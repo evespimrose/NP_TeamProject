@@ -20,9 +20,8 @@ private:
 	float diffuse = 0.2f;
 	float shininess = 256;
 
-	bool Left_keyDown;
-	bool Right_keyDown;
-	bool Space_keyDown;
+	// 0 = Left_keyDown, 1 = Right_keyDown, 2 = Space_keyDown
+	bool keyDownlist[3];
 
 	float posx;
 	float posy;

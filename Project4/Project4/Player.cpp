@@ -105,8 +105,11 @@ void Player::Init()
 	QueryPerformanceCounter(&tTime);
 	fDeltaTime = 0;
 
-	Left_keyDown = 0;
-	Right_keyDown = 0;
+	for (int i = 0; i < 3; ++i)
+	{
+		keyDownlist[i] = false;
+	}
+
 
 	PosVec = glm::vec3(0.0f, -3.5f, 0.0f);
 
@@ -194,7 +197,7 @@ void Player::Init()
 
 void Player::Move()
 {
-	if (Left_keyDown)
+	if (keyDownlist[0])
 	{
 		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -209,7 +212,7 @@ void Player::Move()
 		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
-	if (Right_keyDown)
+	if (keyDownlist[1])
 	{
 		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -258,11 +261,11 @@ void Player::Key_Input(unsigned char key, bool state)
 	{
 		if (state)
 		{
-			Space_keyDown = 1;
+			keyDownlist[2] = true;
 		}
 
 		else
-			Space_keyDown = 0;
+			keyDownlist[2] = false;
 	}
 }
 
@@ -271,19 +274,19 @@ void Player::sKey_Input(int key, bool state)
 	if (key == GLUT_KEY_RIGHT)
 	{
 		if (state)
-			Right_keyDown = 1;
+			keyDownlist[1] = true;
 
 		else
-			Right_keyDown = 0;
+			keyDownlist[1] = false;
 	}
 
 	if (key == GLUT_KEY_LEFT)
 	{
 		if (state)
-			Left_keyDown = 1;
+			keyDownlist[0] = true;
 
 		else
-			Left_keyDown = 0;
+			keyDownlist[1] = false;
 	}
 }
 
@@ -337,7 +340,7 @@ void Player::Fire()
 
 void Player::ManageBullet()
 {
-	if (Space_keyDown)
+	if (keyDownlist[2])
 	{
 		Fire();
 	}
