@@ -94,7 +94,7 @@ void make_vertexShaders()
 	if (!result)
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, errorLog);
-		cerr << "ERROR: vertex shader 컴파???�패\n" << errorLog << endl;
+		cerr << "ERROR: vertex shader error!\n" << errorLog << endl;
 		return;
 	}
 }
@@ -115,7 +115,7 @@ void make_fragmentShaders()
 	if (!result)
 	{
 		glGetShaderInfoLog(fragmentShader, 512, NULL, errorLog);
-		cerr << "ERROR: fragment shader 컴파???�패\n" << errorLog << endl;
+		cerr << "ERROR: fragment shader error!\n" << errorLog << endl;
 		return;
 	}
 }
@@ -183,6 +183,7 @@ GLvoid drawScene()
 		glutSwapBuffers();
 	}
 }
+
 GLvoid Timer(int Value)
 {
 	if (GameState == 1)
@@ -271,12 +272,11 @@ GLvoid sKeyboard(int key, int x, int y)
 {
 	player.sKey_Input(key, TRUE);
 }
+
 GLvoid sKeyboardUp(int key, int x, int y)
 {
 	player.sKey_Input(key, FALSE);
 }
-
-
 
 int main(int argc, char** argv)
 {
@@ -284,7 +284,6 @@ int main(int argc, char** argv)
 
 	GLint width = 800;
 	GLint height = 600;
-
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
