@@ -286,7 +286,7 @@ void Player::sKey_Input(int key, bool state)
 			keyDownlist[0] = true;
 
 		else
-			keyDownlist[1] = false;
+			keyDownlist[0] = false;
 	}
 }
 
