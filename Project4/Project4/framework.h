@@ -50,3 +50,20 @@ struct Data
     Cube_data CubeData;
 };
 
+void Clientsock()
+{
+    int retval;
+
+    WSADATA wsa;
+    WSAStartup(MAKEWORD(2, 2), &wsa);
+
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    SOCKADDR_IN serveraddr;
+    ZeroMemory(&serveraddr, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    serveraddr.sin_addr.s_addr = inet_addr(Proto_IP);
+    serveraddr.sin_port = htons(Proto_Port);
+
+    retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+}
