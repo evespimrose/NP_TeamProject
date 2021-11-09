@@ -1,5 +1,5 @@
 #pragma once
-#include "fmod.hpp"
+#include "inc/fmod.hpp"
 #include <windows.h>
 #pragma comment(lib,"fmod_vc.lib")
 

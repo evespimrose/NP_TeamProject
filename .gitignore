@@ -6,6 +6,13 @@
 *.lo
 *.o
 *.obj
+*.recipe
+*.iobj
+*.ipdb
+*.log
+*.pdb
+*.tlog
+*.lastbuildstate
 
 # Precompiled Headers
 *.gch
