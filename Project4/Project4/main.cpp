@@ -160,7 +160,7 @@ GLvoid drawScene()
 
 		string score = "Score : ";
 		score += std::to_string((int)player.getPosition().z);
-		glutPrint(850.0f, 980.0f, GLUT_BITMAP_HELVETICA_18, score);
+		glutPrint(700.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, score);
 
 		string speed = "Speed : ";
 		speed += std::to_string((int)(player.getSpeed() * 500)) + "km/h";
@@ -168,7 +168,7 @@ GLvoid drawScene()
 
 		string life = "Life : ";
 		life += std::to_string(player.getLife());
-		glutPrint(0.0f, 980.0f, GLUT_BITMAP_HELVETICA_18, life);
+		glutPrint(0.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, life);
 
 		glutSwapBuffers();
 	}
@@ -282,8 +282,8 @@ int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
 
-	GLint width = 1000;
-	GLint height = 1000;
+	GLint width = 800;
+	GLint height = 600;
 
 
 	glutInit(&argc, argv);
