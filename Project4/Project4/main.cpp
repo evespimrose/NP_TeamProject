@@ -23,7 +23,7 @@ Map m;
 
 Data* dat;
 Player_data* pd;
-Cube_data* cd;
+vector<Cube_data> cd;
 
 float Rotate = 0;
 
@@ -52,7 +52,7 @@ Player_data* PD_pack_data(Player p)
 
 Cube_data* CD_pack_data(Cube c)
 {
-
+	
 }
 
 Data* pack_data(Player_data* pd, Cube_data* cd)
