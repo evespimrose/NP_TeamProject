@@ -38,3 +38,6 @@
 *.out
 *.apP
 .vs/
+Debug/
+Rlease/
+x64/
