@@ -21,9 +21,9 @@ float ambient = 0.6f;
 Player player;
 Map m;
 
-Data data;
+Data* dat;
 Player_data* pd;
-Cube_data cd;
+Cube_data* cd;
 
 float Rotate = 0;
 
@@ -34,13 +34,32 @@ void PD_print(Player_data* pd)
 	cout << "x " << pd->PosVec.x << "y " << pd->PosVec.y << "z " << pd->PosVec.z << endl << "speed " << pd->speed << endl;
 }
 
-Player_data* pack_data(Player p)
+// Data print function for check
+/*void D_print(Data* d)
+{
+	Player_data* pd = d->PlayerData;
+	PD_print(pd);
+}*/
+
+Player_data* PD_pack_data(Player p)
 {
 	Player_data* pd = new Player_data;
 	pd->KeyDownlist = p.getKey();
 	pd->PosVec = p.getPosition();
 	pd->speed = p.getSpeed();
 	return pd;
+}
+
+Cube_data* CD_pack_data(Cube c)
+{
+
+}
+
+Data* pack_data(Player_data* pd, Cube_data* cd)
+{
+	Data* d = new Data;
+	d->PlayerData = *pd;
+	return d;
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -230,9 +249,10 @@ GLvoid Timer(int Value)
 	}
 	std::vector<Bullet> tmpList = player.getBulletList();
 	m.BulletCollisionCheck(tmpList);
+	
 	player.setBulletList(tmpList);
-	pd = pack_data(player);
-	PD_print(pd);
+	pd = PD_pack_data(player);
+	D_print(dat);
 
 	string str = "Turbo_Racing   fps:";
 
