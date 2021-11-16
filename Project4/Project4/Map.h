@@ -101,5 +101,6 @@ public:
 	void Render(GLuint ShaderProgram);
 	bool PlayerCollisionCheck(float pz, float pRotate);
 	void BulletCollisionCheck(std::vector<Bullet>& bList);
+	std::vector<Cube> getCubelist() { return CubeList; }
 	void Reset();
 };
