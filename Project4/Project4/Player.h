@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Bullet.h"
 
+
 class Player
 {
 private:
@@ -128,6 +129,7 @@ public:
 
 	glm::vec3 getPosition();
 	Camera getCamera();
+	bool* getKey() { return keyDownlist; }
 
 	void Reset();
 };

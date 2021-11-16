@@ -21,6 +21,10 @@
 #include <time.h>
 #include <chrono>
 
+
+
+
+
 // 클라이언트 통신 관련 참조 헤더
 #define _CRT_SECURE_NO_WARNINGS
 #pragma comment(lib, "ws2_32")
@@ -36,7 +40,7 @@ struct Player_data
     float speed;
     int ID;
     //vector<Bullet> BulletList;
-    bool KeyDownlist[3];
+    bool* KeyDownlist;
 };
 
 struct Cube_data
@@ -50,4 +54,3 @@ struct Data
     Player_data PlayerData;
     Cube_data CubeData;
 };
-

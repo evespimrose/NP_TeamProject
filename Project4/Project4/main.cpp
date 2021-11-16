@@ -1,3 +1,4 @@
+#include "framework.h"
 #include "Player.h"
 #include "Map.h"
 #include "Sound.h"
@@ -20,7 +21,27 @@ float ambient = 0.6f;
 Player player;
 Map m;
 
+Data data;
+Player_data* pd;
+Cube_data cd;
+
 float Rotate = 0;
+
+int cnt = 0;
+
+void PD_print(Player_data* pd)
+{
+	cout << "x " << pd->PosVec.x << "y " << pd->PosVec.y << "z " << pd->PosVec.z << endl << "speed " << pd->speed << endl;
+}
+
+Player_data* pack_data(Player p)
+{
+	Player_data* pd = new Player_data;
+	pd->KeyDownlist = p.getKey();
+	pd->PosVec = p.getPosition();
+	pd->speed = p.getSpeed();
+	return pd;
+}
 
 void glutPrint(float x, float y, LPVOID font, string text)
 {
@@ -172,7 +193,7 @@ GLvoid drawScene()
 
 		glutSwapBuffers();
 	}
-	else
+	else if(GameState == 1)
 	{
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -210,6 +231,8 @@ GLvoid Timer(int Value)
 	std::vector<Bullet> tmpList = player.getBulletList();
 	m.BulletCollisionCheck(tmpList);
 	player.setBulletList(tmpList);
+	pd = pack_data(player);
+	PD_print(pd);
 
 	string str = "Turbo_Racing   fps:";
 
