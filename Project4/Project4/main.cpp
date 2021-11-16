@@ -252,7 +252,7 @@ GLvoid Timer(int Value)
 	
 	player.setBulletList(tmpList);
 	pd = PD_pack_data(player);
-	D_print(dat);
+	//D_print(dat);
 
 	string str = "Turbo_Racing   fps:";
 
