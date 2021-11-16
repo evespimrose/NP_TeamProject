@@ -29,6 +29,7 @@
 #define Proto_IP "127.0.0.1"
 #define Proto_Port 9000
 
+// structs for send
 struct Player_data
 {
     glm::vec3 PosVec;

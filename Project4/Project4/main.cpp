@@ -282,6 +282,11 @@ int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
 
+	// 소켓 초기화
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
 	GLint width = 800;
 	GLint height = 600;
 
