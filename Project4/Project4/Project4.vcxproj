@@ -30,7 +30,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -72,7 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\JHT\source\repos\Project4\Project4\sound;C:\Users\JHT\source\repos\Project4\Project4\lib;C:\Users\JHT\source\repos\Project4\Project4\inc;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\JHT\source\repos\Project4\Project4\sound;C:\Users\JHT\source\repos\Project4\Project4\lib;C:\Users\JHT\source\repos\Project4\Project4\inc;D:\넷겜플\텀프로젝트\Project4\Project4\glm-0.9.9.7\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\넷겜플\텀프로젝트\Project4\Project4\lib\x86;D:\넷겜플\텀프로젝트\Project4\Project4\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -80,7 +81,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\JHT\source\repos\Project4\Project4\sound;C:\Users\JHT\source\repos\Project4\Project4\lib;C:\Users\JHT\source\repos\Project4\Project4\inc;$(IncludePath)</IncludePath>
+    <IncludePath>D:\넷겜플\텀프로젝트\Project4\Project4\glm-0.9.9.7\glm;C:\Users\JHT\source\repos\Project4\Project4\sound;C:\Users\JHT\source\repos\Project4\Project4\lib;C:\Users\JHT\source\repos\Project4\Project4\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\넷겜플\텀프로젝트\Project4\Project4\lib\x64;D:\넷겜플\텀프로젝트\Project4\Project4\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

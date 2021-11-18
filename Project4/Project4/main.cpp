@@ -3,18 +3,39 @@
 #include "Map.h"
 #include "Sound.h"
 
-
-
 #define HEIGHT 600
 #define WIDTH 800
+<<<<<<< HEAD
 #define TEXT_GAP 200
+=======
+
+<<<<<<< HEAD
+// for TCP
+//#define Multi
+=======
+#define SERVERIP "127.0.0.1"
+#define SERVERPORT 9000
+
+>>>>>>> e42000de1409db1cb2bf1ee0bea795e85c46f5a8
+
+>>>>>>> a1ac0573eca3e0fe2327b50804531780ad1d6920
 using namespace std;
 
 const float length = 0.5;
 
 char* arr;
 
+<<<<<<< HEAD
 int GameState = 3;
+=======
+int GameState = 2;
+#ifdef Multi
+GameState = 0;
+#endif // Multi
+
+
+
+>>>>>>> a1ac0573eca3e0fe2327b50804531780ad1d6920
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -23,7 +44,11 @@ GLuint ShaderProgram;
 
 float ambient = 0.6f;
 
-Player player;
+Player player1;
+#ifdef Multi
+vector<Player> p;
+#endif
+
 Map m;
 
 Data* dat;
@@ -35,9 +60,11 @@ float Rotate = 0;
 
 int cnt = 0;
 
-
 int ip_number_len = 0;
 vector<string> words;
+
+SOCKET sock;
+
 
 void PD_print(Player_data* pd)
 {
@@ -187,6 +214,7 @@ void InitShader()
 	glDeleteShader(fragmentShader);
 	glUseProgram(ShaderProgram);
 }
+
 GLvoid drawScene()
 {
 	if (GameState == 0) //게임 시작
@@ -201,24 +229,29 @@ GLvoid drawScene()
 		unsigned int LightColorLocation = glGetUniformLocation(ShaderProgram, "lightColor");
 		glUniform3fv(LightColorLocation, 1, glm::value_ptr(lc));
 
-		glm::vec3 cp = player.getCamera().getPosition();
+		glm::vec3 cp = player1.getCamera().getPosition();
 
 		unsigned int viewPosLocation = glGetUniformLocation(ShaderProgram, "viewPos");
 		glUniform3fv(viewPosLocation, 1, glm::value_ptr(cp));
 
 		m.Render(ShaderProgram);
-		player.Render(ShaderProgram);
-
+		player1.Render(ShaderProgram);
+#ifdef Multi
+		for (auto i = p.begin(); i != p.end(); ++i)
+		{
+			i->Render(ShaderProgram);
+		}
+#endif
 		string score = "Score : ";
-		score += std::to_string((int)player.getPosition().z);
+		score += std::to_string((int)player1.getPosition().z);
 		glutPrint(700.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, score);
 
 		string speed = "Speed : ";
-		speed += std::to_string((int)(player.getSpeed() * 500)) + "km/h";
+		speed += std::to_string((int)(player1.getSpeed() * 500)) + "km/h";
 		glutPrint(0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18, speed);
 
 		string life = "Life : ";
-		life += std::to_string(player.getLife());
+		life += std::to_string(player1.getLife());
 		glutPrint(0.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, life);
 
 		glutSwapBuffers();
@@ -297,6 +330,7 @@ GLvoid drawScene()
 		if (gcd.Players_Pt[2]) {
 			glutPrint(WIDTH / 5.5f + 20+ TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
+<<<<<<< HEAD
 
 		//ready
 		for (int i = 0; i < 3; i++) {
@@ -305,6 +339,10 @@ GLvoid drawScene()
 			}
 		}
 		
+=======
+		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
+		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
+>>>>>>> a1ac0573eca3e0fe2327b50804531780ad1d6920
 
 		glutSwapBuffers();
 	}
@@ -316,34 +354,56 @@ GLvoid Timer(int Value)
 	{
 		SoundManager::sharedManager()->play(OVER_SOUND);
 		SoundManager::sharedManager()->stop(BACKGROUND_SOUND);
+		SoundManager::sharedManager()->stop(DRIVE_SOUND);
 		return;
 	}
 
-	float pz = player.getPosition().z;
-
-	m.Update(pz);
-	player.Update();
-	if (m.PlayerCollisionCheck(pz, player.getRotate()))
+	if (GameState == 0)
 	{
-		SoundManager::sharedManager()->play(CRUSH_SOUND);
+		float pz = player1.getPosition().z;
+		float fpz = 0.0f;
+		float spz = 10000000.0f;
 
-		if (player.collision())
+		vector<Player>::iterator fastest_player_iter = p.begin();
+		vector<Player>::iterator slowest_player_iter = p.begin();
+		for (auto i = p.begin(); i != p.end(); ++i)
 		{
-			GameState = 1;
-			glutPostRedisplay();
+			fpz = max(fpz, i->getPosition().z);
+			spz = min(spz, i->getPosition().z);
 		}
-	}
-	std::vector<Bullet> tmpList = player.getBulletList();
-	m.BulletCollisionCheck(tmpList);
 
-	player.setBulletList(tmpList);
-	pd = PD_pack_data(player);
-	//D_print(dat);
+		m.Fastest_Update(pz);
+		m.Slowest_Update(pz);
+
+		//m.Fastest_Update(fpz);
+		//m.Slowest_Update(spz);
+
+		player1.Update();
+
+
+
+		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
+		{
+			SoundManager::sharedManager()->play(CRUSH_SOUND);
+
+			if (player1.collision())
+			{
+				GameState = 1;
+				glutPostRedisplay();
+			}
+		}
+
+		std::vector<Bullet> tmpList = player1.getBulletList();
+		m.BulletCollisionCheck(tmpList);
+
+		player1.setBulletList(tmpList);
+		pd = PD_pack_data(player1);
+		//D_print(dat);		
+	}
 
 	string str = "Turbo_Racing   fps:";
 
 	glutSetWindowTitle((str + std::to_string(CalculateFrameRate())).c_str());
-
 	glutPostRedisplay();
 	glutTimerFunc(1, Timer, 0);
 }
@@ -355,13 +415,18 @@ void BGM()
 	if (GameState == 0)
 	{
 		SoundManager::sharedManager()->play(BACKGROUND_SOUND);
+		SoundManager::sharedManager()->play(DRIVE_SOUND);
 	}
 }
 
 void Reset()
 {
 	GameState = 0;
-	player.Reset();
+	for (auto i = p.begin(); i != p.end(); ++i)
+	{
+		i->Reset();
+	}
+	player1.Reset();
 	m.Reset();
 	BGM();
 
@@ -370,7 +435,7 @@ void Reset()
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	player.Key_Input(key, TRUE);
+	player1.Key_Input(key, TRUE);
 	switch (key)
 	{
 	case 'Q':
@@ -445,6 +510,11 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			ip_number_len++;
 
 			break;
+		case '0':
+
+			words.push_back("0");
+			ip_number_len++;
+			break;
 		case 'r':
 			Reset();
 			break;
@@ -483,27 +553,81 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 GLvoid KeyboardUp(unsigned char key, int x, int y)
 {
-	player.Key_Input(key, FALSE);
+	player1.Key_Input(key, FALSE);
 }
 
 GLvoid sKeyboard(int key, int x, int y)
 {
-	player.sKey_Input(key, TRUE);
+	player1.sKey_Input(key, TRUE);
 }
 
 GLvoid sKeyboardUp(int key, int x, int y)
 {
-	player.sKey_Input(key, FALSE);
+	player1.sKey_Input(key, FALSE);
 }
+
+//소켓함수 오류 출력 후 종료
+void err_quit(const char* msg)
+{
+<<<<<<< HEAD
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+	LocalFree(lpMsgBuf);
+	exit(1);
+}
+
+//소켓함수 오류 출력
+void err_display(const char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	printf("[%s] %s", msg, (char*)lpMsgBuf);
+	LocalFree(lpMsgBuf);
+}
+
+DWORD WINAPI JoinThread(LPVOID arg)
+{
+	int retval;
+=======
+	p.reserve(3);
+	srand((unsigned int)time(NULL));
+>>>>>>> cfe202dac8b36961a72bb666429ee9a10d33ccb5
+
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET)
+		err_quit("socket()");
+
+	//connect
+	SOCKADDR_IN serveraddr;
+	ZeroMemory(&serveraddr, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR)
+		err_quit("connect()");
+
+	printf("연결 성공");
+}
+
 
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
 
-	// 소켓 초기화
-	WSADATA wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-		return 1;
+	HANDLE hThread_Join;
+	hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
 
 	GLint width = WIDTH;
 	GLint height = HEIGHT;
@@ -524,7 +648,9 @@ int main(int argc, char** argv)
 
 	InitShader();
 
-	player.Init();
+	player1.Init();
+	
+	
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);
