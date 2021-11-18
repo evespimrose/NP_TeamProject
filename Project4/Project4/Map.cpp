@@ -93,26 +93,13 @@ void Map::Init()
 	}
 }
 
-void Map::Update(float pz)
+void Map::Fastest_Update(float pz)
 {
-	std::vector<Tube>::iterator Titer = TubeList.begin();
-	if (Titer->getzOffset() + 50.0f < pz)
-	{
-		TubeList.erase(Titer);
-		Titer = TubeList.end() - 1;
-		float lastzOffset = Titer->getzOffset();
-
-		Tube t;
-		t.Init(lastzOffset + 30.0f, TubeVAO);
-		TubeList.push_back(t);
-	}
+	
 
 	std::vector<Lighting>::iterator Liter = LightingList.begin();
 	if (Liter->getzOffset() + 50.0f < pz)
 	{
-		Liter = LightingList.erase(Liter);
-		Liter = LightingList.erase(Liter);
-
 		Liter = LightingList.end() - 1;
 		float lastzOffset = Liter->getzOffset();
 
@@ -123,16 +110,6 @@ void Map::Update(float pz)
 		Lighting r;
 		r.Init(lastzOffset + 15.0f, 3.5f);
 		LightingList.push_back(r);
-	}
-
-	if (!CubeList.empty())
-	{
-		std::vector<Cube>::iterator Citer = CubeList.begin();
-		if (Citer->getzOffset() + 50.0f < pz)
-		{
-			CubeList.erase(Citer);
-			Citer = CubeList.end() - 1;
-		}
 	}
 
 	while ((int)pz % 100 == 0 && pz > 100.0f)
@@ -153,6 +130,38 @@ void Map::Update(float pz)
 				CubeCounter = 10;
 			}
 			break;
+		}
+	}
+}
+
+void Map::Slowest_Update(float pz)
+{
+	std::vector<Tube>::iterator Titer = TubeList.begin();
+	if (Titer->getzOffset() + 50.0f < pz)
+	{
+		TubeList.erase(Titer);
+		Titer = TubeList.end() - 1;
+		float lastzOffset = Titer->getzOffset();
+
+		Tube t;
+		t.Init(lastzOffset + 30.0f, TubeVAO);
+		TubeList.push_back(t);
+	}
+
+	std::vector<Lighting>::iterator Liter = LightingList.begin();
+	if (Liter->getzOffset() + 50.0f < pz)
+	{
+		Liter = LightingList.erase(Liter);
+		Liter = LightingList.erase(Liter);
+	}
+
+	if (!CubeList.empty())
+	{
+		std::vector<Cube>::iterator Citer = CubeList.begin();
+		if (Citer->getzOffset() + 50.0f < pz)
+		{
+			CubeList.erase(Citer);
+			Citer = CubeList.end() - 1;
 		}
 	}
 }
