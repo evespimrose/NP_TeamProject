@@ -6,6 +6,9 @@
 #define HEIGHT 600
 #define WIDTH 800
 
+// for TCP
+//#define Multi
+
 using namespace std;
 
 const float length = 0.5;
@@ -13,7 +16,11 @@ const float length = 0.5;
 char* arr;
 
 int GameState = 2;
-//int GameState = 0;
+#ifdef Multi
+GameState = 0;
+#endif // Multi
+
+
 
 
 GLuint vertexShader;
@@ -24,7 +31,9 @@ GLuint ShaderProgram;
 float ambient = 0.6f;
 
 Player player1;
+#ifdef Multi
 vector<Player> p;
+#endif
 
 Map m;
 
@@ -35,7 +44,6 @@ vector<Cube_data> cd;
 float Rotate = 0;
 
 int cnt = 0;
-
 
 int ip_number_len = 0;
 vector<string> words;
@@ -208,12 +216,12 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
-		
+#ifdef Multi
 		for (auto i = p.begin(); i != p.end(); ++i)
 		{
 			i->Render(ShaderProgram);
 		}
-
+#endif
 		string score = "Score : ";
 		score += std::to_string((int)player1.getPosition().z);
 		glutPrint(700.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, score);
