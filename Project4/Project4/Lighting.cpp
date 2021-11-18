@@ -1,6 +1,8 @@
 #include "Lighting.h"
 #include "string"
 
+
+
 void Lighting::Init(float zOffset, float xOffset)
 {
 	posx = xOffset;
