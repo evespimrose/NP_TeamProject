@@ -13,6 +13,8 @@ const float length = 0.5;
 char* arr;
 
 int GameState = 2;
+//int GameState = 0;
+
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -22,6 +24,7 @@ GLuint ShaderProgram;
 float ambient = 0.6f;
 
 Player player1;
+vector<Player> p;
 
 Map m;
 
@@ -183,6 +186,7 @@ void InitShader()
 	glDeleteShader(fragmentShader);
 	glUseProgram(ShaderProgram);
 }
+
 GLvoid drawScene()
 {
 	if (GameState == 0) //게임 시작
@@ -204,6 +208,11 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
+		
+		for (auto i = p.begin(); i != p.end(); ++i)
+		{
+			i->Render(ShaderProgram);
+		}
 
 		string score = "Score : ";
 		score += std::to_string((int)player1.getPosition().z);
@@ -281,9 +290,27 @@ GLvoid Timer(int Value)
 	if (GameState == 0)
 	{
 		float pz = player1.getPosition().z;
+		float fpz = 0.0f;
+		float spz = 10000000.0f;
 
-		m.Update(pz);
+		vector<Player>::iterator fastest_player_iter = p.begin();
+		vector<Player>::iterator slowest_player_iter = p.begin();
+		for (auto i = p.begin(); i != p.end(); ++i)
+		{
+			fpz = max(fpz, i->getPosition().z);
+			spz = min(spz, i->getPosition().z);
+		}
+
+		m.Fastest_Update(pz);
+		m.Slowest_Update(pz);
+
+		//m.Fastest_Update(fpz);
+		//m.Slowest_Update(spz);
+
 		player1.Update();
+
+
+
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
@@ -324,6 +351,10 @@ void BGM()
 void Reset()
 {
 	GameState = 0;
+	for (auto i = p.begin(); i != p.end(); ++i)
+	{
+		i->Reset();
+	}
 	player1.Reset();
 	m.Reset();
 	BGM();
@@ -450,6 +481,7 @@ GLvoid sKeyboardUp(int key, int x, int y)
 
 int main(int argc, char** argv)
 {
+	p.reserve(3);
 	srand((unsigned int)time(NULL));
 
 	// 소켓 초기화
@@ -477,6 +509,8 @@ int main(int argc, char** argv)
 	InitShader();
 
 	player1.Init();
+	
+	
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);
