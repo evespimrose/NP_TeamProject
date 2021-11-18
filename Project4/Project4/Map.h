@@ -97,7 +97,8 @@ private:
 
 public:
 	void Init();
-	void Update(float pz);
+	void Fastest_Update(float pz);
+	void Slowest_Update(float pz);
 	void Render(GLuint ShaderProgram);
 	bool PlayerCollisionCheck(float pz, float pRotate);
 	void BulletCollisionCheck(std::vector<Bullet>& bList);
