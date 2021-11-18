@@ -217,8 +217,8 @@ GLvoid drawScene()
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glutPrint(350.0f, 450.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
-		glutPrint(300.0f, 300.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
+		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
+		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
 
 		glutSwapBuffers();
 	}
