@@ -225,7 +225,6 @@ GLvoid drawScene()
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-<<<<<<< HEAD
 		//glutPrint(420.0f, 550.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(WIDTH / 3.0f, HEIGHT / 2.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
@@ -263,10 +262,8 @@ GLvoid drawScene()
 		for (int i = 0; i < ip_number_len; i++) {
 			glutPrint(WIDTH / 3.0f + 100 + 10 * i, HEIGHT / 3.0f, GLUT_BITMAP_HELVETICA_18, words[i]);
 		}
-=======
 		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
->>>>>>> 791d422aec267a34aaaf915350d92f3ebd9d5112
 
 		glutSwapBuffers();
 	}
@@ -282,31 +279,34 @@ GLvoid Timer(int Value)
 		return;
 	}
 
-	float pz = player.getPosition().z;
-
-	m.Update(pz);
-	player.Update();
-	if (m.PlayerCollisionCheck(pz, player.getRotate()))
+	if (GameState == 0)
 	{
-		SoundManager::sharedManager()->play(CRUSH_SOUND);
+		float pz = player.getPosition().z;
 
-		if (player.collision())
+		m.Update(pz);
+		player.Update();
+		if (m.PlayerCollisionCheck(pz, player.getRotate()))
 		{
-			GameState = 1;
-			glutPostRedisplay();
-		}
-	}
-	std::vector<Bullet> tmpList = player.getBulletList();
-	m.BulletCollisionCheck(tmpList);
+			SoundManager::sharedManager()->play(CRUSH_SOUND);
 
-	player.setBulletList(tmpList);
-	pd = PD_pack_data(player);
-	//D_print(dat);
+			if (player.collision())
+			{
+				GameState = 1;
+				glutPostRedisplay();
+			}
+		}
+
+		std::vector<Bullet> tmpList = player.getBulletList();
+		m.BulletCollisionCheck(tmpList);
+
+		player.setBulletList(tmpList);
+		pd = PD_pack_data(player);
+		//D_print(dat);		
+	}
 
 	string str = "Turbo_Racing   fps:";
 
 	glutSetWindowTitle((str + std::to_string(CalculateFrameRate())).c_str());
-
 	glutPostRedisplay();
 	glutTimerFunc(1, Timer, 0);
 }
