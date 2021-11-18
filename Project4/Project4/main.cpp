@@ -230,6 +230,7 @@ GLvoid Timer(int Value)
 	{
 		SoundManager::sharedManager()->play(OVER_SOUND);
 		SoundManager::sharedManager()->stop(BACKGROUND_SOUND);
+		SoundManager::sharedManager()->stop(DRIVE_SOUND);
 		return;
 	}
 
@@ -269,6 +270,7 @@ void BGM()
 	if (GameState == 0)
 	{
 		SoundManager::sharedManager()->play(BACKGROUND_SOUND);
+		SoundManager::sharedManager()->play(DRIVE_SOUND);
 	}
 }
 
