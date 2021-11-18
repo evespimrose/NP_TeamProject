@@ -6,8 +6,14 @@
 #define HEIGHT 600
 #define WIDTH 800
 
+<<<<<<< HEAD
 // for TCP
 //#define Multi
+=======
+#define SERVERIP "127.0.0.1"
+#define SERVERPORT 9000
+
+>>>>>>> e42000de1409db1cb2bf1ee0bea795e85c46f5a8
 
 using namespace std;
 
@@ -47,6 +53,9 @@ int cnt = 0;
 
 int ip_number_len = 0;
 vector<string> words;
+
+SOCKET sock;
+
 
 void PD_print(Player_data* pd)
 {
@@ -487,15 +496,68 @@ GLvoid sKeyboardUp(int key, int x, int y)
 	player1.sKey_Input(key, FALSE);
 }
 
-int main(int argc, char** argv)
+//소켓함수 오류 출력 후 종료
+void err_quit(const char* msg)
 {
+<<<<<<< HEAD
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+	LocalFree(lpMsgBuf);
+	exit(1);
+}
+
+//소켓함수 오류 출력
+void err_display(const char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	printf("[%s] %s", msg, (char*)lpMsgBuf);
+	LocalFree(lpMsgBuf);
+}
+
+DWORD WINAPI JoinThread(LPVOID arg)
+{
+	int retval;
+=======
 	p.reserve(3);
 	srand((unsigned int)time(NULL));
+>>>>>>> cfe202dac8b36961a72bb666429ee9a10d33ccb5
 
-	// 소켓 초기화
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET)
+		err_quit("socket()");
+
+	//connect
+	SOCKADDR_IN serveraddr;
+	ZeroMemory(&serveraddr, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR)
+		err_quit("connect()");
+
+	printf("연결 성공");
+}
+
+
+int main(int argc, char** argv)
+{
+	srand((unsigned int)time(NULL));
+
+	HANDLE hThread_Join;
+	hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
 
 	GLint width = WIDTH;
 	GLint height = HEIGHT;
