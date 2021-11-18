@@ -7,14 +7,14 @@
 
 #define HEIGHT 600
 #define WIDTH 800
-
+#define TEXT_GAP 200
 using namespace std;
 
 const float length = 0.5;
 
 char* arr;
 
-int GameState = 2;
+int GameState = 3;
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -29,6 +29,7 @@ Map m;
 Data* dat;
 Player_data* pd;
 vector<Cube_data> cd;
+Game_Communication_Data gcd;
 
 float Rotate = 0;
 
@@ -58,6 +59,8 @@ Player_data* PD_pack_data(Player p)
 	pd->speed = p.getSpeed();
 	return pd;
 }
+
+
 
 //Cube_data* CD_pack_data(Cube c)
 //{
@@ -225,7 +228,6 @@ GLvoid drawScene()
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-<<<<<<< HEAD
 		//glutPrint(420.0f, 550.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(WIDTH / 3.0f, HEIGHT / 2.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
@@ -256,17 +258,53 @@ GLvoid drawScene()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		glutPrint(WIDTH / 2.5f, HEIGHT / 1.5f, GLUT_BITMAP_TIMES_ROMAN_24, "Tube Racing");
-
-		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_HELVETICA_18, "ENTER IP : ");
-
-		for (int i = 0; i < ip_number_len; i++) {
-			glutPrint(WIDTH / 3.0f + 100 + 10 * i, HEIGHT / 3.0f, GLUT_BITMAP_HELVETICA_18, words[i]);
+		glutPrint(WIDTH / 2.5f-25, HEIGHT / 1.5f +100, GLUT_BITMAP_TIMES_ROMAN_24, "Waiting for players...");
+		//플레이어 1
+		glutPrint(WIDTH / 5.5f, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
+		glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
+		for (int i = 0; i < 7; i++) {
+			glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f -14*i-8 , GLUT_BITMAP_HELVETICA_18, "I");
 		}
-=======
-		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
-		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
->>>>>>> 791d422aec267a34aaaf915350d92f3ebd9d5112
+		for (int i = 0; i < 7; i++) {
+			glutPrint(WIDTH / 3.2f, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
+		}
+		if (gcd.Players_Pt[0]) {
+			glutPrint(WIDTH / 5.5f+20, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 1 ");
+		}
+
+		//플레이어 2
+		glutPrint(WIDTH / 5.5f+ TEXT_GAP, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
+		glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
+		for (int i = 0; i < 7; i++) {
+			glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
+		}
+		for (int i = 0; i < 7; i++) {
+			glutPrint(WIDTH / 3.2f + TEXT_GAP, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
+		}
+		if (gcd.Players_Pt[1]) {
+			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP , HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 2 ");
+		}
+
+		//플레이어 3
+		glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
+		glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
+		for (int i = 0; i < 7; i++) {
+			glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
+		}
+		for (int i = 0; i < 7; i++) {
+			glutPrint(WIDTH / 3.2f + TEXT_GAP * 2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
+		}
+		if (gcd.Players_Pt[2]) {
+			glutPrint(WIDTH / 5.5f + 20+ TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
+		}
+
+		//ready
+		for (int i = 0; i < 3; i++) {
+			if (gcd.Players_Ready[i]) {
+				glutPrint(WIDTH / 5.5f+ TEXT_GAP*i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
+			}
+		}
+		
 
 		glutSwapBuffers();
 	}
@@ -421,6 +459,22 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				ip_add += word;
 
 			cout << ip_add << endl;
+			break;
+		}
+	}
+
+	if (GameState == 3) //로비
+	{
+		switch (key)
+		{
+		case 32:
+			if (gcd.Im_Ready) {
+				gcd.Im_Ready = false;
+			}
+			else if (!gcd.Im_Ready) {
+				gcd.Im_Ready = true;
+			}
+			
 			break;
 		}
 	}
