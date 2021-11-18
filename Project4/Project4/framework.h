@@ -24,6 +24,7 @@
 // 클라이언트 통신 관련 참조 헤더
 #define _CRT_SECURE_NO_WARNINGS
 #pragma comment(lib, "ws2_32")
+#pragma comment(lib, "glew32")
 #include <winsock2.h>
 
 #define Proto_IP "127.0.0.1"
