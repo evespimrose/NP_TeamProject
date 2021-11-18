@@ -50,10 +50,10 @@ Player_data* PD_pack_data(Player p)
 	return pd;
 }
 
-Cube_data* CD_pack_data(Cube c)
-{
-	
-}
+//Cube_data* CD_pack_data(Cube c)
+//{
+//	
+//}
 
 Data* pack_data(Player_data* pd, Cube_data* cd)
 {
