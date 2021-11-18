@@ -126,7 +126,7 @@ void Player::Init()
 
 	Speed = 0.0f;
 
-	acc = 0.00005f;
+	acc = 0.0005f;
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
