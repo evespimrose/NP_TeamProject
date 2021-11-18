@@ -3,13 +3,18 @@
 #include "Map.h"
 #include "Sound.h"
 
+
+
+#define HEIGHT 600
+#define WIDTH 800
+
 using namespace std;
 
 const float length = 0.5;
 
 char* arr;
 
-int GameState = 0;
+int GameState = 2;
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -28,6 +33,10 @@ vector<Cube_data> cd;
 float Rotate = 0;
 
 int cnt = 0;
+
+
+int ip_number_len = 0;
+vector<string> words;
 
 void PD_print(Player_data* pd)
 {
@@ -175,10 +184,9 @@ void InitShader()
 	glDeleteShader(fragmentShader);
 	glUseProgram(ShaderProgram);
 }
-
 GLvoid drawScene()
 {
-	if (GameState == 0)
+	if (GameState == 0) //게임 시작
 	{
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -212,11 +220,48 @@ GLvoid drawScene()
 
 		glutSwapBuffers();
 	}
-	else if(GameState == 1)
+	else if (GameState == 1) //게임종료
 	{
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//glutPrint(420.0f, 550.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
+		glutPrint(WIDTH / 3.0f, HEIGHT / 2.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
+		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
+
+		glutSwapBuffers();
+	}
+	else if (GameState == 2) // 타이틀 씬
+	{
+
+		glClearColor(1, 1, 1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//glutPrint(420.0f, 550.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
+		glutPrint(WIDTH / 2.5f, HEIGHT / 1.5f, GLUT_BITMAP_TIMES_ROMAN_24, "Tube Racing");
+
+		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_HELVETICA_18, "ENTER IP : ");
+
+		for (int i = 0; i < ip_number_len; i++) {
+			glutPrint(WIDTH / 3.0f + 100 + 10 * i, HEIGHT / 3.0f, GLUT_BITMAP_HELVETICA_18, words[i]);
+		}
+
+		glutSwapBuffers();
+
+	}
+	else if (GameState == 3) // 로비 씬
+	{
+		glClearColor(1, 1, 1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+		glutPrint(WIDTH / 2.5f, HEIGHT / 1.5f, GLUT_BITMAP_TIMES_ROMAN_24, "Tube Racing");
+
+		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_HELVETICA_18, "ENTER IP : ");
+
+		for (int i = 0; i < ip_number_len; i++) {
+			glutPrint(WIDTH / 3.0f + 100 + 10 * i, HEIGHT / 3.0f, GLUT_BITMAP_HELVETICA_18, words[i]);
+		}
 		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
 
@@ -230,34 +275,38 @@ GLvoid Timer(int Value)
 	{
 		SoundManager::sharedManager()->play(OVER_SOUND);
 		SoundManager::sharedManager()->stop(BACKGROUND_SOUND);
+		SoundManager::sharedManager()->stop(DRIVE_SOUND);
 		return;
 	}
 
-	float pz = player.getPosition().z;
-
-	m.Update(pz);
-	player.Update();
-	if (m.PlayerCollisionCheck(pz, player.getRotate()))
+	if (GameState == 0)
 	{
-		SoundManager::sharedManager()->play(CRUSH_SOUND);
+		float pz = player.getPosition().z;
 
-		if (player.collision())
+		m.Update(pz);
+		player.Update();
+		if (m.PlayerCollisionCheck(pz, player.getRotate()))
 		{
-			GameState = 1;
-			glutPostRedisplay();
+			SoundManager::sharedManager()->play(CRUSH_SOUND);
+
+			if (player.collision())
+			{
+				GameState = 1;
+				glutPostRedisplay();
+			}
 		}
+
+		std::vector<Bullet> tmpList = player.getBulletList();
+		m.BulletCollisionCheck(tmpList);
+
+		player.setBulletList(tmpList);
+		pd = PD_pack_data(player);
+		//D_print(dat);		
 	}
-	std::vector<Bullet> tmpList = player.getBulletList();
-	m.BulletCollisionCheck(tmpList);
-	
-	player.setBulletList(tmpList);
-	pd = PD_pack_data(player);
-	//D_print(dat);
 
 	string str = "Turbo_Racing   fps:";
 
 	glutSetWindowTitle((str + std::to_string(CalculateFrameRate())).c_str());
-
 	glutPostRedisplay();
 	glutTimerFunc(1, Timer, 0);
 }
@@ -269,6 +318,7 @@ void BGM()
 	if (GameState == 0)
 	{
 		SoundManager::sharedManager()->play(BACKGROUND_SOUND);
+		SoundManager::sharedManager()->play(DRIVE_SOUND);
 	}
 }
 
@@ -304,6 +354,79 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			break;
 		}
 	}
+
+	if (GameState == 2) //타이틀
+	{
+		switch (key)
+		{
+		case '1':
+
+			words.push_back("1");
+			ip_number_len++;
+			break;
+		case '2':
+			words.push_back("2");
+			ip_number_len++;
+
+			break;
+		case '3':
+			words.push_back("3");
+			ip_number_len++;
+
+			break;
+		case '4':
+			words.push_back("4");
+			ip_number_len++;
+
+			break;
+		case '5':
+			words.push_back("5");
+			ip_number_len++;
+
+			break;
+		case '6':
+			words.push_back("6");
+			ip_number_len++;
+
+			break;
+		case '7':
+			words.push_back("7");
+			ip_number_len++;
+
+			break;
+		case '8':
+			words.push_back("8");
+			ip_number_len++;
+
+			break;
+		case '9':
+			words.push_back("9");
+			ip_number_len++;
+
+			break;
+		case '.':
+			words.push_back(".");
+			ip_number_len++;
+
+			break;
+		case 'r':
+			Reset();
+			break;
+		case 8: //backspace
+			words.pop_back();
+			ip_number_len--;
+			break;
+		case 13://enter
+			// 올바른 ip주소라면
+			string ip_add = "";
+			for (string word : words)
+				ip_add += word;
+
+			cout << ip_add << endl;
+			break;
+		}
+	}
+
 }
 
 GLvoid KeyboardUp(unsigned char key, int x, int y)
@@ -330,8 +453,8 @@ int main(int argc, char** argv)
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
-	GLint width = 800;
-	GLint height = 600;
+	GLint width = WIDTH;
+	GLint height = HEIGHT;
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
