@@ -3,8 +3,6 @@
 #include "Map.h"
 #include "Sound.h"
 
-
-
 #define HEIGHT 600
 #define WIDTH 800
 
@@ -23,7 +21,8 @@ GLuint ShaderProgram;
 
 float ambient = 0.6f;
 
-Player player;
+Player player1;
+
 Map m;
 
 Data* dat;
@@ -198,24 +197,24 @@ GLvoid drawScene()
 		unsigned int LightColorLocation = glGetUniformLocation(ShaderProgram, "lightColor");
 		glUniform3fv(LightColorLocation, 1, glm::value_ptr(lc));
 
-		glm::vec3 cp = player.getCamera().getPosition();
+		glm::vec3 cp = player1.getCamera().getPosition();
 
 		unsigned int viewPosLocation = glGetUniformLocation(ShaderProgram, "viewPos");
 		glUniform3fv(viewPosLocation, 1, glm::value_ptr(cp));
 
 		m.Render(ShaderProgram);
-		player.Render(ShaderProgram);
+		player1.Render(ShaderProgram);
 
 		string score = "Score : ";
-		score += std::to_string((int)player.getPosition().z);
+		score += std::to_string((int)player1.getPosition().z);
 		glutPrint(700.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, score);
 
 		string speed = "Speed : ";
-		speed += std::to_string((int)(player.getSpeed() * 500)) + "km/h";
+		speed += std::to_string((int)(player1.getSpeed() * 500)) + "km/h";
 		glutPrint(0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18, speed);
 
 		string life = "Life : ";
-		life += std::to_string(player.getLife());
+		life += std::to_string(player1.getLife());
 		glutPrint(0.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, life);
 
 		glutSwapBuffers();
@@ -281,26 +280,26 @@ GLvoid Timer(int Value)
 
 	if (GameState == 0)
 	{
-		float pz = player.getPosition().z;
+		float pz = player1.getPosition().z;
 
 		m.Update(pz);
-		player.Update();
-		if (m.PlayerCollisionCheck(pz, player.getRotate()))
+		player1.Update();
+		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
 
-			if (player.collision())
+			if (player1.collision())
 			{
 				GameState = 1;
 				glutPostRedisplay();
 			}
 		}
 
-		std::vector<Bullet> tmpList = player.getBulletList();
+		std::vector<Bullet> tmpList = player1.getBulletList();
 		m.BulletCollisionCheck(tmpList);
 
-		player.setBulletList(tmpList);
-		pd = PD_pack_data(player);
+		player1.setBulletList(tmpList);
+		pd = PD_pack_data(player1);
 		//D_print(dat);		
 	}
 
@@ -325,7 +324,7 @@ void BGM()
 void Reset()
 {
 	GameState = 0;
-	player.Reset();
+	player1.Reset();
 	m.Reset();
 	BGM();
 
@@ -334,7 +333,7 @@ void Reset()
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	player.Key_Input(key, TRUE);
+	player1.Key_Input(key, TRUE);
 	switch (key)
 	{
 	case 'Q':
@@ -409,6 +408,11 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			ip_number_len++;
 
 			break;
+		case '0':
+
+			words.push_back("0");
+			ip_number_len++;
+			break;
 		case 'r':
 			Reset();
 			break;
@@ -431,17 +435,17 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 GLvoid KeyboardUp(unsigned char key, int x, int y)
 {
-	player.Key_Input(key, FALSE);
+	player1.Key_Input(key, FALSE);
 }
 
 GLvoid sKeyboard(int key, int x, int y)
 {
-	player.sKey_Input(key, TRUE);
+	player1.sKey_Input(key, TRUE);
 }
 
 GLvoid sKeyboardUp(int key, int x, int y)
 {
-	player.sKey_Input(key, FALSE);
+	player1.sKey_Input(key, FALSE);
 }
 
 int main(int argc, char** argv)
@@ -472,7 +476,7 @@ int main(int argc, char** argv)
 
 	InitShader();
 
-	player.Init();
+	player1.Init();
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);
