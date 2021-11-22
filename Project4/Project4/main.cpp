@@ -581,6 +581,28 @@ void err_display(const char* msg)
 	LocalFree(lpMsgBuf);
 }
 
+int recvn(SOCKET s, char* buf, int len, int flags)
+{
+	int received;
+	char* ptr = buf;
+	int left = len;
+
+	while (left > 0)
+	{
+		received = recv(s, ptr, left, flags);
+		//printf("size of file : %d\n", received);
+		if (received == SOCKET_ERROR)
+		{
+			printf("SOCKET ERROR!\n");
+			return SOCKET_ERROR;
+		}
+
+		left -= received;
+		ptr += received;
+	}
+	return (len - left);
+}
+
 DWORD WINAPI JoinThread(LPVOID arg)
 {
 	int retval;
