@@ -19,7 +19,7 @@ const float length = 0.5;
 char* arr;
 
 
-int GameState = 3;
+int GameState = 0;
 
 //int GameState = 2;
 #ifdef Multi
@@ -596,7 +596,6 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 			printf("SOCKET ERROR!\n");
 			return SOCKET_ERROR;
 		}
-
 		left -= received;
 		ptr += received;
 	}
@@ -629,7 +628,10 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	if (retval == SOCKET_ERROR)
 		err_quit("connect()");
 
-	printf("연결 성공");
+	printf("activated\n");
+	int pdsize = sizeof(pd);
+	send(sock, (char*)&pdsize, sizeof(int), 0);
+	send(sock, (char*)pd, sizeof(Player_data), 0);
 
 
 }
