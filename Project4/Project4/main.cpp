@@ -6,14 +6,10 @@
 #define HEIGHT 600
 #define WIDTH 800
 
-<<<<<<< HEAD
 // for TCP
 //#define Multi
-=======
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
-
->>>>>>> e42000de1409db1cb2bf1ee0bea795e85c46f5a8
 
 using namespace std;
 
