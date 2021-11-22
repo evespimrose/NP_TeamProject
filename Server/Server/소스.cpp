@@ -5,20 +5,12 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "Server.h"
+
 using namespace std;
 
 #define SERVERPORT 9000
-#define BUFSIZE 512
-
-struct Player_data
-{
-	float PosVec_z;
-	float rotate;
-	float speed;
-	int ID;
-	//vector<Bullet> BulletList;
-	bool* KeyDownlist;
-};
+#define BUFSIZE 1024
 
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
@@ -43,13 +35,6 @@ void err_display(const char* msg)
 		(LPTSTR)&lpMsgBuf, 0, NULL);
 	printf("[%s] %s", msg, (char*)lpMsgBuf);
 	LocalFree(lpMsgBuf);
-}
-
-Player_data* pd;
-
-void PD_print(Player_data* pd)
-{
-	cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
 }
 
 //사용자 정의 데이터 수신 함수
@@ -123,60 +108,31 @@ int main()
 			break;
 		}
 
-		retval = recvn(client_sock, (char*)&check_ready[clients_count], sizeof(bool), 0);
-		if (retval == SOCKET_ERROR)
-		{
-			err_display("recv()");
-			break;
-		}
-
-		clients_list[clients_count] = client_sock;
-
-		clients_count += 1;
-
-		for (int i = 0; i < 2; ++i)
-		{
-			if (check_ready[i] == true)
-				ready_stack += 1;
-		}
-
-		if (clients_count == ready_stack)
-		{
-			for (int i = 0; i < clients_count - 1; ++i)
-				send(clients_list[i], (char*)&changestate, sizeof(changestate), 0);
-		}
-
-
-
-
-
 		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
-		/*
-		int retval = recvn(client_sock, (char*)&size, sizeof(int), 0);
-		if (retval == SOCKET_ERROR)
-		{
-			err_quit("recvn()");
-		}
-		printf("size : %d\n",size);
 
-		retval = size;
+		int len;
 		while (1)
 		{
-			retval = recvn(client_sock, (char*)pd, size, 0);
-			retval = size - retval;
-			printf("retval : %d\n", retval);
-			if (retval == SOCKET_ERROR)
-			{
-				err_quit("recvn()");
-			}
-			else if (retval == 0)
-			{
+			retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
 				break;
 			}
+			else if (retval == 0)
+				break;
+
+			char suBuffer[BUFSIZE];
+			int Getsize = recv(client_sock, suBuffer, len, 0);
+			Player_data* dat;
+			suBuffer[Getsize] = '\0';
+			dat = (Player_data*)suBuffer;
+			cout << "------------------" << endl;
+			cout << "z = " << dat->PosVec_z << ", rotate = " << dat->rotate << endl;
+			cout << "------------------" << endl;
 		}
-		PD_print(pd);
-		*/
+
+		//PD_print(*pd);
 	}
 }
 
