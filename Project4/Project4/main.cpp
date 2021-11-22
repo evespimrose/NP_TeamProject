@@ -593,40 +593,16 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	return (len - left);
 }
 
-<<<<<<< HEAD
-=======
+
 DWORD WINAPI JoinThread(LPVOID arg)
 {
-	int retval;
-#ifdef Multi
-	p.reserve(3);
-#endif
-	srand((unsigned int)time(NULL));
+	sock = init_sock();
 
-	WSADATA wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-		return 1;
-
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET)
-		err_quit("socket()");
-
-	//connect
-	SOCKADDR_IN serveraddr;
-	ZeroMemory(&serveraddr, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
-	serveraddr.sin_port = htons(SERVERPORT);
-	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR)
-		err_quit("connect()");
-
-	printf("activated\n");
-	int pdsize = sizeof(pd);
-	send(sock, (char*)&pdsize, sizeof(int), 0);
-	send(sock, (char*)pd, sizeof(Player_data), 0);
-
-	
+	while (1)
+	{
+		pd = PD_pack_data(player1);
+		send_Player(sock, pd);
+	}
 	// ready 확인용 임시코드
 	//bool ready = true;
 	//bool changestate = false;
@@ -637,8 +613,6 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	//	printf("changestate 신호 수신");
 	//}
 }
-
->>>>>>> 3384fbaef07067aa9154a9adf3621cc9ce10f956
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
