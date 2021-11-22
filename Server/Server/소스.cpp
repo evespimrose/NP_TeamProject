@@ -106,6 +106,13 @@ int main()
 	int addrlen;
 	char buf[BUFSIZE + 1];
 
+	bool check_ready[3];
+	int clients_count = 0;
+	int ready_stack = 0;
+	bool changestate = true;
+
+	SOCKET clients_list[3];
+
 	while (1)
 	{
 		addrlen = sizeof(clientaddr);
@@ -115,10 +122,37 @@ int main()
 			err_display("accept()");
 			break;
 		}
-		/*int size;
+
+		retval = recvn(client_sock, (char*)&check_ready[clients_count], sizeof(bool), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("recv()");
+			break;
+		}
+
+		clients_list[clients_count] = client_sock;
+
+		clients_count += 1;
+
+		for (int i = 0; i < 2; ++i)
+		{
+			if (check_ready[i] == true)
+				ready_stack += 1;
+		}
+
+		if (clients_count == ready_stack)
+		{
+			for (int i = 0; i < clients_count - 1; ++i)
+				send(clients_list[i], (char*)&changestate, sizeof(changestate), 0);
+		}
+
+
+
+
+
 		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
-
+		/*
 		int retval = recvn(client_sock, (char*)&size, sizeof(int), 0);
 		if (retval == SOCKET_ERROR)
 		{
