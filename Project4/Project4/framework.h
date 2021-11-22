@@ -33,7 +33,8 @@
 // structs for send
 struct Player_data
 {
-    glm::vec3 PosVec;
+    float PosVec_z;
+    float rotate;
     float speed;
     int ID;
     //vector<Bullet> BulletList;
@@ -60,3 +61,4 @@ struct Game_Communication_Data
     BOOL Players_Ready[3] ; 
     BOOL IS_START = false; //게임 시작했는지
 };
+

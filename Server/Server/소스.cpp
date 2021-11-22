@@ -1,10 +1,24 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #pragma comment(lib, "ws2_32")
 #include <winsock2.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+
+using namespace std;
 
 #define SERVERPORT 9000
 #define BUFSIZE 512
+
+struct Player_data
+{
+	float PosVec_z;
+	float rotate;
+	float speed;
+	int ID;
+	//vector<Bullet> BulletList;
+	bool* KeyDownlist;
+};
 
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
@@ -29,6 +43,13 @@ void err_display(const char* msg)
 		(LPTSTR)&lpMsgBuf, 0, NULL);
 	printf("[%s] %s", msg, (char*)lpMsgBuf);
 	LocalFree(lpMsgBuf);
+}
+
+Player_data* pd;
+
+void PD_print(Player_data* pd)
+{
+	cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
 }
 
 //사용자 정의 데이터 수신 함수
@@ -79,8 +100,6 @@ int main()
 	if (retval == SOCKET_ERROR)
 		err_quit("listen()");
 
-
-
 	//데이터 통신에 사용할 변수
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
@@ -96,10 +115,34 @@ int main()
 			err_display("accept()");
 			break;
 		}
-
+		/*int size;
 		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
+		int retval = recvn(client_sock, (char*)&size, sizeof(int), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_quit("recvn()");
+		}
+		printf("size : %d\n",size);
+
+		retval = size;
+		while (1)
+		{
+			retval = recvn(client_sock, (char*)pd, size, 0);
+			retval = size - retval;
+			printf("retval : %d\n", retval);
+			if (retval == SOCKET_ERROR)
+			{
+				err_quit("recvn()");
+			}
+			else if (retval == 0)
+			{
+				break;
+			}
+		}
+		PD_print(pd);
+		*/
 	}
 }
 

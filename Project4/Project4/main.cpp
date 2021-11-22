@@ -18,14 +18,12 @@ const float length = 0.5;
 
 char* arr;
 
-
 int GameState = 0;
 
 //int GameState = 2;
 #ifdef Multi
 GameState = 0;
 #endif // Multi
-
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -55,10 +53,34 @@ vector<string> words;
 
 SOCKET sock;
 
+//소켓함수 오류 출력 후 종료
+void err_quit(const char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+	LocalFree(lpMsgBuf);
+	exit(1);
+}
+
+//소켓함수 오류 출력
+void err_display(const char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	printf("[%s] %s", msg, (char*)lpMsgBuf);
+	LocalFree(lpMsgBuf);
+}
 
 void PD_print(Player_data* pd)
 {
-	cout << "x " << pd->PosVec.x << "y " << pd->PosVec.y << "z " << pd->PosVec.z << endl << "speed " << pd->speed << endl;
+	cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
 }
 
 // Data print function for check
@@ -72,8 +94,9 @@ Player_data* PD_pack_data(Player p)
 {
 	Player_data* pd = new Player_data;
 	pd->KeyDownlist = p.getKey();
-	pd->PosVec = p.getPosition();
+	pd->PosVec_z = p.getPosition().z;
 	pd->speed = p.getSpeed();
+	pd->rotate = p.getRotate();
 	return pd;
 }
 
@@ -87,6 +110,40 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 	Data* d = new Data;
 	d->PlayerData = *pd;
 	return d;
+}
+
+DWORD WINAPI JoinThread(LPVOID arg)
+{
+	int retval;
+#ifdef Multi
+	p.reserve(3);
+#endif
+
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET)
+		err_quit("socket()");
+
+	//connect
+	SOCKADDR_IN serveraddr;
+	ZeroMemory(&serveraddr, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR)
+		err_quit("connect()");
+
+	printf("activated\n");
+	/*
+	int pdsize = sizeof(pd);
+	printf("pdsize = %d\n", pdsize);
+	send(sock, (char*)&pdsize, sizeof(int), 0);
+	send(sock, (char*)pd, sizeof(Player_data), 0);
+	*/
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -386,7 +443,11 @@ GLvoid Timer(int Value)
 
 		player1.setBulletList(tmpList);
 		pd = PD_pack_data(player1);
-		PD_print(pd);		
+
+		PD_print(pd);
+
+		HANDLE hThread_Join;
+		hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
 	}
 
 	string str = "Turbo_Racing   fps:";
@@ -556,31 +617,6 @@ GLvoid sKeyboardUp(int key, int x, int y)
 	player1.sKey_Input(key, FALSE);
 }
 
-//소켓함수 오류 출력 후 종료
-void err_quit(const char* msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL, WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf, 0, NULL);
-	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
-	LocalFree(lpMsgBuf);
-	exit(1);
-}
-
-//소켓함수 오류 출력
-void err_display(const char* msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL, WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf, 0, NULL);
-	printf("[%s] %s", msg, (char*)lpMsgBuf);
-	LocalFree(lpMsgBuf);
-}
-
 int recvn(SOCKET s, char* buf, int len, int flags)
 {
 	int received;
@@ -602,46 +638,9 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	return (len - left);
 }
 
-DWORD WINAPI JoinThread(LPVOID arg)
-{
-	int retval;
-#ifdef Multi
-	p.reserve(3);
-#endif
-	srand((unsigned int)time(NULL));
-
-	WSADATA wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-		return 1;
-
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET)
-		err_quit("socket()");
-
-	//connect
-	SOCKADDR_IN serveraddr;
-	ZeroMemory(&serveraddr, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
-	serveraddr.sin_port = htons(SERVERPORT);
-	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR)
-		err_quit("connect()");
-
-	printf("activated\n");
-	int pdsize = sizeof(pd);
-	send(sock, (char*)&pdsize, sizeof(int), 0);
-	send(sock, (char*)pd, sizeof(Player_data), 0);
-
-
-}
-
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
-
-	HANDLE hThread_Join;
-	hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
 
 	GLint width = WIDTH;
 	GLint height = HEIGHT;
