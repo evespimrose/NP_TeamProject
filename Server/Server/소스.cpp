@@ -89,7 +89,7 @@ int main()
 
 	bool check_ready[3];
 	int clients_count = 0;
-	int ready_stack = 0;
+	int ready_count = 0;
 	bool changestate = true;
 
 	SOCKET clients_list[3];
@@ -103,6 +103,12 @@ int main()
 			err_display("accept()");
 			break;
 		}
+		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
+			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+		
+		clients_list[clients_count] = client_sock;
+		clients_count += 1;
+		printf("현재 접속중인 클라이언트 수 : %d\n", clients_count);
 
 		retval = recvn(client_sock, (char*)&check_ready[clients_count], sizeof(bool), 0);
 		if (retval == SOCKET_ERROR)
@@ -110,30 +116,21 @@ int main()
 			err_display("recv()");
 			break;
 		}
+		ready_count += 1;
+		printf("현재 준비 완료된 클라이언트 수 : %d\n", ready_count);
 
-		clients_list[clients_count] = client_sock;
-
-		clients_count += 1;
-
-		for (int i = 0; i < 2; ++i)
+		if ((clients_count == ready_count)&&clients_count>1)
 		{
-			if (check_ready[i] == true)
-				ready_stack += 1;
-		}
-
-		if (clients_count == ready_stack)
-		{
-			for (int i = 0; i < clients_count - 1; ++i)
+			for (int i = 0; i < clients_count; ++i)
+			{
 				send(clients_list[i], (char*)&changestate, sizeof(changestate), 0);
+				printf("ready 신호 전송");
+			}
 		}
-
-
-
-
-
-		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
-			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 	}
+
+
+
 }
 

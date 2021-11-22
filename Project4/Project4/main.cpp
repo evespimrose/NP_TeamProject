@@ -633,7 +633,16 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	send(sock, (char*)&pdsize, sizeof(int), 0);
 	send(sock, (char*)pd, sizeof(Player_data), 0);
 
-
+	
+	// ready 확인용 임시코드
+	//bool ready = true;
+	//bool changestate = false;
+	//send(sock, (char*)&ready, sizeof(bool), 0);
+	//retval=recvn(sock, (char*)&changestate, sizeof(bool), 0);
+	//if (retval != SOCKET_ERROR)
+	//{
+	//	printf("changestate 신호 수신");
+	//}
 }
 
 int main(int argc, char** argv)
