@@ -25,6 +25,27 @@ void err_display(const char* msg)
 	LocalFree(lpMsgBuf);
 }
 
+int recvn(SOCKET s, char* buf, int len, int flags)
+{
+	int received;
+	char* ptr = buf;
+	int left = len;
+
+	while (left > 0)
+	{
+		received = recv(s, ptr, left, flags);
+		//printf("size of file : %d\n", received);
+		if (received == SOCKET_ERROR)
+		{
+			printf("SOCKET ERROR!\n");
+			return SOCKET_ERROR;
+		}
+		left -= received;
+		ptr += received;
+	}
+	return (len - left);
+}
+
 SOCKET init_sock()
 {
 	int retval;
@@ -49,7 +70,7 @@ SOCKET init_sock()
 	return sock;
 }
 
-void send_Player(SOCKET sock, Player_data player)
+void send_Player_data(SOCKET sock, Player_data player)
 {
 	int retval;
 
@@ -57,11 +78,9 @@ void send_Player(SOCKET sock, Player_data player)
 	retval = send(sock, (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
-		exit(1);
 	}
 	retval = send(sock, (char*)&player, sizeof(Player_data), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
-		exit(1);
 	}
 }

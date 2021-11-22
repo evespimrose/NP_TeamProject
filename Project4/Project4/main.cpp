@@ -7,7 +7,7 @@
 #define WIDTH 800
 #define TEXT_GAP 200
 
-// for TCP
+// for Multiplay
 //#define Multi
 
 
@@ -17,9 +17,9 @@ const float length = 0.5;
 
 char* arr;
 
-int GameState = 0;
+//int GameState = 0;
 
-//int GameState = 2;
+int GameState = 2;
 #ifdef Multi
 GameState = 0;
 #endif // Multi
@@ -95,10 +95,9 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	{
 		pd = PD_pack_data(player1);
 		PD_print(pd);
-		send_Player(sock, pd);
+		send_Player_data(sock, pd);
 	}
 
-	printf("activated\n");
 	// ready 확인용 임시코드
 	//bool ready = true;
 	//bool changestate = false;

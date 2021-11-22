@@ -72,4 +72,4 @@ typedef struct Server_data
 void err_quit(const char* msg);
 void err_display(const char* msg);
 SOCKET init_sock();
-void send_Player(SOCKET sock, Player_data player);
+void send_Player_data(SOCKET sock, Player_data player);
