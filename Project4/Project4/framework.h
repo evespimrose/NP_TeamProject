@@ -50,4 +50,13 @@ struct Data
 {
     Player_data PlayerData;
     Cube_data CubeData;
+
+};
+
+struct Game_Communication_Data
+{
+    BOOL Im_Ready = false;
+    BOOL Players_Pt[3];
+    BOOL Players_Ready[3] ; 
+    BOOL IS_START = false; //게임 시작했는지
 };
