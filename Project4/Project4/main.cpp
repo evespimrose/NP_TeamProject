@@ -576,27 +576,6 @@ GLvoid sKeyboardUp(int key, int x, int y)
 	player1.sKey_Input(key, FALSE);
 }
 
-int recvn(SOCKET s, char* buf, int len, int flags)
-{
-	int received;
-	char* ptr = buf;
-	int left = len;
-
-	while (left > 0)
-	{
-		received = recv(s, ptr, left, flags);
-		//printf("size of file : %d\n", received);
-		if (received == SOCKET_ERROR)
-		{
-			printf("SOCKET ERROR!\n");
-			return SOCKET_ERROR;
-		}
-		left -= received;
-		ptr += received;
-	}
-	return (len - left);
-}
-
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
