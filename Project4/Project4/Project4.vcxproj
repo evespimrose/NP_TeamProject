@@ -157,6 +157,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="TCP.cpp" />
     <ClCompile Include="Tube.cpp" />
   </ItemGroup>
   <ItemGroup>
