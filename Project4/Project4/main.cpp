@@ -19,7 +19,7 @@ const float length = 0.5;
 
 char* arr;
 
-int GameState = 3;
+int GameState = 0; //0-game 1- game over 2- title 3- Lobby
 
 #ifdef Multi
 GameState = 0;
