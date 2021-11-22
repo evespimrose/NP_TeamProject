@@ -5,38 +5,27 @@
 
 #define HEIGHT 600
 #define WIDTH 800
-<<<<<<< HEAD
 #define TEXT_GAP 200
-=======
 
 // for TCP
 //#define Multi
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
-<<<<<<< HEAD
-=======
->>>>>>> e42000de1409db1cb2bf1ee0bea795e85c46f5a8
-
->>>>>>> a1ac0573eca3e0fe2327b50804531780ad1d6920
->>>>>>> 8382e9450833c8af6992653b2daef1882ba3adbb
 using namespace std;
 
 const float length = 0.5;
 
 char* arr;
 
-<<<<<<< HEAD
+
 int GameState = 3;
-=======
+
 int GameState = 2;
 #ifdef Multi
 GameState = 0;
 #endif // Multi
 
-
-
->>>>>>> a1ac0573eca3e0fe2327b50804531780ad1d6920
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -331,7 +320,6 @@ GLvoid drawScene()
 		if (gcd.Players_Pt[2]) {
 			glutPrint(WIDTH / 5.5f + 20+ TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
-<<<<<<< HEAD
 
 		//ready
 		for (int i = 0; i < 3; i++) {
@@ -340,10 +328,9 @@ GLvoid drawScene()
 			}
 		}
 		
-=======
+
 		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
->>>>>>> a1ac0573eca3e0fe2327b50804531780ad1d6920
 
 		glutSwapBuffers();
 	}
@@ -361,7 +348,9 @@ GLvoid Timer(int Value)
 
 	if (GameState == 0)
 	{
+
 		float pz = player1.getPosition().z;
+#ifdef Multi
 		float fpz = 0.0f;
 		float spz = 10000000.0f;
 
@@ -372,7 +361,7 @@ GLvoid Timer(int Value)
 			fpz = max(fpz, i->getPosition().z);
 			spz = min(spz, i->getPosition().z);
 		}
-
+#endif
 		m.Fastest_Update(pz);
 		m.Slowest_Update(pz);
 
@@ -399,7 +388,7 @@ GLvoid Timer(int Value)
 
 		player1.setBulletList(tmpList);
 		pd = PD_pack_data(player1);
-		//D_print(dat);		
+		PD_print(pd);		
 	}
 
 	string str = "Turbo_Racing   fps:";
@@ -423,10 +412,12 @@ void BGM()
 void Reset()
 {
 	GameState = 0;
+#ifdef Multi
 	for (auto i = p.begin(); i != p.end(); ++i)
 	{
 		i->Reset();
 	}
+#endif
 	player1.Reset();
 	m.Reset();
 	BGM();
@@ -570,7 +561,6 @@ GLvoid sKeyboardUp(int key, int x, int y)
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
 {
-<<<<<<< HEAD
 	LPVOID lpMsgBuf;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 		NULL, WSAGetLastError(),
@@ -596,10 +586,10 @@ void err_display(const char* msg)
 DWORD WINAPI JoinThread(LPVOID arg)
 {
 	int retval;
-=======
+#ifdef Multi
 	p.reserve(3);
+#endif
 	srand((unsigned int)time(NULL));
->>>>>>> cfe202dac8b36961a72bb666429ee9a10d33ccb5
 
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
