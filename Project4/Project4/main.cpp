@@ -103,6 +103,15 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	}
 
 	printf("activated\n");
+	// ready 확인용 임시코드
+	//bool ready = true;
+	//bool changestate = false;
+	//send(sock, (char*)&ready, sizeof(bool), 0);
+	//retval=recvn(sock, (char*)&changestate, sizeof(bool), 0);
+	//if (retval != SOCKET_ERROR)
+	//{
+	//	printf("changestate 신호 수신");
+	//}
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -593,26 +602,6 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	return (len - left);
 }
 
-
-DWORD WINAPI JoinThread(LPVOID arg)
-{
-	sock = init_sock();
-
-	while (1)
-	{
-		pd = PD_pack_data(player1);
-		send_Player(sock, pd);
-	}
-	// ready 확인용 임시코드
-	//bool ready = true;
-	//bool changestate = false;
-	//send(sock, (char*)&ready, sizeof(bool), 0);
-	//retval=recvn(sock, (char*)&changestate, sizeof(bool), 0);
-	//if (retval != SOCKET_ERROR)
-	//{
-	//	printf("changestate 신호 수신");
-	//}
-}
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
