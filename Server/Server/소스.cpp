@@ -107,15 +107,13 @@ int main()
 			err_display("accept()");
 			break;
 		}
-		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
-			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 		
-		clients_list[clients_count] = client_sock;
+		/*/clients_list[clients_count] = client_sock;
 		clients_count += 1;
 		printf("현재 접속중인 클라이언트 수 : %d\n", clients_count);
 
 		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
-			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));*/
 
 		int len;
 		while (1)
@@ -138,7 +136,7 @@ int main()
 			cout << "------------------" << endl;
 		}
 
-		retval = recvn(client_sock, (char*)&check_ready[clients_count], sizeof(bool), 0);
+		/*retval = recvn(client_sock, (char*)&check_ready[clients_count], sizeof(bool), 0);
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");
@@ -154,7 +152,7 @@ int main()
 				send(clients_list[i], (char*)&changestate, sizeof(changestate), 0);
 				printf("ready 신호 전송");
 			}
-		}
+		}*/
 	}
 }
 
