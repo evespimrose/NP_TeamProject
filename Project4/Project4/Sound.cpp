@@ -26,7 +26,7 @@ void SoundManager::loading()
 void SoundManager::play(int _type)
 {
 	pFmod->update();
-	r = pFmod->playSound(music[_type], NULL, false, &ch[_type]);
+	/*r = pFmod->playSound(music[_type], NULL, false, &ch[_type]);*/
 }
 
 void SoundManager::stop(int _cNum)

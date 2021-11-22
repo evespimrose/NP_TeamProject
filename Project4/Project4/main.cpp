@@ -6,7 +6,7 @@
 #define HEIGHT 600
 #define WIDTH 800
 #define TEXT_GAP 200
-
+#define BUFSIZE 1024
 // for TCP
 //#define Multi
 
@@ -17,9 +17,8 @@ const float length = 0.5;
 
 char* arr;
 
-int GameState = 0;
-
-//int GameState = 2;
+int GameState = 2;
+int user_id = -1;
 #ifdef Multi
 GameState = 0;
 #endif // Multi
@@ -42,7 +41,7 @@ Data* dat;
 Player_data pd;
 vector<Cube_data> cd;
 Game_Communication_Data gcd;
-
+all_ready_info* ari;
 float Rotate = 0;
 
 int cnt = 0;
@@ -51,8 +50,9 @@ int ip_number_len = 0;
 vector<string> words;
 
 SOCKET sock;
-
-
+char Buffer[BUFSIZE];
+int get_ClientID(SOCKET sock);
+int recvn(SOCKET s, char* buf, int len, int flags);
 
 void PD_print(Player_data pd)
 {
@@ -93,25 +93,31 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 DWORD WINAPI JoinThread(LPVOID arg)
 {
 	sock = init_sock();
-
-	while (1)
-	{
-		pd = PD_pack_data(player1);
-		PD_print(pd);
-		send_Player(sock, pd);
-
+	user_id = get_ClientID(sock); //id 얻기
+	int retval;
+	//BOOL Is_Ready[3]{false};
+	//all_ready_info* ari;
+	int len = sizeof(ari);
+	int GetSize;
+	ready_info ri;
+	
+	while (1) {
+		//ready상태 받기
+		retval = recvn(sock, (char*)&len, sizeof(int), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+		}
+		else if (retval == 0) {
+		}
+		GetSize = recv(sock, Buffer, len, 0);
+		Buffer[GetSize] = '\0';
+		ari = (all_ready_info*)Buffer;
+		cout << ari->is_ready[0] << endl;
+		cout << ari->is_ready[1] << endl;
+		cout << ari->is_ready[2] << endl;
 	}
 
-	printf("activated\n");
-	// ready 확인용 임시코드
-	//bool ready = true;
-	//bool changestate = false;
-	//send(sock, (char*)&ready, sizeof(bool), 0);
-	//retval=recvn(sock, (char*)&changestate, sizeof(bool), 0);
-	//if (retval != SOCKET_ERROR)
-	//{
-	//	printf("changestate 신호 수신");
-	//}
+
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -346,14 +352,12 @@ GLvoid drawScene()
 
 		//ready
 		for (int i = 0; i < 3; i++) {
-			if (gcd.Players_Ready[i]) {
+			if (ari->is_ready[i]) {
 				glutPrint(WIDTH / 5.5f+ TEXT_GAP*i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
 			}
 		}
 		
 
-		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
-		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
 
 		glutSwapBuffers();
 	}
@@ -457,7 +461,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		exit(0);
 		break;
 	}
-
+	int len;
+	int retval;
 	if (GameState == 1)
 	{
 		switch (key)
@@ -544,6 +549,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				ip_add += word;
 
 			cout << ip_add << endl;
+		
+			GameState = 3;
 			break;
 		}
 	}
@@ -559,7 +566,24 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			else if (!gcd.Im_Ready) {
 				gcd.Im_Ready = true;
 			}
+			ready_info ri;
+			ri.id = user_id;
+			ri.is_ready = gcd.Im_Ready;
 			
+			 len = sizeof(ri);
+			retval = send(sock, (char*)&len, sizeof(int), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+
+			// 데이터 보내기
+			retval = send(sock, (char*)&ri, sizeof(ri), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+				//exit( 1 );
+			}
+			
+
 			break;
 		}
 	}
@@ -641,4 +665,34 @@ int main(int argc, char** argv)
 	BGM();
 
 	glutMainLoop();
+}
+
+int get_ClientID(SOCKET sock) {
+	int retval;
+	int len;
+	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	else if (retval == 0) {
+	}
+
+	char* buf = new char[len]; // 전송된 길이를 알고 있으니 크기에 맞춰서 buf를 늘려주자!
+
+	retval = recvn(sock, buf, len, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	return atoi(buf);
+	//if (atoi(buf) == -1) {
+	//	MessageBox(NULL, "서버에 인원이 꽉 찼습니다..!", "알림", 0);
+	//	//err_quit( "연결 거부" );
+	//	exit(1);
+	//	//return -1;
+	//}
+	//else {
+	//	printf("[알림] Client ID : %s\n", buf);
+
+	//	return atoi(buf);
+	//}
 }
