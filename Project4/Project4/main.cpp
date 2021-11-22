@@ -56,7 +56,7 @@ int recvn(SOCKET s, char* buf, int len, int flags);
 
 void PD_print(Player_data pd)
 {
-	
+
 	//cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
 	cout << "z " << pd.PosVec_z << endl << "rotate " << pd.rotate << "speed " << pd.speed << endl;
 }
@@ -100,7 +100,7 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	int len = sizeof(ari);
 	int GetSize;
 	ready_info ri;
-	
+
 	while (1) {
 		//ready상태 받기
 		retval = recvn(sock, (char*)&len, sizeof(int), 0);
@@ -310,22 +310,22 @@ GLvoid drawScene()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		glutPrint(WIDTH / 2.5f-25, HEIGHT / 1.5f +100, GLUT_BITMAP_TIMES_ROMAN_24, "Waiting for players...");
+		glutPrint(WIDTH / 2.5f - 25, HEIGHT / 1.5f + 100, GLUT_BITMAP_TIMES_ROMAN_24, "Waiting for players...");
 		//플레이어 1
 		glutPrint(WIDTH / 5.5f, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
 		glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
 		for (int i = 0; i < 7; i++) {
-			glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f -14*i-8 , GLUT_BITMAP_HELVETICA_18, "I");
+			glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 3.2f, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		if (gcd.Players_Pt[0]) {
-			glutPrint(WIDTH / 5.5f+20, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 1 ");
+			glutPrint(WIDTH / 5.5f + 20, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 1 ");
 		}
 
 		//플레이어 2
-		glutPrint(WIDTH / 5.5f+ TEXT_GAP, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
+		glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
 		glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
@@ -334,29 +334,29 @@ GLvoid drawScene()
 			glutPrint(WIDTH / 3.2f + TEXT_GAP, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		if (gcd.Players_Pt[1]) {
-			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP , HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 2 ");
+			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 2 ");
 		}
 
 		//플레이어 3
-		glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
-		glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
+		glutPrint(WIDTH / 5.5f + TEXT_GAP * 2, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
+		glutPrint(WIDTH / 5.5f + TEXT_GAP * 2, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
 		for (int i = 0; i < 7; i++) {
-			glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
+			glutPrint(WIDTH / 5.5f + TEXT_GAP * 2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 3.2f + TEXT_GAP * 2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		if (gcd.Players_Pt[2]) {
-			glutPrint(WIDTH / 5.5f + 20+ TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
+			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
 
 		//ready
 		for (int i = 0; i < 3; i++) {
 			if (ari->is_ready[i]) {
-				glutPrint(WIDTH / 5.5f+ TEXT_GAP*i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
+				glutPrint(WIDTH / 5.5f + TEXT_GAP * i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
 			}
 		}
-		
+
 
 
 		glutSwapBuffers();
@@ -415,8 +415,8 @@ GLvoid Timer(int Value)
 
 		//PD_print(&pd);
 
-		
-	} 
+
+	}
 
 	string str = "Turbo_Racing   fps:";
 
@@ -549,7 +549,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				ip_add += word;
 
 			cout << ip_add << endl;
-		
+
 			GameState = 3;
 			break;
 		}
@@ -569,8 +569,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			ready_info ri;
 			ri.id = user_id;
 			ri.is_ready = gcd.Im_Ready;
-			
-			 len = sizeof(ri);
+
+			len = sizeof(ri);
 			retval = send(sock, (char*)&len, sizeof(int), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
@@ -582,7 +582,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				err_display("send()");
 				//exit( 1 );
 			}
-			
+
 
 			break;
 		}
@@ -652,7 +652,7 @@ int main(int argc, char** argv)
 	InitShader();
 
 	player1.Init();
-	
+
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);

@@ -59,14 +59,14 @@ typedef struct Game_Communication_Data
 {
     BOOL Im_Ready = false;
     BOOL Players_Pt[3];
-    BOOL Players_Ready[3] ; 
+    BOOL Players_Ready[3];
     BOOL IS_START = false; //게임 시작했는지
 }Game_Communication_Data;
 
 typedef struct ready_info
 {
     int id = -1;
-    short size=0;
+    short size = 0;
     BOOL is_ready{ false };
 }ready_info;
 

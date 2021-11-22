@@ -90,7 +90,7 @@ int main()
 
 	//데이터 통신에 사용할 변수
 	SOCKET client_sock;
-	
+
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
 	ZeroMemory(&clientaddr, addrlen);
@@ -102,7 +102,7 @@ int main()
 	int ready_count = 0;
 	bool changestate = true;
 	int user_index = -1;
-	
+
 	HANDLE hThread;
 	ready_info rf_Packet;
 	while (1)
@@ -113,8 +113,8 @@ int main()
 			err_display("accept()");
 			break;
 		}
-	
-		if (clients_count == MAXPLAYER ) { //최대 클라 접속시 끊어버림
+
+		if (clients_count == MAXPLAYER) { //최대 클라 접속시 끊어버림
 			closesocket(client_sock);
 			continue;
 		}
@@ -196,7 +196,7 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//클라에게 유저 id 전송
-	char user_index_c [10];
+	char user_index_c[10];
 	itoa(user_index, user_index_c, 10);
 	len = sizeof(user_index_c);
 	retval = send(client_sock, (char*)&len, sizeof(int), 0);
@@ -211,11 +211,11 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 		//exit( 1 );
 	}
 	//--------------------------------------------------------------------------------
-	
+
 	int GetSize;
 	char Buffer[BUFSIZE];
 	ready_info* ri;
-	
+
 	//BOOL is_ready[3]{ false }; //비준비 상태로 초기화
 
 	while (1) { //일단 무한반복

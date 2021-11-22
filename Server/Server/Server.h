@@ -35,18 +35,18 @@ typedef struct login_info
 typedef struct ready_info
 {
     int id = -1;
-    short size=0;
-    BOOL is_ready{false};
+    short size = 0;
+    BOOL is_ready{ false };
 }ready_info;
 
 typedef struct all_ready_info
 {
-    BOOL is_ready[3]{false};
+    BOOL is_ready[3]{ false };
 }all_ready_info;
 
 typedef struct ConnectClient {
     bool is_connected;
-}ConnectClient ;
+}ConnectClient;
 ConnectClient connectedCls[3]{ false };
 std::map <char, SOCKET> clients;
 all_ready_info ari;
