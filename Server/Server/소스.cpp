@@ -114,7 +114,6 @@ int main()
 		clients_count += 1;
 		printf("현재 접속중인 클라이언트 수 : %d\n", clients_count);
 
-<<<<<<< HEAD
 		printf("\n[TCP 서버] 클라이언트 접속 : IP 주소=%s, 포트 번호=%d\n",
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
@@ -139,9 +138,6 @@ int main()
 			cout << "------------------" << endl;
 		}
 
-		//PD_print(*pd);
-	}
-=======
 		retval = recvn(client_sock, (char*)&check_ready[clients_count], sizeof(bool), 0);
 		if (retval == SOCKET_ERROR)
 		{
@@ -151,7 +147,7 @@ int main()
 		ready_count += 1;
 		printf("현재 준비 완료된 클라이언트 수 : %d\n", ready_count);
 
-		if ((clients_count == ready_count)&&clients_count>1)
+		if ((clients_count == ready_count) && clients_count > 1)
 		{
 			for (int i = 0; i < clients_count; ++i)
 			{
@@ -159,11 +155,6 @@ int main()
 				printf("ready 신호 전송");
 			}
 		}
-
 	}
-
-
-
->>>>>>> 3384fbaef07067aa9154a9adf3621cc9ce10f956
 }
 
