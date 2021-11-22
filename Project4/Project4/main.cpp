@@ -578,7 +578,7 @@ void err_display(const char* msg)
 	LocalFree(lpMsgBuf);
 }
 
-DWORD WINAPI JoinThread(LPVOID arg)
+DWORD WINAPI sendThread(LPVOID arg)
 {
 	int retval;
 
@@ -612,7 +612,7 @@ int main(int argc, char** argv)
 	srand((unsigned int)time(NULL));
 
 	HANDLE hThread_Join;
-	hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
+	hThread_Join = CreateThread(NULL, 0, sendThread, NULL, 0, 0);
 
 	GLint width = WIDTH;
 	GLint height = HEIGHT;
