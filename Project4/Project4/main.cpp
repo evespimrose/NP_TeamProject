@@ -52,11 +52,8 @@ vector<string> words;
 
 SOCKET sock;
 
-
-
 void PD_print(Player_data pd)
 {
-	
 	//cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
 	cout << "z " << pd.PosVec_z << endl << "rotate " << pd.rotate << "speed " << pd.speed << endl;
 }
@@ -99,7 +96,6 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		pd = PD_pack_data(player1);
 		PD_print(pd);
 		send_Player(sock, pd);
-
 	}
 
 	printf("activated\n");
@@ -638,7 +634,7 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(sKeyboardUp);
 	glutDisplayFunc(drawScene);
 
-	BGM();
+	//BGM();
 
 	glutMainLoop();
 }

@@ -30,6 +30,8 @@
 #define Proto_IP "127.0.0.1"
 #define Proto_Port 9000
 
+#define MAX_CLIENT 3
+
 
 // structs for send
 typedef struct Player_data
@@ -52,7 +54,6 @@ typedef struct Data
 {
     Player_data PlayerData;
     Cube_data CubeData;
-
 }Data;
 
 typedef struct Game_Communication_Data
@@ -62,6 +63,11 @@ typedef struct Game_Communication_Data
     BOOL Players_Ready[3] ; 
     BOOL IS_START = false; //게임 시작했는지
 }Game_Communication_Data;
+
+typedef struct Server_data
+{
+    Data dat[MAX_CLIENT];
+}Server_data;
 
 void err_quit(const char* msg);
 void err_display(const char* msg);

@@ -1,4 +1,6 @@
 #pragma once
+#define MAX_CLIENT 3
+
 // structs for send
 typedef struct Player_data
 {
@@ -14,6 +16,12 @@ typedef struct Data
 {
     Player_data PlayerData;
 }Data;
+
+typedef struct Server_data
+{
+    Data dat[MAX_CLIENT];
+}Server_data;
+
 
 typedef struct Game_Communication_Data
 {
