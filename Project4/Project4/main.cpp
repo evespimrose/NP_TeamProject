@@ -21,7 +21,7 @@ char* arr;
 
 int GameState = 3;
 
-int GameState = 2;
+//int GameState = 2;
 #ifdef Multi
 GameState = 0;
 #endif // Multi
@@ -76,8 +76,6 @@ Player_data* PD_pack_data(Player p)
 	pd->speed = p.getSpeed();
 	return pd;
 }
-
-
 
 //Cube_data* CD_pack_data(Cube c)
 //{
@@ -610,8 +608,9 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		err_quit("connect()");
 
 	printf("연결 성공");
-}
 
+
+}
 
 int main(int argc, char** argv)
 {
@@ -640,7 +639,6 @@ int main(int argc, char** argv)
 	InitShader();
 
 	player1.Init();
-	
 	
 	m.Init();
 
