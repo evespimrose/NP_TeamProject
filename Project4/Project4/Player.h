@@ -59,6 +59,8 @@ private:
 
 	int Life;
 
+	int p_user_id;
+
 	std::vector<Bullet> BulletList;
 
 	const GLfloat Cube[8][3] = {

@@ -36,6 +36,8 @@ GLuint ShaderProgram;
 float ambient = 0.6f;
 
 Player player1;
+Player player2;
+Player player3;
 #ifdef Multi
 vector<Player> p;
 #endif
@@ -260,6 +262,8 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
+		//player2.Render(ShaderProgram);
+		//player3.Render(ShaderProgram);
 #ifdef Multi
 		for (auto i = p.begin(); i != p.end(); ++i)
 		{
@@ -380,6 +384,7 @@ GLvoid Timer(int Value)
 	if (GameState == 0)
 	{
 		float pz = player1.getPosition().z;
+		//float pz = player2.getPosition().z;
 		float fpz = 0.0f;
 		float spz = 10000000.0f;
 
@@ -398,6 +403,8 @@ GLvoid Timer(int Value)
 		//m.Slowest_Update(spz);
 
 		player1.Update();
+		//player2.Update();
+
 
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
@@ -415,11 +422,6 @@ GLvoid Timer(int Value)
 
 		player1.setBulletList(tmpList);
 		pd = PD_pack_data(player1);
-		//D_print(dat);		
-
-		//PD_print(&pd);
-
-
 	}
 
 	string str = "Turbo_Racing   fps:";
@@ -632,8 +634,11 @@ int main(int argc, char** argv)
 
 	InitShader();
 
-	//player1.multi_Init(1);
-	player1.Init();
+	player1.multi_Init(0);
+	//player2.multi_Init(1);
+	//player3.multi_Init(2);
+
+	//player1.Init();
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);

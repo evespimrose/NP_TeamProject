@@ -197,6 +197,7 @@ void Player::Init()
 
 void Player::multi_Init(float multirad)
 {
+	p_user_id = multirad;
 	printf("multirad : %.1f\n", multirad);
 	Life = 3;
 	PrevFireTime = std::chrono::system_clock::now();
@@ -210,16 +211,16 @@ void Player::multi_Init(float multirad)
 		keyDownlist[i] = false;
 	}
 
-
-	PosVec = glm::vec3(0.0f, -3.5f, 0.0f);
-	rad = 120.0f * multirad;
+	PosVec = glm::vec3(0.0f, -3.5f + multirad, 0.0f);
+	rad = 0.0f;
+	//rad = 120.0f * multirad;
 
 	PosMat = glm::mat4(1.0f);
 	PosMat = glm::translate(PosMat, PosVec);
+	//PosMat = glm::rotate(PosMat, glm::radians(120.0f) * multirad, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	
 	RotMat = glm::mat4(1.0f);
-	RotMat = glm::rotate(RotMat, glm::radians(120.0f) * multirad, glm::vec3(0.0f, 0.0f, 1.0f));
+	//RotMat = glm::rotate(RotMat, glm::radians(120.0f) * multirad, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	SclMat = glm::mat4(1.0f);
 	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
@@ -229,7 +230,6 @@ void Player::multi_Init(float multirad)
 	Speed = 0.0f;
 
 	acc = 0.0005f;
-
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
@@ -296,9 +296,6 @@ void Player::multi_Init(float multirad)
 	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), SphereNormal, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
-
-	camera.setPosition(PosVec);
-	camera.setRotate(rad);
 }
 
 void Player::Move()
@@ -516,7 +513,7 @@ int Player::getLife()
 void Player::Reset()
 {
 	BulletList.clear();
-	Init();
+	multi_Init(p_user_id);
 }
 
 void Player::setBulletList(std::vector<Bullet> tmpList)

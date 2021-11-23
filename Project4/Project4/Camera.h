@@ -14,6 +14,7 @@ private:
 	float rotate;
 
 	glm::vec3 AT;
+	glm::mat4 view = glm::mat4(1.0f);
 
 public:
 	void Render(GLuint ShaderProgram);
@@ -22,4 +23,7 @@ public:
 	void setPosition(glm::vec3 p);
 	void setAT();
 	glm::vec3 getPosition();
+	void rotatecamera(float rad);
+	void init();
+
 };
