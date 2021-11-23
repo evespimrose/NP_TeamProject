@@ -9,6 +9,8 @@
 #define BUFSIZE 1024
 // for TCP
 //#define Multi
+#define SERVERIP "127.0.0.1"
+#define SERVERPORT 9000
 
 
 using namespace std;
@@ -18,6 +20,9 @@ const float length = 0.5;
 char* arr;
 
 int GameState = 0;
+int GameState = 3;
+
+int GameState = 2;
 int user_id = -1;
 #ifdef Multi
 GameState = 0;
@@ -77,6 +82,8 @@ Player_data PD_pack_data(Player p)
 	pd->rotate = p.getRotate();
 	return *pd;
 }
+
+
 
 //Cube_data* CD_pack_data(Cube c)
 //{
@@ -348,6 +355,7 @@ GLvoid drawScene()
 			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
 
+
 		//ready
 		for (int i = 0; i < 3; i++) {
 			if (ari->is_ready[i]) {
@@ -371,20 +379,18 @@ GLvoid Timer(int Value)
 
 	if (GameState == 0)
 	{
-
 		float pz = player1.getPosition().z;
-#ifdef Multi
 		float fpz = 0.0f;
 		float spz = 10000000.0f;
 
-		vector<Player>::iterator fastest_player_iter = p.begin();
-		vector<Player>::iterator slowest_player_iter = p.begin();
-		for (auto i = p.begin(); i != p.end(); ++i)
+		/*vector<Player>::iterator fastest_player_iter = p.begin();
+		vector<Player>::iterator slowest_player_iter = p.begin();*/
+		/*for (auto i = p.begin(); i != p.end(); ++i)
 		{
 			fpz = max(fpz, i->getPosition().z);
 			spz = min(spz, i->getPosition().z);
-		}
-#endif
+		}*/
+
 		m.Fastest_Update(pz);
 		m.Slowest_Update(pz);
 
@@ -408,6 +414,8 @@ GLvoid Timer(int Value)
 		m.BulletCollisionCheck(tmpList);
 
 		player1.setBulletList(tmpList);
+		pd = PD_pack_data(player1);
+		//D_print(dat);		
 
 		//PD_print(&pd);
 
@@ -435,12 +443,10 @@ void BGM()
 void Reset()
 {
 	GameState = 0;
-#ifdef Multi
-	for (auto i = p.begin(); i != p.end(); ++i)
+	/*for (auto i = p.begin(); i != p.end(); ++i)
 	{
 		i->Reset();
-	}
-#endif
+	}*/
 	player1.Reset();
 	m.Reset();
 	BGM();
@@ -601,6 +607,84 @@ GLvoid sKeyboardUp(int key, int x, int y)
 	player1.sKey_Input(key, FALSE);
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+//소켓함수 오류 출력 후 종료
+void err_quit(const char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+	LocalFree(lpMsgBuf);
+	exit(1);
+}
+
+//소켓함수 오류 출력
+void err_display(const char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	printf("[%s] %s", msg, (char*)lpMsgBuf);
+	LocalFree(lpMsgBuf);
+}
+
+DWORD WINAPI JoinThread(LPVOID arg)
+{
+	int retval;
+
+	/*p.reserve(3);*/
+	srand((unsigned int)time(NULL));
+
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET)
+		err_quit("socket()");
+
+	//connect
+	SOCKADDR_IN serveraddr;
+	ZeroMemory(&serveraddr, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR)
+		err_quit("connect()");
+
+	printf("연결 성공");
+}
+
+
+int recvn(SOCKET s, char* buf, int len, int flags)
+{
+	int received;
+	char* ptr = buf;
+	int left = len;
+
+	while (left > 0)
+	{
+		received = recv(s, ptr, left, flags);
+		//printf("size of file : %d\n", received);
+		if (received == SOCKET_ERROR)
+		{
+			printf("SOCKET ERROR!\n");
+			return SOCKET_ERROR;
+		}
+		left -= received;
+		ptr += received;
+	}
+	return (len - left);
+}
+
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
@@ -627,7 +711,7 @@ int main(int argc, char** argv)
 	InitShader();
 
 	player1.multi_Init(1);
-
+	player1.Init();
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);
