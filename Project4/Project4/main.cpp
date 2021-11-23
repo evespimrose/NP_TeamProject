@@ -9,35 +9,28 @@
 
 // for TCP
 //#define Multi
-
+=======
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
+>>>>>>> e42000de1409db1cb2bf1ee0bea795e85c46f5a8
+
+>>>>>>> a1ac0573eca3e0fe2327b50804531780ad1d6920
 using namespace std;
 
 const float length = 0.5;
 
 char* arr;
 
-<<<<<<< HEAD
-int GameState = 0; //0-game 1- game over 2- title 3- Lobby
-
-=======
-
 int GameState = 3;
 
-//int GameState = 2;
->>>>>>> origin/HT
 #ifdef Multi
 GameState = 0;
 #endif // Multi
 
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> origin/HT
 GLuint vertexShader;
 GLuint fragmentShader;
 
@@ -87,6 +80,8 @@ Player_data* PD_pack_data(Player p)
 	pd->speed = p.getSpeed();
 	return pd;
 }
+
+
 
 //Cube_data* CD_pack_data(Cube c)
 //{
@@ -329,10 +324,7 @@ GLvoid drawScene()
 		if (gcd.Players_Pt[2]) {
 			glutPrint(WIDTH / 5.5f + 20+ TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/HT
 
 		//ready
 		for (int i = 0; i < 3; i++) {
@@ -341,12 +333,6 @@ GLvoid drawScene()
 			}
 		}
 		
-<<<<<<< HEAD
-=======
-
-		glutPrint(320.0f, 350.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
-		glutPrint(270.0f, 200.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
->>>>>>> origin/HT
 
 		glutSwapBuffers();
 	}
@@ -364,9 +350,7 @@ GLvoid Timer(int Value)
 
 	if (GameState == 0)
 	{
-
 		float pz = player1.getPosition().z;
-#ifdef Multi
 		float fpz = 0.0f;
 		float spz = 10000000.0f;
 
@@ -376,13 +360,8 @@ GLvoid Timer(int Value)
 		{
 			fpz = max(fpz, i->getPosition().z);
 			spz = min(spz, i->getPosition().z);
-<<<<<<< HEAD
 		}*/
 
-=======
-		}
-#endif
->>>>>>> origin/HT
 		m.Fastest_Update(pz);
 		m.Slowest_Update(pz);
 
@@ -409,7 +388,7 @@ GLvoid Timer(int Value)
 
 		player1.setBulletList(tmpList);
 		pd = PD_pack_data(player1);
-		PD_print(pd);		
+		//D_print(dat);		
 	}
 
 	string str = "Turbo_Racing   fps:";
@@ -433,19 +412,10 @@ void BGM()
 void Reset()
 {
 	GameState = 0;
-<<<<<<< HEAD
 	/*for (auto i = p.begin(); i != p.end(); ++i)
 	{
 		i->Reset();
 	}*/
-=======
-#ifdef Multi
-	for (auto i = p.begin(); i != p.end(); ++i)
-	{
-		i->Reset();
-	}
-#endif
->>>>>>> origin/HT
 	player1.Reset();
 	m.Reset();
 	BGM();
@@ -611,42 +581,11 @@ void err_display(const char* msg)
 	LocalFree(lpMsgBuf);
 }
 
-<<<<<<< HEAD
-DWORD WINAPI sendThread(LPVOID arg)
+DWORD WINAPI JoinThread(LPVOID arg)
 {
 	int retval;
 
 	/*p.reserve(3);*/
-=======
-int recvn(SOCKET s, char* buf, int len, int flags)
-{
-	int received;
-	char* ptr = buf;
-	int left = len;
-
-	while (left > 0)
-	{
-		received = recv(s, ptr, left, flags);
-		//printf("size of file : %d\n", received);
-		if (received == SOCKET_ERROR)
-		{
-			printf("SOCKET ERROR!\n");
-			return SOCKET_ERROR;
-		}
-
-		left -= received;
-		ptr += received;
-	}
-	return (len - left);
-}
-
-DWORD WINAPI JoinThread(LPVOID arg)
-{
-	int retval;
-#ifdef Multi
-	p.reserve(3);
-#endif
->>>>>>> origin/HT
 	srand((unsigned int)time(NULL));
 
 	WSADATA wsa;
@@ -668,16 +607,15 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		err_quit("connect()");
 
 	printf("연결 성공");
-
-
 }
+
 
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
 
 	HANDLE hThread_Join;
-	hThread_Join = CreateThread(NULL, 0, sendThread, NULL, 0, 0);
+	hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
 
 	GLint width = WIDTH;
 	GLint height = HEIGHT;
@@ -699,6 +637,7 @@ int main(int argc, char** argv)
 	InitShader();
 
 	player1.Init();
+	
 	
 	m.Init();
 
