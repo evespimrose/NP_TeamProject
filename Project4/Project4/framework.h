@@ -75,7 +75,10 @@ typedef struct all_ready_info
     BOOL is_ready[3]{ false };
 }all_ready_info;
 
+int recvn(SOCKET s, char* buf, int len, int flags);
+
 void err_quit(const char* msg);
 void err_display(const char* msg);
 SOCKET init_sock();
 void send_Player(SOCKET sock, Player_data player);
+int get_ClientID(SOCKET sock);

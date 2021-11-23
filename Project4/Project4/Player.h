@@ -112,6 +112,7 @@ private:
 
 public:
 	void Init();
+	void multi_Init(float multirad);
 	void Move();
 	void Update();
 	void Key_Input(unsigned char key, bool state);

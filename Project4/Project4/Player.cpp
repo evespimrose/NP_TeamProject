@@ -195,6 +195,108 @@ void Player::Init()
 	glEnableVertexAttribArray(2);
 }
 
+void Player::multi_Init(float multirad)
+{
+	printf("multirad : %.1f\n", multirad);
+	Life = 3;
+	PrevFireTime = std::chrono::system_clock::now();
+
+	QueryPerformanceFrequency(&tSecond);
+	QueryPerformanceCounter(&tTime);
+	fDeltaTime = 0;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		keyDownlist[i] = false;
+	}
+
+
+	PosVec = glm::vec3(0.0f, -3.5f, 0.0f);
+	rad = 120.0f * multirad;
+
+	PosMat = glm::mat4(1.0f);
+	PosMat = glm::translate(PosMat, PosVec);
+
+	
+	RotMat = glm::mat4(1.0f);
+	RotMat = glm::rotate(RotMat, glm::radians(120.0f) * multirad, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	SclMat = glm::mat4(1.0f);
+	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
+
+	dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
+
+	Speed = 0.0f;
+
+	acc = 0.0005f;
+
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+
+	loadOBJ("Sphere.obj", vertices, uvs, normals);
+
+	for (int i = 0; i < vertices.size(); ++i)
+	{
+		Sphere[i][0] = vertices[i].x;
+		Sphere[i][1] = vertices[i].y;
+		Sphere[i][2] = vertices[i].z;
+
+		SphereNormal[i][0] = normals[i].x;
+		SphereNormal[i][1] = normals[i].y;
+		SphereNormal[i][2] = normals[i].z;
+
+		SphereColor[i][0] = 1.0f;
+		SphereColor[i][1] = 1.0f;
+		SphereColor[i][2] = 0.0f;
+	}
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glGenBuffers(3, VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), Cube, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), Color, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), Normal, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), Indices, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+
+	glGenVertexArrays(1, &BulletVAO);
+	glBindVertexArray(BulletVAO);
+	glGenBuffers(3, BulletVBO);
+	glGenBuffers(1, &BulletEBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, BulletVBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), Sphere, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, BulletVBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), SphereColor, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, BulletVBO[2]);
+	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), SphereNormal, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+}
+
 void Player::Move()
 {
 	if (keyDownlist[0])

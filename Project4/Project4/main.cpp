@@ -17,7 +17,7 @@ const float length = 0.5;
 
 char* arr;
 
-int GameState = 2;
+int GameState = 0;
 int user_id = -1;
 #ifdef Multi
 GameState = 0;
@@ -116,8 +116,6 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		cout << ari->is_ready[1] << endl;
 		cout << ari->is_ready[2] << endl;
 	}
-
-
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -353,11 +351,9 @@ GLvoid drawScene()
 		//ready
 		for (int i = 0; i < 3; i++) {
 			if (ari->is_ready[i]) {
-				glutPrint(WIDTH / 5.5f + TEXT_GAP * i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
+				glutPrint(WIDTH / 5.0f + TEXT_GAP * i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
 			}
 		}
-
-
 
 		glutSwapBuffers();
 	}
@@ -605,27 +601,6 @@ GLvoid sKeyboardUp(int key, int x, int y)
 	player1.sKey_Input(key, FALSE);
 }
 
-int recvn(SOCKET s, char* buf, int len, int flags)
-{
-	int received;
-	char* ptr = buf;
-	int left = len;
-
-	while (left > 0)
-	{
-		received = recv(s, ptr, left, flags);
-		//printf("size of file : %d\n", received);
-		if (received == SOCKET_ERROR)
-		{
-			printf("SOCKET ERROR!\n");
-			return SOCKET_ERROR;
-		}
-		left -= received;
-		ptr += received;
-	}
-	return (len - left);
-}
-
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
@@ -651,7 +626,7 @@ int main(int argc, char** argv)
 
 	InitShader();
 
-	player1.Init();
+	player1.multi_Init(1);
 
 	m.Init();
 
@@ -665,34 +640,4 @@ int main(int argc, char** argv)
 	BGM();
 
 	glutMainLoop();
-}
-
-int get_ClientID(SOCKET sock) {
-	int retval;
-	int len;
-	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	else if (retval == 0) {
-	}
-
-	char* buf = new char[len]; // 전송된 길이를 알고 있으니 크기에 맞춰서 buf를 늘려주자!
-
-	retval = recvn(sock, buf, len, 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	return atoi(buf);
-	//if (atoi(buf) == -1) {
-	//	MessageBox(NULL, "서버에 인원이 꽉 찼습니다..!", "알림", 0);
-	//	//err_quit( "연결 거부" );
-	//	exit(1);
-	//	//return -1;
-	//}
-	//else {
-	//	printf("[알림] Client ID : %s\n", buf);
-
-	//	return atoi(buf);
-	//}
 }
