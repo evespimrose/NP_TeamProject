@@ -6,12 +6,16 @@
 #define HEIGHT 600
 #define WIDTH 800
 #define TEXT_GAP 200
-
+#define BUFSIZE 1024
 // for TCP
 //#define Multi
+<<<<<<< HEAD
 =======
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
+=======
+
+>>>>>>> origin/main
 
 >>>>>>> e42000de1409db1cb2bf1ee0bea795e85c46f5a8
 
@@ -22,15 +26,23 @@ const float length = 0.5;
 
 char* arr;
 
+<<<<<<< HEAD
 int GameState = 3;
 
+=======
+int GameState = 2;
+int user_id = -1;
+>>>>>>> origin/main
 #ifdef Multi
 GameState = 0;
 #endif // Multi
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> origin/main
 GLuint vertexShader;
 GLuint fragmentShader;
 
@@ -46,10 +58,10 @@ vector<Player> p;
 Map m;
 
 Data* dat;
-Player_data* pd;
+Player_data pd;
 vector<Cube_data> cd;
 Game_Communication_Data gcd;
-
+all_ready_info* ari;
 float Rotate = 0;
 
 int cnt = 0;
@@ -58,11 +70,15 @@ int ip_number_len = 0;
 vector<string> words;
 
 SOCKET sock;
+char Buffer[BUFSIZE];
+int get_ClientID(SOCKET sock);
+int recvn(SOCKET s, char* buf, int len, int flags);
 
-
-void PD_print(Player_data* pd)
+void PD_print(Player_data pd)
 {
-	cout << "x " << pd->PosVec.x << "y " << pd->PosVec.y << "z " << pd->PosVec.z << endl << "speed " << pd->speed << endl;
+
+	//cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
+	cout << "z " << pd.PosVec_z << endl << "rotate " << pd.rotate << "speed " << pd.speed << endl;
 }
 
 // Data print function for check
@@ -72,13 +88,14 @@ void PD_print(Player_data* pd)
 	PD_print(pd);
 }*/
 
-Player_data* PD_pack_data(Player p)
+Player_data PD_pack_data(Player p)
 {
 	Player_data* pd = new Player_data;
 	pd->KeyDownlist = p.getKey();
-	pd->PosVec = p.getPosition();
+	pd->PosVec_z = p.getPosition().z;
 	pd->speed = p.getSpeed();
-	return pd;
+	pd->rotate = p.getRotate();
+	return *pd;
 }
 
 
@@ -93,6 +110,36 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 	Data* d = new Data;
 	d->PlayerData = *pd;
 	return d;
+}
+
+DWORD WINAPI JoinThread(LPVOID arg)
+{
+	sock = init_sock();
+	user_id = get_ClientID(sock); //id 얻기
+	int retval;
+	//BOOL Is_Ready[3]{false};
+	//all_ready_info* ari;
+	int len = sizeof(ari);
+	int GetSize;
+	ready_info ri;
+
+	while (1) {
+		//ready상태 받기
+		retval = recvn(sock, (char*)&len, sizeof(int), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+		}
+		else if (retval == 0) {
+		}
+		GetSize = recv(sock, Buffer, len, 0);
+		Buffer[GetSize] = '\0';
+		ari = (all_ready_info*)Buffer;
+		cout << ari->is_ready[0] << endl;
+		cout << ari->is_ready[1] << endl;
+		cout << ari->is_ready[2] << endl;
+	}
+
+
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -285,22 +332,22 @@ GLvoid drawScene()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		glutPrint(WIDTH / 2.5f-25, HEIGHT / 1.5f +100, GLUT_BITMAP_TIMES_ROMAN_24, "Waiting for players...");
+		glutPrint(WIDTH / 2.5f - 25, HEIGHT / 1.5f + 100, GLUT_BITMAP_TIMES_ROMAN_24, "Waiting for players...");
 		//플레이어 1
 		glutPrint(WIDTH / 5.5f, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
 		glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
 		for (int i = 0; i < 7; i++) {
-			glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f -14*i-8 , GLUT_BITMAP_HELVETICA_18, "I");
+			glutPrint(WIDTH / 5.5f, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 3.2f, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		if (gcd.Players_Pt[0]) {
-			glutPrint(WIDTH / 5.5f+20, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 1 ");
+			glutPrint(WIDTH / 5.5f + 20, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 1 ");
 		}
 
 		//플레이어 2
-		glutPrint(WIDTH / 5.5f+ TEXT_GAP, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
+		glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
 		glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 5.5f + TEXT_GAP, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
@@ -309,31 +356,35 @@ GLvoid drawScene()
 			glutPrint(WIDTH / 3.2f + TEXT_GAP, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		if (gcd.Players_Pt[1]) {
-			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP , HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 2 ");
+			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 2 ");
 		}
 
 		//플레이어 3
-		glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
-		glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
+		glutPrint(WIDTH / 5.5f + TEXT_GAP * 2, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
+		glutPrint(WIDTH / 5.5f + TEXT_GAP * 2, HEIGHT / 1.5f, GLUT_BITMAP_HELVETICA_18, "----------");
 		for (int i = 0; i < 7; i++) {
-			glutPrint(WIDTH / 5.5f + TEXT_GAP*2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
+			glutPrint(WIDTH / 5.5f + TEXT_GAP * 2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 3.2f + TEXT_GAP * 2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
 		if (gcd.Players_Pt[2]) {
-			glutPrint(WIDTH / 5.5f + 20+ TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
+			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
 
 
 		//ready
 		for (int i = 0; i < 3; i++) {
-			if (gcd.Players_Ready[i]) {
-				glutPrint(WIDTH / 5.5f+ TEXT_GAP*i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
+			if (ari->is_ready[i]) {
+				glutPrint(WIDTH / 5.5f + TEXT_GAP * i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
 			}
 		}
-		
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/main
 		glutSwapBuffers();
 	}
 }
@@ -370,8 +421,6 @@ GLvoid Timer(int Value)
 
 		player1.Update();
 
-
-
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
@@ -387,8 +436,15 @@ GLvoid Timer(int Value)
 		m.BulletCollisionCheck(tmpList);
 
 		player1.setBulletList(tmpList);
+<<<<<<< HEAD
 		pd = PD_pack_data(player1);
 		//D_print(dat);		
+=======
+
+		//PD_print(&pd);
+
+
+>>>>>>> origin/main
 	}
 
 	string str = "Turbo_Racing   fps:";
@@ -432,7 +488,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		exit(0);
 		break;
 	}
-
+	int len;
+	int retval;
 	if (GameState == 1)
 	{
 		switch (key)
@@ -519,6 +576,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				ip_add += word;
 
 			cout << ip_add << endl;
+
+			GameState = 3;
 			break;
 		}
 	}
@@ -534,7 +593,24 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			else if (!gcd.Im_Ready) {
 				gcd.Im_Ready = true;
 			}
-			
+			ready_info ri;
+			ri.id = user_id;
+			ri.is_ready = gcd.Im_Ready;
+
+			len = sizeof(ri);
+			retval = send(sock, (char*)&len, sizeof(int), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+
+			// 데이터 보내기
+			retval = send(sock, (char*)&ri, sizeof(ri), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+				//exit( 1 );
+			}
+
+
 			break;
 		}
 	}
@@ -556,6 +632,7 @@ GLvoid sKeyboardUp(int key, int x, int y)
 	player1.sKey_Input(key, FALSE);
 }
 
+<<<<<<< HEAD
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
 {
@@ -610,10 +687,32 @@ DWORD WINAPI JoinThread(LPVOID arg)
 }
 
 
+=======
+int recvn(SOCKET s, char* buf, int len, int flags)
+{
+	int received;
+	char* ptr = buf;
+	int left = len;
+
+	while (left > 0)
+	{
+		received = recv(s, ptr, left, flags);
+		//printf("size of file : %d\n", received);
+		if (received == SOCKET_ERROR)
+		{
+			printf("SOCKET ERROR!\n");
+			return SOCKET_ERROR;
+		}
+		left -= received;
+		ptr += received;
+	}
+	return (len - left);
+}
+
+>>>>>>> origin/main
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
-
 	HANDLE hThread_Join;
 	hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
 
@@ -637,8 +736,12 @@ int main(int argc, char** argv)
 	InitShader();
 
 	player1.Init();
+<<<<<<< HEAD
 	
 	
+=======
+
+>>>>>>> origin/main
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);
@@ -651,4 +754,34 @@ int main(int argc, char** argv)
 	BGM();
 
 	glutMainLoop();
+}
+
+int get_ClientID(SOCKET sock) {
+	int retval;
+	int len;
+	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	else if (retval == 0) {
+	}
+
+	char* buf = new char[len]; // 전송된 길이를 알고 있으니 크기에 맞춰서 buf를 늘려주자!
+
+	retval = recvn(sock, buf, len, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	return atoi(buf);
+	//if (atoi(buf) == -1) {
+	//	MessageBox(NULL, "서버에 인원이 꽉 찼습니다..!", "알림", 0);
+	//	//err_quit( "연결 거부" );
+	//	exit(1);
+	//	//return -1;
+	//}
+	//else {
+	//	printf("[알림] Client ID : %s\n", buf);
+
+	//	return atoi(buf);
+	//}
 }

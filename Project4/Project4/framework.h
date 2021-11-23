@@ -30,33 +30,52 @@
 #define Proto_IP "127.0.0.1"
 #define Proto_Port 9000
 
+
 // structs for send
-struct Player_data
+typedef struct Player_data
 {
-    glm::vec3 PosVec;
+    float PosVec_z;
+    float rotate;
     float speed;
     int ID;
     //vector<Bullet> BulletList;
     bool* KeyDownlist;
-};
+}Player_data;
 
-struct Cube_data
+typedef struct Cube_data
 {
     glm::vec3 PosVec;
     int life;
-};
+}Cube_data;
 
-struct Data
+typedef struct Data
 {
     Player_data PlayerData;
     Cube_data CubeData;
 
-};
+}Data;
 
-struct Game_Communication_Data
+typedef struct Game_Communication_Data
 {
     BOOL Im_Ready = false;
     BOOL Players_Pt[3];
-    BOOL Players_Ready[3] ; 
+    BOOL Players_Ready[3];
     BOOL IS_START = false; //게임 시작했는지
-};
+}Game_Communication_Data;
+
+typedef struct ready_info
+{
+    int id = -1;
+    short size = 0;
+    BOOL is_ready{ false };
+}ready_info;
+
+typedef struct all_ready_info
+{
+    BOOL is_ready[3]{ false };
+}all_ready_info;
+
+void err_quit(const char* msg);
+void err_display(const char* msg);
+SOCKET init_sock();
+void send_Player(SOCKET sock, Player_data player);
