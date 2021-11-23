@@ -230,6 +230,7 @@ void Player::multi_Init(float multirad)
 
 	acc = 0.0005f;
 
+
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals;
@@ -295,6 +296,9 @@ void Player::multi_Init(float multirad)
 	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), SphereNormal, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
+
+	camera.setPosition(PosVec);
+	camera.setRotate(rad);
 }
 
 void Player::Move()
