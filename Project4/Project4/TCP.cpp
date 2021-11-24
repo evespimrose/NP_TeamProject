@@ -1,5 +1,4 @@
 #include "framework.h"
-#define BUFSIZE 1024
 
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
@@ -66,66 +65,30 @@ void send_Player(SOCKET sock, Player_data player)
 		exit(1);
 	}
 }
-
-int recvn(SOCKET s, char* buf, int len, int flags)
-{
-	int received;
-	char* ptr = buf;
-	int left = len;
-
-	while (left > 0)
-	{
-		received = recv(s, ptr, left, flags);
-		//printf("size of file : %d\n", received);
-		if (received == SOCKET_ERROR)
-		{
-			printf("SOCKET ERROR!\n");
-			return SOCKET_ERROR;
-		}
-		left -= received;
-		ptr += received;
-	}
-	return (len - left);
-}
-
-int get_ClientID(SOCKET sock)
-{
-	int retval;
-	int len;
-	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	else if (retval == 0) {
-	}
-
-	char* buf = new char[len]; 
-
-	retval = recvn(sock, buf, len, 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	return atoi(buf);
-	//if (atoi(buf) == -1) {
-	//	MessageBox(NULL, "서버에 인원이 꽉 찼습니다..!", "알림", 0);
-	//	//err_quit( "연결 거부" );
-	//	exit(1);
-	//	//return -1;
-	//}
-	//else {
-	//	printf("[알림] Client ID : %s\n", buf);
-
-	//	return atoi(buf);
-	//}
-}
-
 void Send_event(SOCKET sock, char buf)
 {
 	send(sock, &buf, sizeof(char), 0);
 }
 
-Player_data recv_Player(SOCKET sock)
-{
+int recvn(SOCKET s, char* buf, int len, int flags) {
+	int received;
+	char* ptr = buf;
+	int left = len;
+
+	while (left > 0) {
+		received = recv(s, ptr, left, flags);
+		if (received == SOCKET_ERROR)
+			return SOCKET_ERROR;
+		else if (received == 0)
+			break;
+		left -= received;
+		ptr += received;
+	}
+
+	return (len - left);
+}
+
+Player_data recv_Player(SOCKET sock) {
 	int retval;
 	int len;
 	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)

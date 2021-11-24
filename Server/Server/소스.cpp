@@ -340,16 +340,22 @@ void Calcutlaion_clients() {
 							break;*/
 				case DIR_LEFT_GO:
 					cout << "하이7" << endl;
-					player_data[0].KeyDownlist[0] = true;
-					cout << player_data[0].KeyDownlist[0] << endl;
+					//player_data[0].KeyDownlist[0] = true;
+					//cout << player_data[0].KeyDownlist[0] << endl;
+					player_data[0].rotate[0] = player_data[0].rotate[1];
+					player_data[0].rotate[1] += 2.0f* 0.005;
+					if (player_data[0].rotate[1] > 360)
+					{
+						player_data[0].rotate[1] -= 360;
+					}
 					break;
 					/*case DIR_RIGHT:
 						phyPlayers[phyMsg.id].SetKeyD(phyMsg.isPushed);
 						break;*/
 				case DIR_LEFT_STOP:
 					cout << "하이7" << endl;
-					player_data[0].KeyDownlist[0] = false;
-					cout << player_data[0].KeyDownlist[0] << endl;
+					//player_data[0].KeyDownlist[0] = false;
+					//cout << player_data[0].KeyDownlist[0] << endl;
 					break;
 				}
 			}
@@ -365,6 +371,7 @@ void Calcutlaion_clients() {
 			retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
+
 			}
 			retval = send(Client_sock[i], (char*)&player_data, sizeof(player_data), 0);
 			if (retval == SOCKET_ERROR) {

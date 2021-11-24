@@ -13,7 +13,7 @@ struct Message {
 typedef struct Player_data
 {
     float PosVec_z = -1000.0f;
-    float rotate[2];
+    float rotate[2] = { 0.1 ,0.1};
     float speed = 0.5f;
     int ID = -1000;
     //vector<Bullet> BulletList;

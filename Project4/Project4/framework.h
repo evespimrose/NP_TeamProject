@@ -30,7 +30,7 @@
 
 #define Proto_IP "127.0.0.1"
 #define Proto_Port 9000
-
+#define BUFSIZE 1024
 
 
 
@@ -58,27 +58,24 @@ typedef struct Data
 
 }Data;
 
-typedef struct Game_Communication_Data
-{
-    BOOL Im_Ready = false;
-    BOOL Players_Pt[3];
-    BOOL Players_Ready[3];
-    BOOL IS_START = false; //게임 시작했는지
-}Game_Communication_Data;
+
 
 typedef struct ready_info
 {
     int id = -1;
     short size = 0;
+    BOOL pt_player{ false };
     BOOL is_ready{ false };
 }ready_info;
 
 typedef struct all_ready_info
 {
+    BOOL Pt_Players[3]{ false };
     BOOL is_ready[3]{ false };
+    BOOL game_start{ false };
 }all_ready_info;
 
-int recvn(SOCKET s, char* buf, int len, int flags);
+//int recvn(SOCKET s, char* buf, int len, int flags);
 
 void err_quit(const char* msg);
 void err_display(const char* msg);

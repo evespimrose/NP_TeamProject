@@ -300,11 +300,24 @@ void Player::multi_Init(float multirad)
 
 void Player::Move(Player_data pd)
 {
-	if (pd.KeyDownlist[0])
-	{
-		RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1] - pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1] - pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
-	}
+	std::cout << "гоюл213" << std::endl;
+	    RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1]-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+		/*RotMat = glm::rotate(RotMat, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));*/
+
+		/*rad += 2.0f * Speed;
+		if (rad > 360)
+		{
+			rad -= 360;
+		}*/
+
+	/*	RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));*/
+	
+	
 
 	if (keyDownlist[1])
 	{
@@ -346,6 +359,7 @@ void Player::Update(Player_data pd)
 	camera.setRotate(rad);
 	camera.setpSpeed(Speed * fDeltaTime);
 	camera.setAT();
+
 }
 
 void Player::Key_Input(unsigned char key, bool state)
@@ -523,8 +537,7 @@ Camera Player::getCamera()
 	return camera;
 }
 
-void Player::setRad(float before, float after)
+void Player::setRad(float radian)
 {
-	Radian[0] = before;
-	Radian[1] = after;
+	rad = radian;
 }
