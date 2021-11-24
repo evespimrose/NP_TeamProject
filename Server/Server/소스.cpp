@@ -216,7 +216,106 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 	char Buffer[BUFSIZE];
 	ready_info* ri;
 
+<<<<<<< HEAD
 	//BOOL is_ready[3]{ false }; //비준비 상태로 초기화
+=======
+		if (ari.game_start) { //게임 시작 
+			std::cout << "physics thread 생성!" << std::endl;
+
+
+			//CreateThread(NULL, 0, Calcutlaion_Thread, NULL, 0, NULL); //인자로 뭘 넘길까?
+			while (ari.game_start) {
+				char retval = recv(client_sock, buf, 1, 0);
+
+				// 클라이언트 접속 종료, recv 에러 처리
+				if (retval == 0 || retval == SOCKET_ERROR) {
+					closesocket(client_sock);
+				}
+				switch ((int)buf[0])
+				{
+				case SC_PLAYER_LEFT_DOWN:
+				{
+					msg.id = user_index;
+					msg.type = TYPE_PLAYER;
+					msg.dir = DIR_LEFT_GO;
+					msg.isPushed = true;
+					break;
+				}
+				case SC_PLAYER_LEFT_UP:
+				{
+					msg.id = user_index;
+					msg.type = TYPE_PLAYER;
+					msg.dir = DIR_LEFT_STOP;
+					msg.isPushed = true;
+					break;
+				}
+				}
+
+				if (msg.id != -1)
+				{
+					glo_MsgQueue.emplace(msg);
+				}
+			}
+		}
+	}
+	//---------------------------------------------------------------------------------------------
+	closesocket(client_sock);
+	return 0;
+}
+
+void Calcutlaion_clients() {
+
+	std::queue <Message> MsgQueue;
+	Message Msg;
+	Player_data player_data[3];
+	int retval;
+
+	while (true) {
+		MsgQueue = glo_MsgQueue;
+
+		//cout << "하이4" << endl;
+
+		while (!glo_MsgQueue.empty()) {
+			
+			glo_MsgQueue.pop();
+		}
+
+		while (!MsgQueue.empty()) {
+		
+			Msg = MsgQueue.front();
+			MsgQueue.pop();
+			if (Msg.type == TYPE_PLAYER) {
+				switch (Msg.dir)
+				{
+					/*	case DIR_UP:
+							phyPlayers[phyMsg.id].SetKeyW(phyMsg.isPushed);
+							break;
+						case DIR_DOWN:
+							phyPlayers[phyMsg.id].SetKeyS(phyMsg.isPushed);
+							break;*/
+				case DIR_LEFT_GO:
+					cout << "하이7" << endl;
+					player_data[0].KeyDownlist[0] = true;
+					cout << player_data[0].KeyDownlist[0] << endl;
+					break;
+					/*case DIR_RIGHT:
+						phyPlayers[phyMsg.id].SetKeyD(phyMsg.isPushed);
+						break;*/
+				case DIR_LEFT_STOP:
+					cout << "하이7" << endl;
+					player_data[0].KeyDownlist[0] = false;
+					cout << player_data[0].KeyDownlist[0] << endl;
+					break;
+				}
+			}
+
+			if (Msg.type == TYPE_BULLET) {
+				break;
+			}
+		}
+
+		int len = sizeof(player_data);
+>>>>>>> main
 
 	while (1) { //일단 무한반복
 		//유저에게 모든 클라 ready 상태 전송

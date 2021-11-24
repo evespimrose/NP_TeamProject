@@ -311,6 +311,19 @@ void Player::Move()
 			rad -= 360;
 		}
 
+void Player::Move(Player_data pd)
+{
+	if (pd.KeyDownlist[0])
+	{
+		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		rad += 2.0f * Speed;
+		if (rad > 360)
+		{
+			rad -= 360;
+		}
+
 		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
 	}
@@ -332,6 +345,7 @@ void Player::Move()
 }
 
 void Player::Update()
+void Player::Update(Player_data pd)
 {
 	LARGE_INTEGER time;
 	QueryPerformanceCounter(&time);
@@ -350,6 +364,7 @@ void Player::Update()
 	PosMat = glm::translate(PosMat, glm::vec3(0.0f, 0.0f, Speed * fDeltaTime));
 
 	Move();
+	Move(pd);
 	ManageBullet();
 	camera.setPosition(PosVec);
 	camera.setRotate(rad);
@@ -373,6 +388,7 @@ void Player::Key_Input(unsigned char key, bool state)
 }
 
 void Player::sKey_Input(int key, bool state)
+void Player::sKey_Input(SOCKET sock, int key, bool state)
 {
 	if (key == GLUT_KEY_RIGHT)
 	{
@@ -390,6 +406,13 @@ void Player::sKey_Input(int key, bool state)
 
 		else
 			keyDownlist[0] = false;
+=======
+			Send_event(sock, CS_PLAYER_LEFT_DOWN); //´©¸§
+
+		else
+			Send_event(sock, CS_PLAYER_LEFT_UP);
+		//keyDownlist[0] = false;  //¶À
+>>>>>>> main
 	}
 }
 

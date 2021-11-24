@@ -13,11 +13,11 @@ struct Message {
 typedef struct Player_data
 {
     float PosVec_z = -1000.0f;
-    float rotate = -1000.0f;
-    float speed = -1000.0f;
+    float rotate = 1.0f;
+    float speed = 0.5f;
     int ID = -1000;
     //vector<Bullet> BulletList;
-    bool* KeyDownlist;
+    bool KeyDownlist[3]{false}; //left right space
 }Player_data;
 
 typedef struct Data

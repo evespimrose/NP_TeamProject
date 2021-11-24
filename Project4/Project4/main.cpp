@@ -2,7 +2,10 @@
 #include "Player.h"
 #include "Map.h"
 #include "Sound.h"
+<<<<<<< HEAD
 #include "MPlayer.h"
+=======
+>>>>>>> main
 
 #define HEIGHT 600
 #define WIDTH 800
@@ -47,7 +50,12 @@ vector<Player> p;
 Map m;
 
 Data* dat;
+<<<<<<< HEAD
 Player_data pd;
+=======
+Player_data player_data[3];
+
+>>>>>>> main
 vector<Cube_data> cd;
 Game_Communication_Data gcd;
 all_ready_info* ari;
@@ -63,32 +71,22 @@ char Buffer[BUFSIZE];
 int get_ClientID(SOCKET sock);
 int recvn(SOCKET s, char* buf, int len, int flags);
 
-void PD_print(Player_data pd)
-{
-
-	//cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
-	cout << "z " << pd.PosVec_z << endl << "rotate " << pd.rotate << "speed " << pd.speed << endl;
-}
-
-// Data print function for check
-/*void D_print(Data* d)
-{
-	Player_data* pd = d->PlayerData;
-	PD_print(pd);
-}*/
 
 Player_data PD_pack_data(Player p)
 {
 	Player_data* pd = new Player_data;
-	pd->KeyDownlist = p.getKey();
+	//pd->KeyDownlist[3] = p.getKey();
 	pd->PosVec_z = p.getPosition().z;
 	pd->speed = p.getSpeed();
-	pd->rotate = p.getRotate();
+	//pd->rotate = p.getRotate();
 	return *pd;
 }
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> main
 //Cube_data* CD_pack_data(Cube c)
 //{
 //	
@@ -127,6 +125,16 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		cout << ari->is_ready[1] << endl;
 		cout << ari->is_ready[2] << endl;
 	}
+
+	while (1) {
+		//recv palyer data
+		for (int i = 0; i < 1; i++) {
+			player_data[i] = recv_Player(sock);
+			//cout << player_data[i].rotate << endl;
+		}
+	}
+
+
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -410,6 +418,8 @@ GLvoid Timer(int Value)
 		//player2.Update();
 
 
+		//player1.Update(player_data[0]);
+		player1.Update(player_data[0]);
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
@@ -471,6 +481,21 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	}
 	int len;
 	int retval;
+<<<<<<< HEAD
+=======
+	if (GameState == 0) //°ÔÀÓ ¾À
+	{
+		switch (key)
+		{
+		case 'a'://¿ÞÂÊ ¹æÇâÅ°
+			cout << "ÇÏÀÌ" << endl;
+			Send_event(sock, CS_PLAYER_LEFT_DOWN);
+			break;
+
+		}
+	}
+
+>>>>>>> main
 	if (GameState == 1)
 	{
 		switch (key)
@@ -605,12 +630,12 @@ GLvoid KeyboardUp(unsigned char key, int x, int y)
 
 GLvoid sKeyboard(int key, int x, int y)
 {
-	player1.sKey_Input(key, TRUE);
+	player1.sKey_Input(sock, key, TRUE);
 }
 
-GLvoid sKeyboardUp(int key, int x, int y)
+GLvoid sKeyboardUp( int key, int x, int y)
 {
-	player1.sKey_Input(key, FALSE);
+	player1.sKey_Input(sock, key, FALSE);
 }
 
 int main(int argc, char** argv)

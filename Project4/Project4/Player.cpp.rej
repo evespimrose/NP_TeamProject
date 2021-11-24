@@ -1,0 +1,9 @@
+diff a/Project4/Project4/Player.cpp b/Project4/Project4/Player.cpp	(rejected hunks)
+@@ -416,6 +416,7 @@
+ 		else
+ 			Send_event(sock, CS_PLAYER_LEFT_UP);
+ 		//keyDownlist[0] = false;  //��
++>>>>>>> main
+ 	}
+ }
+ 

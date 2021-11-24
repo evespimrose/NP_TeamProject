@@ -1,9 +1,9 @@
 diff a/Project4/Project4/main.cpp b/Project4/Project4/main.cpp	(rejected hunks)
-@@ -609,6 +609,7 @@
- 
+@@ -482,6 +482,7 @@
+ 	int len;
+ 	int retval;
  <<<<<<< HEAD
- =======
-+<<<<<<< HEAD
- //�����Լ� ���� ��� �� ����
- void err_quit(const char* msg)
- {
++=======
+ 	if (GameState == 0) //���� ��
+ 	{
+ 		switch (key)

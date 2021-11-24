@@ -1,0 +1,9 @@
+diff a/Server/Server/소스.cpp b/Server/Server/소스.cpp	(rejected hunks)
+@@ -319,6 +319,7 @@
+ 		}
+ 
+ 		int len = sizeof(player_data);
++>>>>>>> main
+ 
+ 	while (1) { //�ϴ� ���ѹݺ�
+ 		//�������� ��� Ŭ�� ready ���� ����
