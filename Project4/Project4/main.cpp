@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Sound.h"
+#include "MPlayer.h"
 
 #define HEIGHT 600
 #define WIDTH 800
@@ -38,6 +39,7 @@ float ambient = 0.6f;
 Player player1;
 Player player2;
 Player player3;
+MPlayer mplayer;
 #ifdef Multi
 vector<Player> p;
 #endif
@@ -262,6 +264,7 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
+		mplayer.Render(ShaderProgram);
 		//player2.Render(ShaderProgram);
 		//player3.Render(ShaderProgram);
 #ifdef Multi
@@ -403,6 +406,7 @@ GLvoid Timer(int Value)
 		//m.Slowest_Update(spz);
 
 		player1.Update();
+		mplayer.Update();
 		//player2.Update();
 
 
@@ -633,12 +637,9 @@ int main(int argc, char** argv)
 	glewInit();
 
 	InitShader();
+	mplayer.Init();
+	player1.Init();
 
-	player1.multi_Init(1);
-	//player2.multi_Init(1);
-	//player3.multi_Init(2);
-
-	//player1.Init();
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);

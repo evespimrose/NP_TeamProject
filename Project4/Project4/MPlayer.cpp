@@ -197,7 +197,6 @@ void MPlayer::Init()
 
 void MPlayer::multi_Init(float multirad)
 {
-	//camera.Render(Shaderprogram);
 	p_user_id = multirad;
 	printf("multirad : %.1f\n", multirad);
 	Life = 3;
@@ -352,11 +351,6 @@ void MPlayer::Update()
 
 	Move();
 	ManageBullet();
-	camera.setPosition(PosVec);
-	camera.setRotate(rad);
-	camera.setpSpeed(Speed * fDeltaTime);
-	camera.setAT();
-
 }
 
 void MPlayer::Key_Input(unsigned char key, bool state)
@@ -396,7 +390,6 @@ void MPlayer::sKey_Input(int key, bool state)
 
 void MPlayer::Render(GLuint ShaderProgram)
 {
-	camera.Render(ShaderProgram);
 
 	unsigned int modelLocation = glGetUniformLocation(ShaderProgram, "modelTransform");
 

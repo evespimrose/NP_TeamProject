@@ -212,8 +212,8 @@ void Player::multi_Init(float multirad)
 	}
 	//PosVec = glm::rotate(PosVec, glm::radians(-multirad), glm::vec3(0.0f, 0.0f, 1.0f));
 	
-	//rad = 0.0f;
-	rad = 120.0f * multirad;
+	rad = 0.0f;
+	//rad = 120.0f * multirad;
 	dirVec = glm::rotate(PosVec, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	PosMat = glm::mat4(1.0f);
