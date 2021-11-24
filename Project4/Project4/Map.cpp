@@ -95,8 +95,6 @@ void Map::Init()
 
 void Map::Fastest_Update(float pz)
 {
-	
-
 	std::vector<Lighting>::iterator Liter = LightingList.begin();
 	if (Liter->getzOffset() + 50.0f < pz)
 	{

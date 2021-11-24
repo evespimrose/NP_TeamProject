@@ -129,6 +129,7 @@ public:
 	void ManageBullet();
 	bool MinusLife();
 	int getLife();
+	void setRad(float radian);
 
 	glm::vec3 getPosition();
 	Camera getCamera();

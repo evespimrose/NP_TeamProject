@@ -110,7 +110,6 @@ void Player::Init()
 		keyDownlist[i] = false;
 	}
 
-
 	PosVec = glm::vec3(0.0f, -3.5f, 0.0f);
 
 	PosMat = glm::mat4(1.0f);
@@ -211,7 +210,7 @@ void Player::multi_Init(float multirad)
 	{
 		keyDownlist[i] = false;
 	}
-	PosVec = glm::rotate(PosVec, glm::radians(-multirad), glm::vec3(0.0f, 0.0f, 1.0f));
+	//PosVec = glm::rotate(PosVec, glm::radians(-multirad), glm::vec3(0.0f, 0.0f, 1.0f));
 	
 	//rad = 0.0f;
 	rad = 120.0f * multirad;
@@ -531,4 +530,9 @@ glm::vec3 Player::getPosition()
 Camera Player::getCamera()
 {
 	return camera;
+}
+
+void Player::setRad(float radian)
+{
+	rad = radian;
 }
