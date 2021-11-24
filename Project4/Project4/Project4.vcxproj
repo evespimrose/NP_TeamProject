@@ -169,6 +169,7 @@
     <ClInclude Include="LoadOBJ.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="protocol.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Tube.h" />
   </ItemGroup>
