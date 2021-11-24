@@ -278,16 +278,22 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 				}
 				switch ((int)buf[0])
 				{
-				case CS_PLAYER_LEFT:
+				case SC_PLAYER_LEFT_DOWN:
 				{
-					cout << "하이" << endl;
 					msg.id = user_index;
 					msg.type = TYPE_PLAYER;
-					msg.dir = DIR_LEFT;
+					msg.dir = DIR_LEFT_GO;
 					msg.isPushed = true;
 					break;
 				}
-
+				case SC_PLAYER_LEFT_UP:
+				{
+					msg.id = user_index;
+					msg.type = TYPE_PLAYER;
+					msg.dir = DIR_LEFT_STOP;
+					msg.isPushed = true;
+					break;
+				}
 				}
 
 				if (msg.id != -1)
@@ -303,7 +309,7 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 }
 
 void Calcutlaion_clients() {
-	cout << "하이3" << endl;
+
 	std::queue <Message> MsgQueue;
 	Message Msg;
 	Player_data player_data[3];
@@ -312,10 +318,15 @@ void Calcutlaion_clients() {
 	while (true) {
 		MsgQueue = glo_MsgQueue;
 
-		while (!glo_MsgQueue.empty())
+		//cout << "하이4" << endl;
+
+		while (!glo_MsgQueue.empty()) {
+			
 			glo_MsgQueue.pop();
+		}
 
 		while (!MsgQueue.empty()) {
+		
 			Msg = MsgQueue.front();
 			MsgQueue.pop();
 			if (Msg.type == TYPE_PLAYER) {
@@ -327,13 +338,19 @@ void Calcutlaion_clients() {
 						case DIR_DOWN:
 							phyPlayers[phyMsg.id].SetKeyS(phyMsg.isPushed);
 							break;*/
-				case DIR_LEFT:
+				case DIR_LEFT_GO:
 					cout << "하이7" << endl;
-					player_data->rotate += 2.0f * player_data->speed;
+					player_data[0].KeyDownlist[0] = true;
+					cout << player_data[0].KeyDownlist[0] << endl;
 					break;
 					/*case DIR_RIGHT:
 						phyPlayers[phyMsg.id].SetKeyD(phyMsg.isPushed);
 						break;*/
+				case DIR_LEFT_STOP:
+					cout << "하이7" << endl;
+					player_data[0].KeyDownlist[0] = false;
+					cout << player_data[0].KeyDownlist[0] << endl;
+					break;
 				}
 			}
 

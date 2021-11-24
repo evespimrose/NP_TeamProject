@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Sound.h"
-#include "protocol.h"
+
 #define HEIGHT 600
 #define WIDTH 800
 #define TEXT_GAP 200
@@ -38,7 +38,7 @@ vector<Player> p;
 Map m;
 
 Data* dat;
-Player_data player_data;
+Player_data player_data[3];
 
 vector<Cube_data> cd;
 all_ready_info* ari;
@@ -55,30 +55,16 @@ char Buffer[BUFSIZE];
 int get_ClientID(SOCKET sock);
 int recvn(SOCKET s, char* buf, int len, int flags);
 
-void PD_print(Player_data pd)
-{
-
-	//cout << "z " << pd->PosVec_z << endl << "rotate " << pd->rotate << "speed " << pd->speed << endl;
-	cout << "z " << pd.PosVec_z << endl << "rotate " << pd.rotate << "speed " << pd.speed << endl;
-}
-
-// Data print function for check
-/*void D_print(Data* d)
-{
-	Player_data* pd = d->PlayerData;
-	PD_print(pd);
-}*/
 
 Player_data PD_pack_data(Player p)
 {
 	Player_data* pd = new Player_data;
-	pd->KeyDownlist = p.getKey();
+	//pd->KeyDownlist[3] = p.getKey();
 	pd->PosVec_z = p.getPosition().z;
 	pd->speed = p.getSpeed();
-	pd->rotate = p.getRotate();
+	//pd->rotate = p.getRotate();
 	return *pd;
 }
-
 //Cube_data* CD_pack_data(Cube c)
 //{
 //	
@@ -121,7 +107,10 @@ DWORD WINAPI JoinThread(LPVOID arg)
 
 	while (1) {
 		//recv palyer data
-		player_data = recv_Player(sock);
+		for (int i = 0; i < 1; i++) {
+			player_data[i] = recv_Player(sock);
+			//cout << player_data[i].rotate << endl;
+		}
 	}
 
 
@@ -402,8 +391,8 @@ GLvoid Timer(int Value)
 		//m.Fastest_Update(fpz);
 		//m.Slowest_Update(spz);
 
-		player1.Update();
-
+		//player1.Update(player_data[0]);
+		player1.Update(player_data[0]);
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
@@ -476,7 +465,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		{
 		case 'a'://왼쪽 방향키
 			cout << "하이" << endl;
-			Send_event(sock, SC_PLAYER_LEFT);
+			Send_event(sock, CS_PLAYER_LEFT_DOWN);
 			break;
 
 		}
@@ -633,12 +622,12 @@ GLvoid KeyboardUp(unsigned char key, int x, int y)
 
 GLvoid sKeyboard(int key, int x, int y)
 {
-	player1.sKey_Input(key, TRUE);
+	player1.sKey_Input(sock, key, TRUE);
 }
 
-GLvoid sKeyboardUp(int key, int x, int y)
+GLvoid sKeyboardUp( int key, int x, int y)
 {
-	player1.sKey_Input(key, FALSE);
+	player1.sKey_Input(sock, key, FALSE);
 }
 
 

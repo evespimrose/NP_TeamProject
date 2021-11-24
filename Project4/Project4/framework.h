@@ -16,10 +16,11 @@
 #include <vector>
 #include <map>
 #include <math.h>
-
 #include <stdio.h>
 #include <time.h>
 #include <chrono>
+
+#include "protocol.h"
 
 // 클라이언트 통신 관련 참조 헤더
 #define _CRT_SECURE_NO_WARNINGS
@@ -31,6 +32,8 @@
 #define Proto_Port 9000
 #define BUFSIZE    1024
 
+
+
 // structs for send
 typedef struct Player_data
 {
@@ -39,10 +42,8 @@ typedef struct Player_data
     float speed;
     int ID;
     //vector<Bullet> BulletList;
-    bool* KeyDownlist;
+    bool KeyDownlist[3];//left right space
 }Player_data;
-
-extern Player_data player_data;
 
 typedef struct Cube_data
 {
