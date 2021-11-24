@@ -12,14 +12,12 @@ void Camera::setRotate(float r)
 
 void Camera::setPosition(glm::vec3 p)
 {
-	posx = p.x;
-	posy = p.y;
 	posz = p.z;
 }
 
 glm::vec3 Camera::getPosition()
 {
-	return glm::vec3(posx, posy - 1.0f, posz - 3.0f);
+	return glm::vec3(posx, posy - 1.0f, posz - 30.0f);
 }
 
 void Camera::setAT()
@@ -36,7 +34,7 @@ void Camera::rotatecamera(float rad)
 
 void Camera::init()
 {
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
+	glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, -10.0f);
 	glm::vec3 cameraDirection = AT;
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 

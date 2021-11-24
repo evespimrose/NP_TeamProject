@@ -316,8 +316,6 @@ void Player::Move(Player_data pd)
 
 	/*	RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));
 		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));*/
-	
-	
 
 	if (keyDownlist[1])
 	{
@@ -337,6 +335,7 @@ void Player::Move(Player_data pd)
 
 void Player::Update(Player_data pd)
 {
+	setRad(pd.rotate[1]);
 	LARGE_INTEGER time;
 	QueryPerformanceCounter(&time);
 	fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
