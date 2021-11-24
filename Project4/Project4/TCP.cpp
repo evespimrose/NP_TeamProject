@@ -1,4 +1,5 @@
 #include "framework.h"
+#define BUFSIZE 1024
 
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
@@ -116,4 +117,40 @@ int get_ClientID(SOCKET sock)
 
 	//	return atoi(buf);
 	//}
+}
+
+void Send_event(SOCKET sock, char buf)
+{
+	send(sock, &buf, sizeof(char), 0);
+}
+
+Player_data recv_Player(SOCKET sock)
+{
+	int retval;
+	int len;
+	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	else if (retval == 0) {
+	}
+
+	//printf( "Recv : %d\n", len );
+	//printf( "데이터 크기 : %d\n", len );
+
+	int GetSize;
+	char suBuffer[BUFSIZE];
+	Player_data* player;
+	GetSize = recv(sock, suBuffer, len, 0);
+	if (GetSize == SOCKET_ERROR) {
+		MessageBox(NULL, "서버와의 연결이 끊어졌습니다..!\n이유 : \n 1. 서버가 종료되었습니다\n 2. 서버에 의해 강제퇴장 당하였습니다\n 3. 인터넷 연결이 올바르지 않습니다", "NetworkTermProject", 0);
+		exit(1);
+	}
+
+	suBuffer[GetSize] = '\0';
+	player = (Player_data*)suBuffer;
+
+	//printf( "%d\n", player[0]->camxrotate );
+
+	return *player;
 }

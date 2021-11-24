@@ -4,17 +4,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <thread>
 
 #include "Server.h"
-
+#include "protocol.h"
 using namespace std;
 
 #define SERVERPORT 9000
 #define BUFSIZE 1024
 #define MAXPLAYER 3
 
+int GetSize;
+char Buffer[BUFSIZE];
+
 
 DWORD WINAPI recv_thread(LPVOID arg);
+//DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
+void Calcutlaion_clients();
+
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
 {
@@ -59,6 +66,8 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	}
 	return (len - left);
 }
+
+
 int count_s = 0;
 int main()
 {
@@ -113,45 +122,12 @@ int main()
 			err_display("accept()");
 			break;
 		}
-
 		if (clients_count == MAXPLAYER) { //최대 클라 접속시 끊어버림
 			closesocket(client_sock);
 			continue;
 		}
-		//클아이언트에게 아이디 부여 
-		/*for (int i = 0; i < MAXPLAYER; ++i) {
-			if (false == connectedCls[i].is_connected) {
-				connectedCls[i].is_connected = true;
-				user_index = i;
-				clients_count++;
-				cout << "==============================" << endl;
-				cout << "ID " << i << " is connected" << endl;
-				cout << "==============================" << endl;
-
-				break;
-			}
-		}
-
-		*/
 		Client_sock[count_s] = client_sock;
 		count_s++;
-		//
-
-		////접속한 클라에게 id 전송
-		//login_info li_packet;
-		//li_packet.id = user_index;
-		//li_packet.size = sizeof(li_packet);
-		//li_packet.type = true;
-		//send(client_sock, (char*)&li_packet, sizeof(li_packet), 0);
-
-		////레디 상황 전달
-		//for (int i = 0; i < MAXPLAYER; ++i)	// 유저아이디가 순서대로 증가할 때만 가능
-		//{
-		//	if (true == connectedCls[i].is_connected)
-		//	{
-		//		send(clients[i], (char*)&rf_Packet, sizeof(rf_Packet), 0);
-		//	}
-		//}
 
 		//recv 스레드 생성
 		hThread = CreateThread(NULL, 0, recv_thread, (LPVOID)client_sock, 0, NULL);
@@ -210,15 +186,84 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 		err_display("send()");
 		//exit( 1 );
 	}
+	printf("데이터 전송");
+
 	//--------------------------------------------------------------------------------
+	//참가 유저 정보 받기
 
-	int GetSize;
-	char Buffer[BUFSIZE];
-	ready_info* ri;
+	cout << "여기1" << endl;
+	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	else if (retval == 0) {
+	}
+	GetSize = recv(client_sock, Buffer, len, 0);
+	//Buffer[GetSize] = '\0';
+	ri = (ready_info*)Buffer;
+	ari.is_ready[ri->id] = ri->is_ready;
+	ari.Pt_Players[ri->id] = ri->pt_player;
+	//---------------------------------------------------------------------------------
+	cout << "여기2" << endl;
 
-<<<<<<< HEAD
-	//BOOL is_ready[3]{ false }; //비준비 상태로 초기화
-=======
+	Message msg{};
+	cout << "여기3" << endl;
+	while (true) {
+
+		if (!ari.game_start) { //게임 시작할때까지
+			while (1) {
+				cout << "여기4" << endl;
+				//유저에게 모든 클라 ready 상태 전송
+				len = sizeof(ari);
+				for (int i = 0; i < count_s; i++) {
+					retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
+					if (retval == SOCKET_ERROR) {
+						err_display("send()");
+					}
+
+					// 데이터 보내기
+					retval = send(Client_sock[i], (char*)&ari, len, 0);
+					if (retval == SOCKET_ERROR) {
+						err_display("send()");
+						//exit( 1 );
+					}
+				}
+				cout << "여기5" << endl;
+				//유저에게 ready 상태 받음 
+				retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
+				if (retval == SOCKET_ERROR) {
+					err_display("recv()");
+				}
+				else if (retval == 0) {
+				}
+				GetSize = recv(client_sock, Buffer, len, 0);
+				Buffer[GetSize] = '\0';
+				ri = (ready_info*)Buffer;
+				ari.is_ready[ri->id] = ri->is_ready;
+				ari.Pt_Players[ri->id] = ri->pt_player;
+
+				cout << "여기6" << endl;
+				if (count_s == 1 && ari.is_ready[0]) {
+					ari.game_start = true;
+					thread PhysicsThread(Calcutlaion_clients);
+					PhysicsThread.detach();
+					break;
+				}
+				if (count_s == 2 && ari.is_ready[0] && ari.is_ready[1]) {
+					ari.game_start = true;
+					thread PhysicsThread(Calcutlaion_clients);
+					PhysicsThread.detach();
+					break;
+				}
+				if (count_s == 3 && ari.is_ready[0] && ari.is_ready[1] && ari.is_ready[2]) {
+					ari.game_start = true;
+					thread PhysicsThread(Calcutlaion_clients);
+					PhysicsThread.detach();
+					break;
+				}
+			}
+		}
+
 		if (ari.game_start) { //게임 시작 
 			std::cout << "physics thread 생성!" << std::endl;
 
@@ -276,12 +321,12 @@ void Calcutlaion_clients() {
 		//cout << "하이4" << endl;
 
 		while (!glo_MsgQueue.empty()) {
-			
+
 			glo_MsgQueue.pop();
 		}
 
 		while (!MsgQueue.empty()) {
-		
+
 			Msg = MsgQueue.front();
 			MsgQueue.pop();
 			if (Msg.type == TYPE_PLAYER) {
@@ -315,41 +360,20 @@ void Calcutlaion_clients() {
 		}
 
 		int len = sizeof(player_data);
->>>>>>> main
 
-	while (1) { //일단 무한반복
-		//유저에게 모든 클라 ready 상태 전송
-		len = sizeof(ari);
 		for (int i = 0; i < count_s; i++) {
 			retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
-			}
 
-			// 데이터 보내기
-			retval = send(Client_sock[i], (char*)&ari, len, 0);
+			}
+			retval = send(Client_sock[i], (char*)&player_data, sizeof(player_data), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
-				//exit( 1 );
+
 			}
 		}
-		//유저에게 ready 상태 받음 
-		retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
-		}
-		else if (retval == 0) {
-		}
-		GetSize = recv(client_sock, Buffer, len, 0);
-		Buffer[GetSize] = '\0';
-		ri = (ready_info*)Buffer;
-		ari.is_ready[ri->id] = ri->is_ready;
-		cout << ari.is_ready[0] << endl;
-		cout << ari.is_ready[1] << endl;
-		cout << ari.is_ready[2] << endl;
-	}
-	//---------------------------------------------------------------------------------------------
 
-	return 0;
+	}
 }
 

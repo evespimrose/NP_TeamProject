@@ -85,3 +85,5 @@ void err_display(const char* msg);
 SOCKET init_sock();
 void send_Player(SOCKET sock, Player_data player);
 int get_ClientID(SOCKET sock);
+void Send_event(SOCKET sock, char buf);
+Player_data recv_Player(SOCKET sock);

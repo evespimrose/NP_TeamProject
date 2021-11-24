@@ -2,10 +2,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Sound.h"
-<<<<<<< HEAD
 #include "MPlayer.h"
-=======
->>>>>>> main
 
 #define HEIGHT 600
 #define WIDTH 800
@@ -50,12 +47,9 @@ vector<Player> p;
 Map m;
 
 Data* dat;
-<<<<<<< HEAD
 Player_data pd;
-=======
 Player_data player_data[3];
 
->>>>>>> main
 vector<Cube_data> cd;
 Game_Communication_Data gcd;
 all_ready_info* ari;
@@ -81,12 +75,7 @@ Player_data PD_pack_data(Player p)
 	//pd->rotate = p.getRotate();
 	return *pd;
 }
-<<<<<<< HEAD
 
-
-
-=======
->>>>>>> main
 //Cube_data* CD_pack_data(Cube c)
 //{
 //	
@@ -413,7 +402,7 @@ GLvoid Timer(int Value)
 		//m.Fastest_Update(fpz);
 		//m.Slowest_Update(spz);
 
-		player1.Update();
+		//player1.Update();
 		mplayer.Update();
 		//player2.Update();
 
@@ -481,8 +470,6 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	}
 	int len;
 	int retval;
-<<<<<<< HEAD
-=======
 	if (GameState == 0) //°ÔÀÓ ¾À
 	{
 		switch (key)
@@ -495,7 +482,6 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		}
 	}
 
->>>>>>> main
 	if (GameState == 1)
 	{
 		switch (key)

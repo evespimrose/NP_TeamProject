@@ -386,10 +386,6 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 	if (key == GLUT_KEY_LEFT)
 	{
 		if (state)
-			keyDownlist[0] = true;
-
-		else
-			keyDownlist[0] = false;
 			Send_event(sock, CS_PLAYER_LEFT_DOWN); //´©¸§
 
 		else
