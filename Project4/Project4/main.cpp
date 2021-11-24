@@ -2,15 +2,13 @@
 #include "Player.h"
 #include "Map.h"
 #include "Sound.h"
-
+#include "protocol.h"
 #define HEIGHT 600
 #define WIDTH 800
 #define TEXT_GAP 200
 #define BUFSIZE 1024
 // for TCP
 //#define Multi
-#define SERVERIP "127.0.0.1"
-#define SERVERPORT 9000
 
 
 using namespace std;
@@ -18,9 +16,6 @@ using namespace std;
 const float length = 0.5;
 
 char* arr;
-
-int GameState = 0;
-int GameState = 3;
 
 int GameState = 2;
 int user_id = -1;
@@ -43,10 +38,11 @@ vector<Player> p;
 Map m;
 
 Data* dat;
-Player_data pd;
+Player_data player_data;
+
 vector<Cube_data> cd;
-Game_Communication_Data gcd;
 all_ready_info* ari;
+ready_info ri;
 float Rotate = 0;
 
 int cnt = 0;
@@ -83,8 +79,6 @@ Player_data PD_pack_data(Player p)
 	return *pd;
 }
 
-
-
 //Cube_data* CD_pack_data(Cube c)
 //{
 //	
@@ -99,6 +93,7 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 
 DWORD WINAPI JoinThread(LPVOID arg)
 {
+
 	sock = init_sock();
 	user_id = get_ClientID(sock); //id 얻기
 	int retval;
@@ -106,9 +101,8 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	//all_ready_info* ari;
 	int len = sizeof(ari);
 	int GetSize;
-	ready_info ri;
 
-	while (1) {
+	while (1) { //
 		//ready상태 받기
 		retval = recvn(sock, (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
@@ -119,10 +113,18 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		GetSize = recv(sock, Buffer, len, 0);
 		Buffer[GetSize] = '\0';
 		ari = (all_ready_info*)Buffer;
-		cout << ari->is_ready[0] << endl;
-		cout << ari->is_ready[1] << endl;
-		cout << ari->is_ready[2] << endl;
+		if (ari->game_start) {
+			GameState = 0;
+			break;
+		}
 	}
+
+	while (1) {
+		//recv palyer data
+		player_data = recv_Player(sock);
+	}
+
+
 }
 
 void glutPrint(float x, float y, LPVOID font, string text)
@@ -325,7 +327,7 @@ GLvoid drawScene()
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 3.2f, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
-		if (gcd.Players_Pt[0]) {
+		if (ari->Pt_Players[0]) {
 			glutPrint(WIDTH / 5.5f + 20, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 1 ");
 		}
 
@@ -338,7 +340,7 @@ GLvoid drawScene()
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 3.2f + TEXT_GAP, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
-		if (gcd.Players_Pt[1]) {
+		if (ari->Pt_Players[1]) {
 			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 2 ");
 		}
 
@@ -351,17 +353,18 @@ GLvoid drawScene()
 		for (int i = 0; i < 7; i++) {
 			glutPrint(WIDTH / 3.2f + TEXT_GAP * 2, HEIGHT / 1.5f - 14 * i - 8, GLUT_BITMAP_HELVETICA_18, "I");
 		}
-		if (gcd.Players_Pt[2]) {
+		if (ari->Pt_Players[2]) {
 			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
-
 
 		//ready
 		for (int i = 0; i < 3; i++) {
 			if (ari->is_ready[i]) {
-				glutPrint(WIDTH / 5.0f + TEXT_GAP * i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
+				glutPrint(WIDTH / 5.5f + TEXT_GAP * i, HEIGHT / 2.2f, GLUT_BITMAP_HELVETICA_18, "Ready");
 			}
 		}
+
+
 
 		glutSwapBuffers();
 	}
@@ -379,18 +382,20 @@ GLvoid Timer(int Value)
 
 	if (GameState == 0)
 	{
+
 		float pz = player1.getPosition().z;
+#ifdef Multi
 		float fpz = 0.0f;
 		float spz = 10000000.0f;
 
-		/*vector<Player>::iterator fastest_player_iter = p.begin();
-		vector<Player>::iterator slowest_player_iter = p.begin();*/
-		/*for (auto i = p.begin(); i != p.end(); ++i)
+		vector<Player>::iterator fastest_player_iter = p.begin();
+		vector<Player>::iterator slowest_player_iter = p.begin();
+		for (auto i = p.begin(); i != p.end(); ++i)
 		{
 			fpz = max(fpz, i->getPosition().z);
 			spz = min(spz, i->getPosition().z);
-		}*/
-
+		}
+#endif
 		m.Fastest_Update(pz);
 		m.Slowest_Update(pz);
 
@@ -414,8 +419,6 @@ GLvoid Timer(int Value)
 		m.BulletCollisionCheck(tmpList);
 
 		player1.setBulletList(tmpList);
-		pd = PD_pack_data(player1);
-		//D_print(dat);		
 
 		//PD_print(&pd);
 
@@ -443,10 +446,12 @@ void BGM()
 void Reset()
 {
 	GameState = 0;
-	/*for (auto i = p.begin(); i != p.end(); ++i)
+#ifdef Multi
+	for (auto i = p.begin(); i != p.end(); ++i)
 	{
 		i->Reset();
-	}*/
+	}
+#endif
 	player1.Reset();
 	m.Reset();
 	BGM();
@@ -465,6 +470,18 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	}
 	int len;
 	int retval;
+	if (GameState == 0) //게임 씬
+	{
+		switch (key)
+		{
+		case 'a'://왼쪽 방향키
+			cout << "하이" << endl;
+			Send_event(sock, SC_PLAYER_LEFT);
+			break;
+
+		}
+	}
+
 	if (GameState == 1)
 	{
 		switch (key)
@@ -482,9 +499,9 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	{
 		switch (key)
 		{
-		case '1':
+		case 'a':
 
-			words.push_back("1");
+			words.push_back("a");
 			ip_number_len++;
 			break;
 		case '2':
@@ -545,13 +562,29 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			ip_number_len--;
 			break;
 		case 13://enter
-			// 올바른 ip주소라면
+
 			string ip_add = "";
 			for (string word : words)
 				ip_add += word;
 
-			cout << ip_add << endl;
+			// 올바른 ip주소라면
+			ri.id = user_id;
+			ri.is_ready = false; //비준비 상태
+			ri.pt_player = true; //나 참가했어요
 
+			len = sizeof(ri);
+			retval = send(sock, (char*)&len, sizeof(int), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+
+			// 데이터 보내기
+			retval = send(sock, (char*)&ri, sizeof(ri), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+				//exit( 1 );
+			}
+			printf("전송완료");
 			GameState = 3;
 			break;
 		}
@@ -562,15 +595,16 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		switch (key)
 		{
 		case 32:
-			if (gcd.Im_Ready) {
-				gcd.Im_Ready = false;
+			if (ri.is_ready) {
+				ri.is_ready = false;
 			}
-			else if (!gcd.Im_Ready) {
-				gcd.Im_Ready = true;
+			else if (!ri.is_ready) {
+				ri.is_ready = true;
 			}
-			ready_info ri;
+
 			ri.id = user_id;
-			ri.is_ready = gcd.Im_Ready;
+
+
 
 			len = sizeof(ri);
 			retval = send(sock, (char*)&len, sizeof(int), 0);
@@ -607,83 +641,7 @@ GLvoid sKeyboardUp(int key, int x, int y)
 	player1.sKey_Input(key, FALSE);
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-//소켓함수 오류 출력 후 종료
-void err_quit(const char* msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL, WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf, 0, NULL);
-	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
-	LocalFree(lpMsgBuf);
-	exit(1);
-}
 
-//소켓함수 오류 출력
-void err_display(const char* msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL, WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf, 0, NULL);
-	printf("[%s] %s", msg, (char*)lpMsgBuf);
-	LocalFree(lpMsgBuf);
-}
-
-DWORD WINAPI JoinThread(LPVOID arg)
-{
-	int retval;
-
-	/*p.reserve(3);*/
-	srand((unsigned int)time(NULL));
-
-	WSADATA wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-		return 1;
-
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET)
-		err_quit("socket()");
-
-	//connect
-	SOCKADDR_IN serveraddr;
-	ZeroMemory(&serveraddr, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
-	serveraddr.sin_port = htons(SERVERPORT);
-	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR)
-		err_quit("connect()");
-
-	printf("연결 성공");
-}
-
-
-int recvn(SOCKET s, char* buf, int len, int flags)
-{
-	int received;
-	char* ptr = buf;
-	int left = len;
-
-	while (left > 0)
-	{
-		received = recv(s, ptr, left, flags);
-		//printf("size of file : %d\n", received);
-		if (received == SOCKET_ERROR)
-		{
-			printf("SOCKET ERROR!\n");
-			return SOCKET_ERROR;
-		}
-		left -= received;
-		ptr += received;
-	}
-	return (len - left);
-}
 
 int main(int argc, char** argv)
 {
@@ -710,8 +668,8 @@ int main(int argc, char** argv)
 
 	InitShader();
 
-	player1.multi_Init(1);
 	player1.Init();
+
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);
@@ -724,4 +682,24 @@ int main(int argc, char** argv)
 	BGM();
 
 	glutMainLoop();
+}
+
+int get_ClientID(SOCKET sock) {
+	int retval;
+	int len;
+	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	else if (retval == 0) {
+	}
+
+	char* buf = new char[len]; // 전송된 길이를 알고 있으니 크기에 맞춰서 buf를 늘려주자!
+
+	retval = recvn(sock, buf, len, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	return atoi(buf);
+
 }

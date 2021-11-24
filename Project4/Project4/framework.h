@@ -29,7 +29,7 @@
 
 #define Proto_IP "127.0.0.1"
 #define Proto_Port 9000
-
+#define BUFSIZE    1024
 
 // structs for send
 typedef struct Player_data
@@ -41,6 +41,8 @@ typedef struct Player_data
     //vector<Bullet> BulletList;
     bool* KeyDownlist;
 }Player_data;
+
+extern Player_data player_data;
 
 typedef struct Cube_data
 {
@@ -55,30 +57,26 @@ typedef struct Data
 
 }Data;
 
-typedef struct Game_Communication_Data
-{
-    BOOL Im_Ready = false;
-    BOOL Players_Pt[3];
-    BOOL Players_Ready[3];
-    BOOL IS_START = false; //게임 시작했는지
-}Game_Communication_Data;
-
 typedef struct ready_info
 {
     int id = -1;
     short size = 0;
+    BOOL pt_player{ false };
     BOOL is_ready{ false };
 }ready_info;
 
-typedef struct all_ready_info
-{
-    BOOL is_ready[3]{ false };
-}all_ready_info;
 
-int recvn(SOCKET s, char* buf, int len, int flags);
+
+typedef struct all_ready_info //받는 유저들의 데이터
+{
+    BOOL Pt_Players[3]{ false };
+    BOOL is_ready[3]{ false };
+    BOOL game_start{ false };
+}all_ready_info;
 
 void err_quit(const char* msg);
 void err_display(const char* msg);
 SOCKET init_sock();
 void send_Player(SOCKET sock, Player_data player);
-int get_ClientID(SOCKET sock);
+Player_data recv_Player(SOCKET sock);
+void Send_event(SOCKET sock, char buf);

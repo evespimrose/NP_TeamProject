@@ -1,5 +1,14 @@
 #pragma once
 #include <map>
+#include <queue>
+
+struct Message {
+    char id;
+    char type;
+    char dir;
+    bool isPushed;
+};
+
 // structs for send
 typedef struct Player_data
 {
@@ -16,14 +25,6 @@ typedef struct Data
     Player_data PlayerData;
 }Data;
 
-typedef struct Game_Communication_Data
-{
-    BOOL Im_Ready = false;
-    BOOL Players_Pt[3];
-    BOOL Players_Ready[3];
-    BOOL IS_START = false; //게임 시작했는지
-}Game_Communication_Data;
-
 typedef struct login_info
 {
     BOOL is_connected;
@@ -36,12 +37,15 @@ typedef struct ready_info
 {
     int id = -1;
     short size = 0;
+    BOOL pt_player{ false };
     BOOL is_ready{ false };
 }ready_info;
 
 typedef struct all_ready_info
 {
+    BOOL Pt_Players[3]{ false };
     BOOL is_ready[3]{ false };
+    BOOL game_start{ false };
 }all_ready_info;
 
 typedef struct ConnectClient {
@@ -50,5 +54,7 @@ typedef struct ConnectClient {
 ConnectClient connectedCls[3]{ false };
 std::map <char, SOCKET> clients;
 all_ready_info ari;
-
+ready_info* ri;
 SOCKET Client_sock[3];
+
+std::queue <Message> glo_MsgQueue;
