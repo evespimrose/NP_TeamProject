@@ -38,7 +38,7 @@
 typedef struct Player_data
 {
     float PosVec_z;
-    float rotate;
+    float rotate[2];
     float speed;
     int ID;
     //vector<Bullet> BulletList;

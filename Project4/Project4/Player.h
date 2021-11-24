@@ -17,6 +17,7 @@ private:
 	glm::vec3 dirVec;
 
 	float rad;
+	float Radian[2];
 	float specular = 0.8f;
 	float diffuse = 0.2f;
 	float shininess = 256;
@@ -129,7 +130,7 @@ public:
 	void ManageBullet();
 	bool MinusLife();
 	int getLife();
-	void setRad(float radian);
+	void setRad(float before, float after);
 
 	glm::vec3 getPosition();
 	Camera getCamera();

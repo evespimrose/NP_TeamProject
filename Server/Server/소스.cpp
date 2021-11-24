@@ -365,7 +365,6 @@ void Calcutlaion_clients() {
 			retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
-
 			}
 			retval = send(Client_sock[i], (char*)&player_data, sizeof(player_data), 0);
 			if (retval == SOCKET_ERROR) {
