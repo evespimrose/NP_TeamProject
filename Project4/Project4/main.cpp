@@ -634,7 +634,7 @@ int main(int argc, char** argv)
 
 	InitShader();
 
-	player1.multi_Init(0);
+	player1.multi_Init(1);
 	//player2.multi_Init(1);
 	//player3.multi_Init(2);
 

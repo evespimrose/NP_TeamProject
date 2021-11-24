@@ -122,7 +122,7 @@ void Player::Init()
 	SclMat = glm::mat4(1.0f);
 	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 
-	dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
+	//dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	Speed = 0.0f;
 
@@ -197,6 +197,7 @@ void Player::Init()
 
 void Player::multi_Init(float multirad)
 {
+	//camera.Render(Shaderprogram);
 	p_user_id = multirad;
 	printf("multirad : %.1f\n", multirad);
 	Life = 3;
@@ -210,14 +211,15 @@ void Player::multi_Init(float multirad)
 	{
 		keyDownlist[i] = false;
 	}
-
-	PosVec = glm::vec3(0.0f, -3.5f + multirad, 0.0f);
-	rad = 0.0f;
-	//rad = 120.0f * multirad;
+	PosVec = glm::rotate(PosVec, glm::radians(-multirad), glm::vec3(0.0f, 0.0f, 1.0f));
+	
+	//rad = 0.0f;
+	rad = 120.0f * multirad;
+	dirVec = glm::rotate(PosVec, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	PosMat = glm::mat4(1.0f);
 	PosMat = glm::translate(PosMat, PosVec);
-	//PosMat = glm::rotate(PosMat, glm::radians(120.0f) * multirad, glm::vec3(0.0f, 0.0f, 1.0f));
+	//printf("%f", PosMat[0][1]);
 
 	RotMat = glm::mat4(1.0f);
 	//RotMat = glm::rotate(RotMat, glm::radians(120.0f) * multirad, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -225,7 +227,6 @@ void Player::multi_Init(float multirad)
 	SclMat = glm::mat4(1.0f);
 	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 
-	dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	Speed = 0.0f;
 
