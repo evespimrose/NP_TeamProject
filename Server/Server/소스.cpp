@@ -343,7 +343,7 @@ void Calcutlaion_clients() {
 					//player_data[0].KeyDownlist[0] = true;
 					//cout << player_data[0].KeyDownlist[0] << endl;
 					player_data[0].rotate[0] = player_data[0].rotate[1];
-					player_data[0].rotate[1] += 2.0f* 0.005;
+					player_data[0].rotate[1] += 2.0f * 0.5;
 					if (player_data[0].rotate[1] > 360)
 					{
 						player_data[0].rotate[1] -= 360;
