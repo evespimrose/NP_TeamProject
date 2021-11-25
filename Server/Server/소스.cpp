@@ -79,8 +79,8 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	return (len - left);
 }
 
-
 int count_s = 0;
+
 int main()
 {
 	int retval;
@@ -471,13 +471,14 @@ void Calcutlaion_clients() {
 					break;
 				case DIR_LEFT_STOP:
 					cout << "ÇÏÀÌ7" << endl;
+
 					break;
 				case DIR_RIGHT_GO://¿ÞÂÊ
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
 					col_player_data[Msg.id].rad -= 2.0f * col_player_data[Msg.id].Speed;
-					if (col_player_data[Msg.id].rad > 360)
+					if (col_player_data[Msg.id].rad < 0)
 					{
 						col_player_data[Msg.id].rad += 360;
 					}

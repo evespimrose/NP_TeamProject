@@ -13,14 +13,13 @@
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
-
 using namespace std;
+
+int Scene = TITLE_SCENE;
 
 const float length = 0.5;
 
 char* arr;
-
-int GameState = 2;
 
 int user_id = -1;
 #ifdef Multi
@@ -108,7 +107,7 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		Buffer[GetSize] = '\0';
 		ari = (all_ready_info*)Buffer;
 		if (ari->game_start) {
-			GameState = 0;
+			Scene = GAME_SCENE;
 			break;
 		}
 	}
@@ -240,7 +239,7 @@ void InitShader()
 
 GLvoid drawScene()
 {
-	if (GameState == 0) //게임 시작
+	if (Scene == GAME_SCENE) //게임 시작
 	{
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -260,8 +259,6 @@ GLvoid drawScene()
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
 		mplayer.Render(ShaderProgram);
-		//player2.Render(ShaderProgram);
-		//player3.Render(ShaderProgram);
 #ifdef Multi
 		for (auto i = p.begin(); i != p.end(); ++i)
 		{
@@ -282,7 +279,7 @@ GLvoid drawScene()
 
 		glutSwapBuffers();
 	}
-	else if (GameState == 1) //게임종료
+	else if (Scene == OVER_SCENE) //게임종료
 	{
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -293,7 +290,7 @@ GLvoid drawScene()
 
 		glutSwapBuffers();
 	}
-	else if (GameState == 2) // 타이틀 씬
+	else if (Scene == TITLE_SCENE) // 타이틀 씬
 	{
 
 		glClearColor(1, 1, 1, 1);
@@ -311,7 +308,7 @@ GLvoid drawScene()
 		glutSwapBuffers();
 
 	}
-	else if (GameState == 3) // 로비 씬
+	else if (Scene == LOBBY_SCENE) // 로비 씬
 	{
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -357,7 +354,6 @@ GLvoid drawScene()
 			glutPrint(WIDTH / 5.5f + 20 + TEXT_GAP * 2, HEIGHT / 1.7f, GLUT_BITMAP_HELVETICA_18, "Player 3 ");
 		}
 
-
 		//ready
 		for (int i = 0; i < 3; i++) {
 			if (ari->is_ready[i]) {
@@ -371,7 +367,7 @@ GLvoid drawScene()
 
 GLvoid Timer(int Value)
 {
-	if (GameState == 1)
+	if (Scene == OVER_SCENE)
 	{
 		SoundManager::sharedManager()->play(OVER_SOUND);
 		SoundManager::sharedManager()->stop(BACKGROUND_SOUND);
@@ -379,7 +375,7 @@ GLvoid Timer(int Value)
 		return;
 	}
 
-	if (GameState == 0)
+	if (Scene == GAME_SCENE)
 	{
 		float pz = player1.getPosition().z;
 		//float pz = player2.getPosition().z;
@@ -413,7 +409,7 @@ GLvoid Timer(int Value)
 
 			if (player1.collision())
 			{
-				GameState = 1;
+				Scene = OVER_SCENE;
 				glutPostRedisplay();
 			}
 		}
@@ -436,7 +432,7 @@ void BGM()
 {
 	SoundManager::sharedManager()->init();
 	SoundManager::sharedManager()->loading();
-	if (GameState == 0)
+	if (Scene == GAME_SCENE)
 	{
 		SoundManager::sharedManager()->play(BACKGROUND_SOUND);
 		SoundManager::sharedManager()->play(DRIVE_SOUND);
@@ -445,7 +441,7 @@ void BGM()
 
 void Reset()
 {
-	GameState = 0;
+	Scene = GAME_SCENE;
 	/*for (auto i = p.begin(); i != p.end(); ++i)
 	{
 		i->Reset();
@@ -468,7 +464,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	}
 	int len;
 	int retval;
-	if (GameState == 0) //게임 씬
+	if (Scene == GAME_SCENE) //게임 씬
 	{
 		switch (key)
 		{
@@ -480,7 +476,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		}
 	}
 
-	if (GameState == 1)
+	if (Scene == OVER_SCENE)
 	{
 		switch (key)
 		{
@@ -493,7 +489,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		}
 	}
 
-	if (GameState == 2) //타이틀
+	if (Scene == TITLE_SCENE) //타이틀
 	{
 		switch (key)
 		{
@@ -583,12 +579,12 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				//exit( 1 );
 			}
 			printf("전송완료");
-			GameState = 3;
+			Scene = LOBBY_SCENE;
 			break;
 		}
 	}
 
-	if (GameState == 3) //로비
+	if (Scene == LOBBY_SCENE) //로비
 	{
 		switch (key)
 		{
@@ -616,7 +612,6 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				err_display("send()");
 				//exit( 1 );
 			}
-
 
 			break;
 		}
@@ -675,27 +670,7 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(sKeyboardUp);
 	glutDisplayFunc(drawScene);
 
-	BGM();
+	//BGM();
 
 	glutMainLoop();
-}
-
-int get_ClientID(SOCKET sock) {
-	int retval;
-	int len;
-	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	else if (retval == 0) {
-	}
-
-	char* buf = new char[len]; // 전송된 길이를 알고 있으니 크기에 맞춰서 buf를 늘려주자!
-
-	retval = recvn(sock, buf, len, 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	return atoi(buf);
-
 }

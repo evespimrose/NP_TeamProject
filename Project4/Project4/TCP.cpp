@@ -65,6 +65,7 @@ void send_Player(SOCKET sock, Player_data player)
 		exit(1);
 	}
 }
+
 void Send_event(SOCKET sock, char buf)
 {
 	send(sock, &buf, sizeof(char), 0);
@@ -116,4 +117,23 @@ Player_data recv_Player(SOCKET sock) {
 	//printf( "%d\n", player[0]->camxrotate );
 
 	return *player;
+}
+
+int get_ClientID(SOCKET sock) {
+	int retval;
+	int len;
+	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	else if (retval == 0) {
+	}
+
+	char* buf = new char[len]; // 전송된 길이를 알고 있으니 크기에 맞춰서 buf를 늘려주자!
+
+	retval = recvn(sock, buf, len, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+	return atoi(buf);
 }
