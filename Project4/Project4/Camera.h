@@ -23,10 +23,11 @@ public:
 	void Render(GLuint ShaderProgram);
 	void setpSpeed(float s);
 	void setRotate(float r);
-	void setPosition(glm::vec3 p);
+	void setPosition(float p_z);
 	void setAT();
 	glm::vec3 getPosition();
 	void rotatecamera(float rad);
 	void init();
 	void Roll(float fRadian);
+	void setcamera_pos(float posx, float posy, float posz);
 };

@@ -30,14 +30,14 @@ private:
 
 	std::chrono::system_clock::time_point PrevFireTime;
 
-	LARGE_INTEGER tSecond;
-	LARGE_INTEGER tTime;
+	//LARGE_INTEGER tSecond;
+	//LARGE_INTEGER tTime;
 
 	float fDeltaTime;
 
 	float Speed;
 
-	float acc;
+	//float acc;
 
 	glm::vec3 PosVec;
 
@@ -130,7 +130,7 @@ public:
 	bool MinusLife();
 	int getLife();
 	void setRad(float radian);
-
+	void setSpeed(float speed);
 	glm::vec3 getPosition();
 	Camera getCamera();
 	bool* getKey() { return keyDownlist; }

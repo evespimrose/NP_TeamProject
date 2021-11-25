@@ -37,12 +37,13 @@
 // structs for send
 typedef struct Player_data
 {
-    float PosVec_z;
-    float rotate[2];
-    float speed;
-    int ID;
-    //vector<Bullet> BulletList;
-    bool KeyDownlist[3];//left right space
+    glm::vec3 Posvec;
+    glm::mat4 PosMat;
+    glm::mat4 SclMat;
+    glm::mat4 RotMat;
+    float camera_posx;
+    float camera_posy;
+    float camera_posz;
 }Player_data;
 
 typedef struct Cube_data
@@ -72,6 +73,7 @@ typedef struct all_ready_info
 {
     BOOL Pt_Players[3]{ false };
     BOOL is_ready[3]{ false };
+    int pt_clients_num;
     BOOL game_start{ false };
 }all_ready_info;
 

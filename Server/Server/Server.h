@@ -10,20 +10,57 @@ struct Message {
 };
 
 // structs for send
-typedef struct Player_data
+//typedef struct Data
+//{
+//    Player_data PlayerData;
+//}Data;
+
+typedef struct Col_Player_data //계산용 플레이어 데이터
 {
-    float PosVec_z = -1000.0f;
-    float rotate[2] = { 0.1 ,0.1};
-    float speed = 0.5f;
-    int ID = -1000;
+    glm::vec3 Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
+    glm::mat4 PosMat = glm::mat4(1.0f);
+    glm::mat4 SclMat = glm::mat4(1.0f);
+    glm::vec3 dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::mat4 RotMat = glm::mat4(1.0f);
+    float rad = 0.0f;
+  //  float posx;
+  //  float posy;
+  //  float posz;
+    float Speed = 0.0f;
+}Col_Player_data;
+
+typedef struct Col_Camera_data //계산용 플레이어 데이터
+{
+    float posx = 0.0f;
+    float posy = 0.0f;
+    float posz = 0.0f;
+    float pSpeed = 0.0f;
+    float rotate = 0.0f;
+    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 AT = glm::vec3(0, 0, 0.0f);
+   // glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, -10.0f);
+    glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+
+}Col_Camera_data;
+
+typedef struct Player_data//최종 보낼 플레이어 데이터
+{
+    glm::vec3 Posvec = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::mat4 PosMat= glm::mat4(1.0f);
+    glm::mat4 SclMat= glm::mat4(1.0f);
+    glm::mat4 RotMat= glm::mat4(1.0f);
+    float camera_posx = 0.0f;
+    float camera_posy = 0.0f;
+    float camera_posz = 0.0f;
     //vector<Bullet> BulletList;
-    bool KeyDownlist[3]{false}; //left right space
 }Player_data;
 
-typedef struct Data
-{
-    Player_data PlayerData;
-}Data;
+LARGE_INTEGER tSecond;
+LARGE_INTEGER tTime;
+float acc= 0.0005f;
+float fDeltaTime=0;
 
 typedef struct login_info
 {
@@ -45,6 +82,7 @@ typedef struct all_ready_info
 {
     BOOL Pt_Players[3]{ false };
     BOOL is_ready[3]{ false };
+    int pt_clients_num;
     BOOL game_start{ false };
 }all_ready_info;
 
@@ -54,7 +92,7 @@ typedef struct ConnectClient {
 ConnectClient connectedCls[3]{ false };
 std::map <char, SOCKET> clients;
 all_ready_info ari;
-ready_info* ri;
+ready_info* ri; //보냄
 SOCKET Client_sock[3];
 
 std::queue <Message> glo_MsgQueue;

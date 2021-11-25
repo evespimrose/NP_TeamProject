@@ -101,9 +101,9 @@ void Player::Init()
 	Life = 3;
 	PrevFireTime = std::chrono::system_clock::now();
 
-	QueryPerformanceFrequency(&tSecond);
-	QueryPerformanceCounter(&tTime);
-	fDeltaTime = 0;
+	//QueryPerformanceFrequency(&tSecond);
+	//QueryPerformanceCounter(&tTime);
+	//fDeltaTime = 0;
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -125,7 +125,7 @@ void Player::Init()
 
 	Speed = 0.0f;
 
-	acc = 0.0005f;
+	//acc = 0.0005f;
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
@@ -202,9 +202,9 @@ void Player::multi_Init(float multirad)
 	Life = 3;
 	PrevFireTime = std::chrono::system_clock::now();
 
-	QueryPerformanceFrequency(&tSecond);
-	QueryPerformanceCounter(&tTime);
-	fDeltaTime = 0;
+	//QueryPerformanceFrequency(&tSecond);
+	//QueryPerformanceCounter(&tTime);
+	//fDeltaTime = 0;
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -227,9 +227,9 @@ void Player::multi_Init(float multirad)
 	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 
 
-	Speed = 0.0f;
+	//Speed = 0.0f;
 
-	acc = 0.0005f;
+	//acc = 0.0005f;
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
@@ -300,24 +300,21 @@ void Player::multi_Init(float multirad)
 
 void Player::Move(Player_data pd)
 {
-	std::cout << "하이213" << std::endl;
-	    RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1]-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
-
+	  
 
 		/*RotMat = glm::rotate(RotMat, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));*/
+		PosVec = glm::rotate(PosVec, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		/*rad += 2.0f * Speed;
+		rad += 2.0f * Speed;
 		if (rad > 360)
 		{
 			rad -= 360;
-		}*/
+		}
 
-	/*	RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));
+		RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));
 		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));*/
 
-	if (keyDownlist[1])
+	/*if (keyDownlist[1])
 	{
 		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -330,34 +327,21 @@ void Player::Move(Player_data pd)
 
 		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-	}
+	}*/
 }
 
 void Player::Update(Player_data pd)
 {
-	setRad(pd.rotate[1]);
-	LARGE_INTEGER time;
-	QueryPerformanceCounter(&time);
-	fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
-	tTime = time;
-
-	fDeltaTime *= 100;
-
-	if (Speed < 1.5)
-	{
-		Speed += acc * fDeltaTime;
-	}
-
-	PosVec.z += Speed * fDeltaTime;
-
-	PosMat = glm::translate(PosMat, glm::vec3(0.0f, 0.0f, Speed * fDeltaTime));
-
-	Move(pd);
+	RotMat = pd.RotMat;
+	PosVec =pd.Posvec;
+	PosMat =pd.PosMat;
+	SclMat =pd.SclMat;
+	
 	ManageBullet();
-	camera.setPosition(PosVec);
-	camera.setRotate(rad);
-	camera.setpSpeed(Speed * fDeltaTime);
-	camera.setAT();
+	
+	camera.setPosition(PosVec.z);
+
+	
 
 }
 
@@ -380,10 +364,10 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 	if (key == GLUT_KEY_RIGHT)
 	{
 		if (state)
-			keyDownlist[1] = true;
+			Send_event(sock, CS_PLAYER_RIGHT_DOWN); //누름
 
 		else
-			keyDownlist[1] = false;
+			Send_event(sock, CS_PLAYER_RIGHT_UP);
 	}
 
 	if (key == GLUT_KEY_LEFT)
@@ -399,6 +383,7 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 
 void Player::Render(GLuint ShaderProgram)
 {
+
 	camera.Render(ShaderProgram);
 
 	unsigned int modelLocation = glGetUniformLocation(ShaderProgram, "modelTransform");
@@ -539,4 +524,8 @@ Camera Player::getCamera()
 void Player::setRad(float radian)
 {
 	rad = radian;
+}
+void Player::setSpeed(float speed) {
+	Speed = speed;
+
 }

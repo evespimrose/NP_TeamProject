@@ -67,8 +67,8 @@ Player_data PD_pack_data(Player p)
 {
 	Player_data* pd = new Player_data;
 	//pd->KeyDownlist[3] = p.getKey();
-	pd->PosVec_z = p.getPosition().z;
-	pd->speed = p.getSpeed();
+	/*pd->PosVec_z = p.getPosition().z;
+	pd->speed = p.getSpeed();*/
 	//pd->rotate = p.getRotate();
 	return *pd;
 }
@@ -115,7 +115,7 @@ DWORD WINAPI JoinThread(LPVOID arg)
 
 	while (1) {
 		//recv palyer data
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < ari->pt_clients_num; i++) {
 			player_data[i] = recv_Player(sock);
 			//cout << player_data[i].rotate << endl;
 		}
