@@ -32,7 +32,13 @@
 #define Proto_Port 9000
 #define BUFSIZE 1024
 
-
+enum
+{
+    TITLE_SCENE,
+    LOBBY_SCENE,
+    GAME_SCENE,
+    OVER_SCENE
+};
 
 // structs for send
 typedef struct Player_data
@@ -57,8 +63,6 @@ typedef struct Data
     Cube_data CubeData;
 
 }Data;
-
-
 
 typedef struct ready_info
 {

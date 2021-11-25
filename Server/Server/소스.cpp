@@ -67,8 +67,8 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	return (len - left);
 }
 
-
 int count_s = 0;
+
 int main()
 {
 	int retval;
