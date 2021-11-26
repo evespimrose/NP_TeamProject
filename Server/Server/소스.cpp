@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include <iostream>
 #include <thread>
+#include <algorithm>
 
 #include "Server.h"
 #include "protocol.h"
+#include "Cube.h"
 using namespace std;
 
 #define SERVERPORT 9000
@@ -16,6 +18,8 @@ using namespace std;
 
 int GetSize;
 char Buffer[BUFSIZE];
+
+
 
 
 DWORD WINAPI recv_thread(LPVOID arg);
@@ -357,6 +361,55 @@ void Calcutlaion_clients() {
 			}
 		}
 
+		// 최전방, 최후방 클라이언트 z값
+
+		float cmpZ[3];
+		for (int i = 0; i < count_s; ++i)
+			cmpZ[i] = player_data[i].PosVec_z;
+		if (count_s == 1)
+		{
+			LastPosZ = cmpZ[0];
+			FirstPosZ = cmpZ[0];
+
+			printf("%f\n", LastPosZ);
+		}
+
+		if (count_s == 2)
+		{
+			LastPosZ = min(cmpZ[0], cmpZ[1]);
+			FirstPosZ = max(cmpZ[0], cmpZ[1]);
+		}
+		if (count_s == 3)
+		{
+			LastPosZ = min(cmpZ[0], cmpZ[1], cmpZ[2]);
+			FirstPosZ = max(cmpZ[0], cmpZ[1], cmp[2]);
+		}
+		ZeroMemory(&CubeList, sizeof(Cube_data) * 10);
+
+		//조건 검사해서 큐브 생성하고 CubeList에 Cube 삽입
+		if ((int)FirstPosZ % 100 == 0 && FirstPosZ > 100.0f)
+		{
+			Cube_data c;
+			c.Life = rand() % 3;
+			c.zOffset = FirstPosZ + 300.0f + rand() % 100;
+			c.rotate = rand() % 360;
+			CubeList[CubeCounter] = c;
+			//printf("%f\n", c.zOffset);
+			if (CubeCounter < 10-1)
+				CubeCounter += 1;
+		}
+
+		len = sizeof(CubeList);
+
+		for (int i = 0; i < count_s; ++i)
+		{
+			retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
+			retval = send(Client_sock[i], (char*)CubeList, len, 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+
+		}
 	}
 }
 

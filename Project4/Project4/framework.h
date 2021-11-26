@@ -46,8 +46,9 @@ extern Player_data player_data;
 
 typedef struct Cube_data
 {
-    glm::vec3 PosVec;
-    int life;
+    float zOffset;
+    float rotate;
+    int Life;
 }Cube_data;
 
 typedef struct Data

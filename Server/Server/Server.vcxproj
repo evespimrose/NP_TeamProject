@@ -142,6 +142,7 @@
     <ClCompile Include="소스.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="Server.h" />
   </ItemGroup>

@@ -1,6 +1,9 @@
 #pragma once
 #include <map>
 #include <queue>
+#include <vector>
+#include "Cube.h"
+#include <chrono>
 
 struct Message {
     char id;
@@ -56,5 +59,11 @@ std::map <char, SOCKET> clients;
 all_ready_info ari;
 ready_info* ri;
 SOCKET Client_sock[3];
+float LastPosZ = -1000.0f;
+float FirstPosZ = -1000.0f;
+
 
 std::queue <Message> glo_MsgQueue;
+Cube_data CubeList[10];
+int CubeCounter = 0;
+

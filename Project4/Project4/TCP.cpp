@@ -1,5 +1,4 @@
 #include "framework.h"
-
 //소켓함수 오류 출력 후 종료
 void err_quit(const char* msg)
 {
@@ -91,6 +90,8 @@ int recvn(SOCKET s, char* buf, int len, int flags) {
 Player_data recv_Player(SOCKET sock) {
 	int retval;
 	int len;
+	std::vector<Cube_data> CubeVec;
+
 	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
 	if (retval == SOCKET_ERROR) {
 		err_display("recv()");
@@ -115,5 +116,28 @@ Player_data recv_Player(SOCKET sock) {
 
 	//printf( "%d\n", player[0]->camxrotate );
 
+	///////////////////////////////////////////////////
+
+
+	Cube_data* Cube_data_Array;
+
+	retval = recvn(sock, (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+
+	
+	retval = recvn(sock, (char*)&suBuffer, len, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+	}
+
+	Cube_data_Array = (Cube_data*)suBuffer;
+
+	//for (int i = 0; i < len; ++i)
+	//	printf("%f\n", Cube_data_Array[i].zOffset);
+
+
 	return *player;
 }
+

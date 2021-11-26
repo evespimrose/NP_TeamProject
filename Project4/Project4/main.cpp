@@ -11,6 +11,7 @@
 //#define Multi
 
 
+
 using namespace std;
 
 const float length = 0.5;
@@ -94,8 +95,8 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 DWORD WINAPI JoinThread(LPVOID arg)
 {
 
-	sock = init_sock();
-	user_id = get_ClientID(sock); //id 얻기
+	sock = init_sock();				//접속한 소켓
+	user_id = get_ClientID(sock);	//id 얻기
 	int retval;
 	//BOOL Is_Ready[3]{false};
 	//all_ready_info* ari;
@@ -478,6 +479,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			cout << "하이" << endl;
 			Send_event(sock, SC_PLAYER_LEFT);
 			break;
+
 
 		}
 	}
