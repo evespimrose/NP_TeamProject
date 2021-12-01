@@ -393,47 +393,34 @@ GLvoid Timer(int Value)
 		m.Fastest_Update(pz);
 		m.Slowest_Update(pz);
 
-		//m.Fastest_Update(fpz);
-		//m.Slowest_Update(spz);
-
-		//player1.Update();
-		//player2.Update();
-
-		//player1.Update(player_data[0]);
-		player1.Update(game_data.player_data[0]);
+	
 #ifdef MULTI
 		mplayer2.Update(player_data[1]);
 		mplayer3.Update(player_data[2]);
 #endif
 
-		/*if (m.PlayerCollisionCheck(pz, player1.getRotate()))
-=======
-
-		for (int i = 0; i < ari->pt_clients_num ; i++) {
-			if(i!=user_id) //내 아이디가 아니면
-			mplayer[i].Update(game_data.player_data[i]);
-			else {
-				player1.Update(game_data.player_data[i]);
-		player1.Update(game_data.player_data[user_id]);
 	
-		if (ari->pt_clients_num == 2) {
-			
-			mplayer[0].Update(game_data.player_data[user_id ==1 ? 0 : 1 ]);
-		}
-		if (ari->pt_clients_num == 3) {
-			for (int i = 0; i < 3; i++) {
-				if (i != user_id && cnt==0) {
-					mplayer[0].Update(game_data.player_data[i]);
-					cnt++;
-				}
-				else {
-					mplayer[1].Update(game_data.player_data[i]);
+			player1.Update(game_data.player_data[user_id]);
+
+			if (ari->pt_clients_num == 2) {
+
+				mplayer[0].Update(game_data.player_data[user_id == 1 ? 0 : 1]);
+			}
+
+			if (ari->pt_clients_num == 3) {
+				for (int i = 0; i < 3; i++) {
+					if (i != user_id && cnt == 0) {
+						mplayer[0].Update(game_data.player_data[i]);
+						cnt++;
+					}
+					else {
+						mplayer[1].Update(game_data.player_data[i]);
+					}
 				}
 			}
-		}
 
-		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
->>>>>>> a6475dac6b96ffbaccc2e32c1d2d643e53117cd7
+	/*	if (m.PlayerCollisionCheck(pz, player1.getRotate()))
+
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
 

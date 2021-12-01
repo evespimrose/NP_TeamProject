@@ -539,19 +539,12 @@ void Calcutlaion_clients() {
 		//데이터 바꿔치기
 
 		for (int i = 0; i < count_s; i++) {
-			/*player_data[i].PosMat = col_player_data[i].PosMat;
-			player_data[i].Posvec = col_player_data[i].Posvec;
-			player_data[i].SclMat = col_player_data[i].SclMat;
-			player_data[i].RotMat = col_player_data[i].RotMat;
-			player_data[i].rad = col_player_data[i].rad;
-			player_data[i].camera_posx = col_camera_data[i].posx;
-			player_data[i].camera_posy = col_camera_data[i].posy;
-			player_data[i].camera_posz = col_camera_data[i].posz;*/
-			//cout << col_player_data[i].Speed << endl;
+		
 			game_data.player_data[i].PosMat = col_player_data[i].PosMat;
 			game_data.player_data[i].Posvec = col_player_data[i].Posvec;
 			game_data.player_data[i].SclMat = col_player_data[i].SclMat;
 			game_data.player_data[i].RotMat = col_player_data[i].RotMat;
+			game_data.player_data[i].rad = col_player_data[i].rad;
 			game_data.player_data[i].camera_posx = col_camera_data[i].posx;
 			game_data.player_data[i].camera_posy = col_camera_data[i].posy;
 			game_data.player_data[i].camera_posz = col_camera_data[i].posz;
