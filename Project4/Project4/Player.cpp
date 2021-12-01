@@ -101,10 +101,6 @@ void Player::Init()
 	Life = 3;
 	PrevFireTime = std::chrono::system_clock::now();
 
-	//QueryPerformanceFrequency(&tSecond);
-	//QueryPerformanceCounter(&tTime);
-	//fDeltaTime = 0;
-
 	for (int i = 0; i < 3; ++i)
 	{
 		keyDownlist[i] = false;
@@ -363,21 +359,23 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 {
 	if (key == GLUT_KEY_RIGHT)
 	{
-		if (state)
+		if (state) {
 			Send_event(sock, CS_PLAYER_RIGHT_DOWN); //누름
-
-		else
+		}
+		else {
 			Send_event(sock, CS_PLAYER_RIGHT_UP);
+		}
 	}
 
 	if (key == GLUT_KEY_LEFT)
 	{
-		if (state)
-			Send_event(sock, CS_PLAYER_LEFT_DOWN); //누름
-
+		if (state) {
+		Send_event(sock, CS_PLAYER_LEFT_DOWN); //누름
+	}
 		else
+		{
 			Send_event(sock, CS_PLAYER_LEFT_UP);
-		//keyDownlist[0] = false;  //뗌
+		}
 	}
 }
 

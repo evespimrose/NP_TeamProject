@@ -21,7 +21,7 @@ const float length = 0.5;
 
 char* arr;
 
-int user_id = -1;
+int user_id = -1; //0~2
 #ifdef Multi
 GameState = 0;
 #endif // Multi
@@ -107,7 +107,6 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		Buffer[GetSize] = '\0';
 		ari = (all_ready_info*)Buffer;
 		if (ari->game_start) {
-		
 			Scene = GAME_SCENE;
 			break;
 		}
@@ -116,8 +115,7 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	while (1) {
 		//recv palyer data
 			game_data = recv_Player(sock);
-		
-			
+
 	}
 	return 0;
 
@@ -258,8 +256,14 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
-		for (int i = 0; i < ari->pt_clients_num ; i++) {
-			mplayer[i].Render(ShaderProgram);
+		//2명일때
+		if (ari->pt_clients_num == 2) {
+			mplayer[0].Render(ShaderProgram);
+		}
+		//3명일때 
+		else if(ari->pt_clients_num == 3){
+			mplayer[0].Render(ShaderProgram);
+			mplayer[1].Render(ShaderProgram);
 		}
 
 		
@@ -400,15 +404,24 @@ GLvoid Timer(int Value)
 		//m.Fastest_Update(fpz);
 		//m.Slowest_Update(spz);
 
-
-		for (int i = 0; i < ari->pt_clients_num ; i++) {
-			if(i!=user_id) //내 아이디가 아니면
-			mplayer[i].Update(game_data.player_data[i]);
-			else {
-				player1.Update(game_data.player_data[i]);
+		player1.Update(game_data.player_data[user_id]);
+	
+		if (ari->pt_clients_num == 2) {
+			
+			mplayer[0].Update(game_data.player_data[user_id ==1 ? 0 : 1 ]);
+		}
+		if (ari->pt_clients_num == 3) {
+			for (int i = 0; i < 3; i++) {
+				if (i != user_id && cnt==0) {
+					mplayer[0].Update(game_data.player_data[i]);
+					cnt++;
+				}
+				else {
+					mplayer[1].Update(game_data.player_data[i]);
+				}
 			}
 		}
-	
+
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
