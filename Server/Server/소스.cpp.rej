@@ -1,9 +1,9 @@
 diff a/Server/Server/소스.cpp b/Server/Server/소스.cpp	(rejected hunks)
-@@ -319,6 +319,7 @@
- 		}
+@@ -508,6 +508,7 @@
+ 		//������ �ٲ�ġ��
  
- 		int len = sizeof(player_data);
-+>>>>>>> main
- 
- 	while (1) { //�ϴ� ���ѹݺ�
- 		//�������� ��� Ŭ�� ready ���� ����
+ 		for (int i = 0; i < count_s; i++) {
++<<<<<<< HEAD
+ 			player_data[i].PosMat = col_player_data[i].PosMat;
+ 			player_data[i].Posvec = col_player_data[i].Posvec;
+ 			player_data[i].SclMat = col_player_data[i].SclMat;

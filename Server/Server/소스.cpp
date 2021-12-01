@@ -34,6 +34,7 @@ void init_player(Col_Player_data cpd);
 //void update_camera(Col_Player_data cpd, Col_Camera_data ccd);
 //void init_camera(Col_Camera_data ccd);
 //소켓함수 오류 출력 후 종료
+Game_data game_data;
 void err_quit(const char* msg)
 {
 
@@ -395,7 +396,6 @@ void Calcutlaion_clients() {
 
 	std::queue <Message> MsgQueue;
 	Message Msg;
-	Player_data player_data[3];
 	Col_Player_data col_player_data[3];
 	Col_Camera_data col_camera_data[3];
 	int retval;
@@ -508,6 +508,7 @@ void Calcutlaion_clients() {
 		//데이터 바꿔치기
 
 		for (int i = 0; i < count_s; i++) {
+<<<<<<< HEAD
 			player_data[i].PosMat = col_player_data[i].PosMat;
 			player_data[i].Posvec = col_player_data[i].Posvec;
 			player_data[i].SclMat = col_player_data[i].SclMat;
@@ -517,9 +518,17 @@ void Calcutlaion_clients() {
 			player_data[i].camera_posy = col_camera_data[i].posy;
 			player_data[i].camera_posz = col_camera_data[i].posz;
 			//cout << col_player_data[i].Speed << endl;
+			game_data.player_data[i].PosMat = col_player_data[i].PosMat;
+			game_data.player_data[i].Posvec = col_player_data[i].Posvec;
+			game_data.player_data[i].SclMat = col_player_data[i].SclMat;
+			game_data.player_data[i].RotMat = col_player_data[i].RotMat;
+			game_data.player_data[i].camera_posx = col_camera_data[i].posx;
+			game_data.player_data[i].camera_posy = col_camera_data[i].posy;
+			game_data.player_data[i].camera_posz = col_camera_data[i].posz;
+		
 
 		}
-		int len = sizeof(player_data);
+		int len = sizeof(game_data);
 
 		for (int i = 0; i < count_s; i++) { //플레이어 수만큼
 			retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
@@ -527,7 +536,7 @@ void Calcutlaion_clients() {
 				err_display("send()");
 
 			}
-			retval = send(Client_sock[i], (char*)&player_data, sizeof(player_data), 0);
+			retval = send(Client_sock[i], (char*)&game_data, sizeof(game_data), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 

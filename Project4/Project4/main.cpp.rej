@@ -1,9 +1,9 @@
 diff a/Project4/Project4/main.cpp b/Project4/Project4/main.cpp	(rejected hunks)
-@@ -482,6 +482,7 @@
- 	int len;
- 	int retval;
- <<<<<<< HEAD
+@@ -402,6 +402,7 @@
+ #endif
+ 
+ 		/*if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 +=======
- 	if (GameState == 0) //���� ��
- 	{
- 		switch (key)
+ 
+ 		for (int i = 0; i < ari->pt_clients_num ; i++) {
+ 			if(i!=user_id) //�� ���̵� �ƴϸ�
