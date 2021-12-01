@@ -33,6 +33,9 @@ void init_player(Col_Player_data cpd);
 //void update_time();
 //void update_camera(Col_Player_data cpd, Col_Camera_data ccd);
 //void init_camera(Col_Camera_data ccd);
+
+ //CRITICAL_SECTION cs;
+ CRITICAL_SECTION Msg_cs;
 //소켓함수 오류 출력 후 종료
 Game_data game_data;
 void err_quit(const char* msg)
@@ -84,6 +87,9 @@ int count_s = 0;
 
 int main()
 {
+	//임계 영역 생성
+	//InitializeCriticalSection(&cs);
+	InitializeCriticalSection(&Msg_cs);
 	int retval;
 
 	WSADATA wsa;
@@ -149,7 +155,12 @@ int main()
 		else {
 			CloseHandle(hThread);
 		}
+
+
 	}
+
+	//DeleteCriticalSection(&cs);
+	DeleteCriticalSection(&Msg_cs);
 	// closesocket()
 	closesocket(listen_sock);
 
@@ -160,7 +171,9 @@ int main()
 }
 
 DWORD WINAPI recv_thread(LPVOID arg) {
+	//EnterCriticalSection(&cs);
 	SOCKET client_sock = (SOCKET)arg;
+	//LeaveCriticalSection(&cs);
 	SOCKADDR_IN clientaddr;
 	int addrlen;
 	int retval;
@@ -172,6 +185,7 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 	for (int i = 0; i < MAXPLAYER; ++i) {
+		//EnterCriticalSection(&cs);
 		if (false == connectedCls[i].is_connected) {
 			connectedCls[i].is_connected = true;
 			user_index = i;
@@ -181,28 +195,31 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 			break;
 		}
+		//LeaveCriticalSection(&cs);
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//클라에게 유저 id 전송
 	char user_index_c[10];
+	//EnterCriticalSection(&cs);
 	itoa(user_index, user_index_c, 10);
 	len = sizeof(user_index_c);
 	retval = send(client_sock, (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 	}
-
+	//LeaveCriticalSection(&cs);
 	// 데이터 보내기
+	//EnterCriticalSection(&cs);
 	retval = send(client_sock, (char*)&user_index_c, sizeof(user_index_c), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 		//exit( 1 );
 	}
 	printf("데이터 전송");
-
+	//LeaveCriticalSection(&cs);
 	//--------------------------------------------------------------------------------
 	//참가 유저 정보 받기
-
+	//EnterCriticalSection(&cs);
 	cout << "여기1" << endl;
 	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
@@ -215,16 +232,16 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 	ri = (ready_info*)Buffer;
 	ari.is_ready[ri->id] = ri->is_ready;
 	ari.Pt_Players[ri->id] = ri->pt_player;
+	//LeaveCriticalSection(&cs);
 	//---------------------------------------------------------------------------------
-	cout << "여기2" << endl;
+
 
 	Message msg{};
-	cout << "여기3" << endl;
+
 	while (true) {
 
 		if (!ari.game_start) { //게임 시작할때까지
 			while (1) {
-				cout << "여기4" << endl;
 				//유저에게 모든 클라 ready 상태 전송
 				len = sizeof(ari);
 				for (int i = 0; i < count_s; i++) {
@@ -242,7 +259,6 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 					}
 				}
 				cout << "여기5" << endl;
-				//유저에게 ready 상태 받음 
 				retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 				if (retval == SOCKET_ERROR) {
 					err_display("recv()");
@@ -333,21 +349,28 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 		if (ari.game_start) { //게임 시작 
 			std::cout << "physics thread 생성!" << std::endl;
-			QueryPerformanceFrequency(&tSecond);
-			QueryPerformanceCounter(&tTime);
+			
 
-			//CreateThread(NULL, 0, Calcutlaion_Thread, NULL, 0, NULL); //인자로 뭘 넘길까?
+			
 			while (ari.game_start) {
 				char retval = recv(client_sock, buf, 1, 0);
 
 				// 클라이언트 접속 종료, recv 에러 처리
 				if (retval == 0 || retval == SOCKET_ERROR) {
 					closesocket(client_sock);
+
+					//에러처리 코드
 				}
+
+				//메세지 초기화
+				ZeroMemory(&msg, sizeof(Message));
+				msg.id = -1;
+
 				switch ((int)buf[0])
 				{
 				case SC_PLAYER_LEFT_DOWN:
 				{
+					cout << user_index << endl;
 					msg.id = user_index;
 					msg.type = TYPE_PLAYER;
 					msg.dir = DIR_LEFT_GO;
@@ -382,7 +405,9 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 				if (msg.id != -1)
 				{
+					//EnterCriticalSection(&cs);
 					glo_MsgQueue.emplace(msg);
+					//LeaveCriticalSection(&cs);
 				}
 			}
 		}
@@ -393,6 +418,8 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 }
 
 void Calcutlaion_clients() {
+	QueryPerformanceFrequency(&tSecond);
+	QueryPerformanceCounter(&tTime);
 
 	std::queue <Message> MsgQueue;
 	Message Msg;
@@ -420,7 +447,9 @@ void Calcutlaion_clients() {
 	}
 
 	while (true) {
+		EnterCriticalSection(&Msg_cs);
 		MsgQueue = glo_MsgQueue;
+		LeaveCriticalSection(&Msg_cs);
 
 		//cout << "하이4" << endl;
 		LARGE_INTEGER time;
@@ -439,10 +468,10 @@ void Calcutlaion_clients() {
 
 			col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, glm::vec3(0.0f, 0.0f, col_player_data[i].Speed * fDeltaTime));
 		}
-
+		EnterCriticalSection(&Msg_cs);
 		while (!glo_MsgQueue.empty()) {
-
 			glo_MsgQueue.pop();
+		LeaveCriticalSection(&Msg_cs);
 		}
 
 		while (!MsgQueue.empty()) {
