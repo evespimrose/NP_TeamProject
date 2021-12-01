@@ -9,7 +9,7 @@
 #define TEXT_GAP 200
 #define BUFSIZE 1024
 // for TCP
-//#define Multi
+#define MULTI
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
@@ -34,10 +34,8 @@ GLuint ShaderProgram;
 float ambient = 0.6f;
 
 Player player1;
-MPlayer mplayer;
-#ifdef Multi
-vector<Player> p;
-#endif
+MPlayer mplayer2;
+MPlayer mplayer3;
 
 Map m;
 
@@ -86,7 +84,6 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 
 DWORD WINAPI JoinThread(LPVOID arg)
 {
-
 	sock = init_sock();
 	user_id = get_ClientID(sock); //id ¾ò±â
 	int retval;
@@ -258,12 +255,9 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
-		mplayer.Render(ShaderProgram);
-#ifdef Multi
-		for (auto i = p.begin(); i != p.end(); ++i)
-		{
-			i->Render(ShaderProgram);
-		}
+#ifdef MULTI
+		mplayer2.Render(ShaderProgram);
+		mplayer3.Render(ShaderProgram);
 #endif
 		string score = "Score : ";
 		score += std::to_string((int)player1.getPosition().z);
@@ -273,9 +267,9 @@ GLvoid drawScene()
 		speed += std::to_string((int)(player1.getSpeed() * 500)) + "km/h";
 		glutPrint(0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18, speed);
 
-		string life = "Life : ";
-		life += std::to_string(player1.getLife());
-		glutPrint(0.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, life);
+		//string life = "Life : ";
+		//life += std::to_string(player1.getLife());
+		//glutPrint(0.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, life);
 
 		glutSwapBuffers();
 	}
@@ -397,13 +391,16 @@ GLvoid Timer(int Value)
 		//m.Slowest_Update(spz);
 
 		//player1.Update();
-		mplayer.Update();
 		//player2.Update();
-
 
 		//player1.Update(player_data[0]);
 		player1.Update(player_data[0]);
-		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
+#ifdef MULTI
+		mplayer2.Update(player_data[1]);
+		mplayer3.Update(player_data[2]);
+#endif
+
+		/*if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
 
@@ -412,7 +409,7 @@ GLvoid Timer(int Value)
 				Scene = OVER_SCENE;
 				glutPostRedisplay();
 			}
-		}
+		}*/
 
 		std::vector<Bullet> tmpList = player1.getBulletList();
 		m.BulletCollisionCheck(tmpList);
@@ -658,8 +655,11 @@ int main(int argc, char** argv)
 	glewInit();
 
 	InitShader();
-	mplayer.Init();
-	player1.Init();
+	player1.Init(player_data[0]);
+#ifdef MULTI
+	mplayer2.Init();
+	mplayer3.Init();
+#endif
 
 	m.Init();
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Camera.h"
 #include "Bullet.h"
+#include "framework.h"
 
 
 class Player
@@ -57,7 +58,7 @@ private:
 	GLuint BulletVBO[3];
 	GLuint BulletEBO;
 
-	int Life;
+	//int Life;
 
 	int p_user_id;
 
@@ -114,7 +115,7 @@ private:
 
 public:
 	void Init();
-	void multi_Init(float multirad);
+	void Init(Player_data pd);
 	void Move(Player_data pd);
 	void Update(Player_data pd);
 	void Key_Input(unsigned char key, bool state);
@@ -122,15 +123,15 @@ public:
 	void Render(GLuint ShaderProgram);
 	float getSpeed();
 	float getRotate();
-	bool collision();
+	//bool collision();
+	//bool MinusLife();
+	//int getLife();
+	//void setSpeed(float speed);
 	void Fire();
 	std::vector<Bullet> getBulletList();
 	void setBulletList(std::vector<Bullet> tmpList);
 	void ManageBullet();
-	bool MinusLife();
-	int getLife();
 	void setRad(float radian);
-	void setSpeed(float speed);
 	glm::vec3 getPosition();
 	Camera getCamera();
 	bool* getKey() { return keyDownlist; }

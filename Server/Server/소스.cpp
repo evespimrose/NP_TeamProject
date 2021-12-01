@@ -402,11 +402,9 @@ void Calcutlaion_clients() {
 
 	for (int i = 0; i < count_s; i++) {
 		col_player_data[i].Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
-		col_player_data[i].PosMat = glm::mat4(1.0f);
 		col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
-		col_player_data[i].rad = 0.0f;
-		col_player_data[i].RotMat = glm::mat4(1.0f);
-		col_player_data[i].SclMat = glm::mat4(1.0f);
+		col_player_data[i].rad = (-120.0f * (1+i));
+		col_player_data[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 		col_player_data[i].dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
 		col_player_data[i].Speed = 0.0f;
@@ -416,7 +414,6 @@ void Calcutlaion_clients() {
 		col_camera_data[i].cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		col_camera_data[i].AT = glm::vec3(0, 0, 0.0f);
 		col_camera_data[i].view = glm::lookAt(col_camera_data[i].cameraPos, col_camera_data[i].cameraDirection, col_camera_data[i].cameraUp);
-
 	}
 
 	while (true) {
@@ -515,10 +512,11 @@ void Calcutlaion_clients() {
 			player_data[i].Posvec = col_player_data[i].Posvec;
 			player_data[i].SclMat = col_player_data[i].SclMat;
 			player_data[i].RotMat = col_player_data[i].RotMat;
+			player_data[i].rad = col_player_data[i].rad;
 			player_data[i].camera_posx = col_camera_data[i].posx;
 			player_data[i].camera_posy = col_camera_data[i].posy;
 			player_data[i].camera_posz = col_camera_data[i].posz;
-			cout << col_player_data[i].Speed << endl;
+			//cout << col_player_data[i].Speed << endl;
 
 		}
 		int len = sizeof(player_data);

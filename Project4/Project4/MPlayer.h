@@ -114,9 +114,8 @@ private:
 
 public:
 	void Init();
-	void multi_Init(float multirad);
 	void Move();
-	void Update();
+	void Update(Player_data pd);
 	void Key_Input(unsigned char key, bool state);
 	void sKey_Input(int key, bool state);
 	void Render(GLuint ShaderProgram);
