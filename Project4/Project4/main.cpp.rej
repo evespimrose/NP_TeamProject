@@ -1,9 +1,9 @@
 diff a/Project4/Project4/main.cpp b/Project4/Project4/main.cpp	(rejected hunks)
-@@ -482,6 +482,7 @@
- 	int len;
- 	int retval;
- <<<<<<< HEAD
+@@ -257,6 +257,7 @@
+ #ifdef MULTI
+ 		mplayer2.Render(ShaderProgram);
+ 		mplayer3.Render(ShaderProgram);
 +=======
- 	if (GameState == 0) //���� ��
- 	{
- 		switch (key)
+ 		//2���϶�
+ 		if (ari->pt_clients_num == 2) {
+ 			mplayer[0].Render(ShaderProgram);

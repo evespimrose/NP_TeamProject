@@ -98,8 +98,8 @@ bool Player::loadOBJ(
 
 void Player::Init()
 {
-	Life = 3;
 	PrevFireTime = std::chrono::system_clock::now();
+	fDeltaTime = 0.0f;
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -113,6 +113,7 @@ void Player::Init()
 
 	rad = 0.0f;
 	RotMat = glm::mat4(1.0f);
+	RotMat = glm::rotate(RotMat, glm::radians(-120.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	SclMat = glm::mat4(1.0f);
 	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
@@ -190,40 +191,27 @@ void Player::Init()
 	glEnableVertexAttribArray(2);
 }
 
-void Player::multi_Init(float multirad)
+void Player::Init(Player_data pd)
 {
-	//camera.Render(Shaderprogram);
-	p_user_id = multirad;
-	printf("multirad : %.1f\n", multirad);
-	Life = 3;
 	PrevFireTime = std::chrono::system_clock::now();
-
-	//QueryPerformanceFrequency(&tSecond);
-	//QueryPerformanceCounter(&tTime);
-	//fDeltaTime = 0;
 
 	for (int i = 0; i < 3; ++i)
 	{
 		keyDownlist[i] = false;
 	}
-	//PosVec = glm::rotate(PosVec, glm::radians(-multirad), glm::vec3(0.0f, 0.0f, 1.0f));
-	
-	rad = 0.0f;
-	//rad = 120.0f * multirad;
-	dirVec = glm::rotate(PosVec, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-	PosMat = glm::mat4(1.0f);
-	PosMat = glm::translate(PosMat, PosVec);
-	//printf("%f", PosMat[0][1]);
+	PosVec = pd.Posvec;
 
-	RotMat = glm::mat4(1.0f);
-	//RotMat = glm::rotate(RotMat, glm::radians(120.0f) * multirad, glm::vec3(0.0f, 0.0f, 1.0f));
+	PosMat = pd.PosMat;
 
-	SclMat = glm::mat4(1.0f);
-	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
+	rad = pd.rad;
+	RotMat = pd.RotMat;
 
+	SclMat = pd.SclMat;
 
-	//Speed = 0.0f;
+	//dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
+
+	Speed = 0.0f;
 
 	//acc = 0.0005f;
 
@@ -329,16 +317,14 @@ void Player::Move(Player_data pd)
 void Player::Update(Player_data pd)
 {
 	RotMat = pd.RotMat;
-	PosVec =pd.Posvec;
-	PosMat =pd.PosMat;
-	SclMat =pd.SclMat;
+	PosVec = pd.Posvec;
+	PosMat = pd.PosMat;
+	SclMat = pd.SclMat;
+	
 	
 	ManageBullet();
 	
 	camera.setPosition(PosVec.z);
-
-	
-
 }
 
 void Player::Key_Input(unsigned char key, bool state)
@@ -461,6 +447,14 @@ float Player::getRotate()
 	return rad;
 }
 
+
+
+std::vector<Bullet> Player::getBulletList()
+{
+	return BulletList;
+}
+
+/*
 bool Player::collision()
 {
 	Speed /= 2;
@@ -473,12 +467,6 @@ bool Player::collision()
 		return false;
 	}
 }
-
-std::vector<Bullet> Player::getBulletList()
-{
-	return BulletList;
-}
-
 bool Player::MinusLife()
 {
 	if (Life > 1)
@@ -490,17 +478,16 @@ bool Player::MinusLife()
 	{
 		return 1;
 	}
-}
-
-int Player::getLife()
+	int Player::getLife()
 {
 	return Life;
 }
+}*/
 
 void Player::Reset()
 {
 	BulletList.clear();
-	multi_Init(p_user_id);
+	Init();
 }
 
 void Player::setBulletList(std::vector<Bullet> tmpList)
@@ -522,8 +509,4 @@ Camera Player::getCamera()
 void Player::setRad(float radian)
 {
 	rad = radian;
-}
-void Player::setSpeed(float speed) {
-	Speed = speed;
-
 }

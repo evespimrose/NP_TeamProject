@@ -114,7 +114,6 @@ private:
 
 public:
 	void Init();
-	void multi_Init(float multirad);
 	void Move();
 	void Update(Player_data pd);
 	void Key_Input(unsigned char key, bool state);

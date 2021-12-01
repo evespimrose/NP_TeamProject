@@ -9,7 +9,7 @@
 #define TEXT_GAP 200
 #define BUFSIZE 1024
 // for TCP
-//#define Multi
+#define MULTI
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
@@ -34,10 +34,9 @@ GLuint ShaderProgram;
 float ambient = 0.6f;
 
 Player player1;
+MPlayer mplayer2;
+MPlayer mplayer3;
 MPlayer mplayer[2];
-#ifdef Multi
-vector<Player> p;
-#endif
 
 Map m;
 
@@ -86,7 +85,6 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 
 DWORD WINAPI JoinThread(LPVOID arg)
 {
-
 	sock = init_sock();
 	user_id = get_ClientID(sock); //id 얻기
 	int retval;
@@ -256,6 +254,10 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
+#ifdef MULTI
+		mplayer2.Render(ShaderProgram);
+		mplayer3.Render(ShaderProgram);
+=======
 		//2명일때
 		if (ari->pt_clients_num == 2) {
 			mplayer[0].Render(ShaderProgram);
@@ -281,9 +283,9 @@ GLvoid drawScene()
 		speed += std::to_string((int)(player1.getSpeed() * 500)) + "km/h";
 		glutPrint(0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18, speed);
 
-		string life = "Life : ";
-		life += std::to_string(player1.getLife());
-		glutPrint(0.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, life);
+		//string life = "Life : ";
+		//life += std::to_string(player1.getLife());
+		//glutPrint(0.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, life);
 
 		glutSwapBuffers();
 	}
@@ -404,6 +406,24 @@ GLvoid Timer(int Value)
 		//m.Fastest_Update(fpz);
 		//m.Slowest_Update(spz);
 
+		//player1.Update();
+		//player2.Update();
+
+		//player1.Update(player_data[0]);
+		player1.Update(player_data[0]);
+#ifdef MULTI
+		mplayer2.Update(player_data[1]);
+		mplayer3.Update(player_data[2]);
+#endif
+
+		/*if (m.PlayerCollisionCheck(pz, player1.getRotate()))
+=======
+
+		for (int i = 0; i < ari->pt_clients_num ; i++) {
+			if(i!=user_id) //내 아이디가 아니면
+			mplayer[i].Update(game_data.player_data[i]);
+			else {
+				player1.Update(game_data.player_data[i]);
 		player1.Update(game_data.player_data[user_id]);
 	
 		if (ari->pt_clients_num == 2) {
@@ -423,6 +443,7 @@ GLvoid Timer(int Value)
 		}
 
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
+>>>>>>> a6475dac6b96ffbaccc2e32c1d2d643e53117cd7
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
 
@@ -431,7 +452,7 @@ GLvoid Timer(int Value)
 				Scene = OVER_SCENE;
 				glutPostRedisplay();
 			}
-		}
+		}*/
 
 		std::vector<Bullet> tmpList = player1.getBulletList();
 		m.BulletCollisionCheck(tmpList);
@@ -677,6 +698,11 @@ int main(int argc, char** argv)
 	glewInit();
 
 	InitShader();
+	player1.Init(player_data[0]);
+#ifdef MULTI
+	mplayer2.Init();
+	mplayer3.Init();
+#endif
 	
 		mplayer[0].Init();
 		mplayer[1].Init();

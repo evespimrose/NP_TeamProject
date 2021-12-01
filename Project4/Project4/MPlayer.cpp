@@ -98,9 +98,9 @@ bool MPlayer::loadOBJ(
 
 void MPlayer::Init()
 {
-	Life = 3;
 	PrevFireTime = std::chrono::system_clock::now();
 
+	fDeltaTime = 0;
 
 
 
@@ -188,6 +188,45 @@ void MPlayer::Init()
 	glEnableVertexAttribArray(2);
 }
 
+void MPlayer::Move()
+{
+	if (keyDownlist[0])
+	{
+		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		rad += 2.0f * Speed;
+		if (rad > 360)
+		{
+			rad -= 360;
+		}
+
+		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+
+	if (keyDownlist[1])
+	{
+		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		rad -= 2.0f * Speed;
+		if (rad < 0)
+		{
+			rad += 360;
+		}
+
+		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+}
+
+void MPlayer::Update(Player_data pd)
+{
+	PosVec = pd.Posvec;
+	PosMat = pd.PosMat;
+	RotMat = pd.RotMat;
+	SclMat = pd.SclMat;
 void MPlayer::multi_Init(float multirad)
 {
 	p_user_id = multirad;
@@ -438,7 +477,7 @@ int MPlayer::getLife()
 void MPlayer::Reset()
 {
 	BulletList.clear();
-	multi_Init(p_user_id);
+	Init();
 }
 
 void MPlayer::setBulletList(std::vector<Bullet> tmpList)
