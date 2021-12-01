@@ -1,9 +1,9 @@
 diff a/Project4/Project4/main.cpp b/Project4/Project4/main.cpp	(rejected hunks)
-@@ -402,6 +402,7 @@
- #endif
- 
- 		/*if (m.PlayerCollisionCheck(pz, player1.getRotate()))
+@@ -257,6 +257,7 @@
+ #ifdef MULTI
+ 		mplayer2.Render(ShaderProgram);
+ 		mplayer3.Render(ShaderProgram);
 +=======
- 
- 		for (int i = 0; i < ari->pt_clients_num ; i++) {
- 			if(i!=user_id) //�� ���̵� �ƴϸ�
+ 		//2���϶�
+ 		if (ari->pt_clients_num == 2) {
+ 			mplayer[0].Render(ShaderProgram);

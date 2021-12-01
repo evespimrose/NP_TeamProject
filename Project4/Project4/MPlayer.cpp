@@ -102,10 +102,6 @@ void MPlayer::Init()
 
 	fDeltaTime = 0;
 
-	for (int i = 0; i < 3; ++i)
-	{
-		keyDownlist[i] = false;
-	}
 
 
 	PosVec = glm::vec3(0.0f, -3.5f, 0.0f);

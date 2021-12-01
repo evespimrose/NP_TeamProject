@@ -21,7 +21,7 @@ const float length = 0.5;
 
 char* arr;
 
-int user_id = -1;
+int user_id = -1; //0~2
 #ifdef Multi
 GameState = 0;
 #endif // Multi
@@ -105,7 +105,6 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		Buffer[GetSize] = '\0';
 		ari = (all_ready_info*)Buffer;
 		if (ari->game_start) {
-		
 			Scene = GAME_SCENE;
 			break;
 		}
@@ -114,8 +113,7 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	while (1) {
 		//recv palyer data
 			game_data = recv_Player(sock);
-		
-			
+
 	}
 	return 0;
 
@@ -259,6 +257,23 @@ GLvoid drawScene()
 #ifdef MULTI
 		mplayer2.Render(ShaderProgram);
 		mplayer3.Render(ShaderProgram);
+=======
+		//2명일때
+		if (ari->pt_clients_num == 2) {
+			mplayer[0].Render(ShaderProgram);
+		}
+		//3명일때 
+		else if(ari->pt_clients_num == 3){
+			mplayer[0].Render(ShaderProgram);
+			mplayer[1].Render(ShaderProgram);
+		}
+
+		
+#ifdef Multi
+		for (auto i = p.begin(); i != p.end(); ++i)
+		{
+			i->Render(ShaderProgram);
+		}
 #endif
 		string score = "Score : ";
 		score += std::to_string((int)player1.getPosition().z);
@@ -409,9 +424,24 @@ GLvoid Timer(int Value)
 			mplayer[i].Update(game_data.player_data[i]);
 			else {
 				player1.Update(game_data.player_data[i]);
+		player1.Update(game_data.player_data[user_id]);
+	
+		if (ari->pt_clients_num == 2) {
+			
+			mplayer[0].Update(game_data.player_data[user_id ==1 ? 0 : 1 ]);
+		}
+		if (ari->pt_clients_num == 3) {
+			for (int i = 0; i < 3; i++) {
+				if (i != user_id && cnt==0) {
+					mplayer[0].Update(game_data.player_data[i]);
+					cnt++;
+				}
+				else {
+					mplayer[1].Update(game_data.player_data[i]);
+				}
 			}
 		}
-	
+
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 >>>>>>> a6475dac6b96ffbaccc2e32c1d2d643e53117cd7
 		{
