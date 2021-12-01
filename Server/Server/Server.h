@@ -102,3 +102,5 @@ ready_info* ri; //º¸³¿
 SOCKET Client_sock[3];
 
 std::queue <Message> glo_MsgQueue;
+
+bool game_start = false;
