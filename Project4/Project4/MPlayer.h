@@ -116,8 +116,6 @@ public:
 	void Init();
 	void Move();
 	void Update(Player_data pd);
-	void Key_Input(unsigned char key, bool state);
-	void sKey_Input(int key, bool state);
 	void Render(GLuint ShaderProgram);
 	float getSpeed();
 	float getRotate();

@@ -363,7 +363,6 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 
 void Player::Render(GLuint ShaderProgram)
 {
-
 	camera.Render(ShaderProgram);
 
 	unsigned int modelLocation = glGetUniformLocation(ShaderProgram, "modelTransform");
@@ -419,7 +418,7 @@ void Player::Fire(Player_data pd)
 	{
 		Bullet b;
 
-		b.Init(PosVec, BulletVAO, Speed, rad);
+		b.Init(pd, BulletVAO);
 		BulletList.push_back(b);
 
 		PrevFireTime = std::chrono::system_clock::now();
@@ -456,7 +455,7 @@ void Player::ManageBullet(Player_data pd)
 {
 	if (keyDownlist[2])
 	{
-		Fire();
+		Fire(pd);
 	}
 
 	std::vector<Bullet>::iterator iter = BulletList.begin();
@@ -484,8 +483,6 @@ float Player::getRotate()
 {
 	return rad;
 }
-
-
 
 std::vector<Bullet> Player::getBulletList()
 {

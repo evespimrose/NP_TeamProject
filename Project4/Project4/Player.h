@@ -128,9 +128,11 @@ public:
 	//int getLife();
 	//void setSpeed(float speed);
 	void Fire();
+	void Fire(Player_data pd);
 	std::vector<Bullet> getBulletList();
 	void setBulletList(std::vector<Bullet> tmpList);
 	void ManageBullet();
+	void ManageBullet(Player_data pd);
 	void setRad(float radian);
 	glm::vec3 getPosition();
 	Camera getCamera();
