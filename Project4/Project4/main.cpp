@@ -102,7 +102,22 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		GetSize = recv(sock, Buffer, len, 0);
 		Buffer[GetSize] = '\0';
 		ari = (all_ready_info*)Buffer;
+		
 		if (ari->game_start) {
+
+			ri.im_game_start = true; //나 게임시작했어요
+
+			len = sizeof(ri); //서버에게 ri 전송 
+			retval = send(sock, (char*)&len, sizeof(int), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+
+			retval = send(sock, (char*)&ri, sizeof(ri), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+
 			Scene = GAME_SCENE;
 			break;
 		}
@@ -418,6 +433,8 @@ GLvoid Timer(int Value)
 					}
 				}
 			}
+
+			cnt = 0;
 
 	/*	if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 

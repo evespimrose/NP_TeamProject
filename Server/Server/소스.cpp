@@ -243,8 +243,8 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 	while (true) {
 
-		if (!game_start) { //게임 시작할때까지
-			while (!game_start) {
+		 //게임 시작할때까지
+			while (1) {
 				//유저에게 모든 클라 ready 상태 전송
 				len = sizeof(ari);
 				for (int i = 0; i < count_s; i++) {
@@ -261,6 +261,7 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 						//exit( 1 );
 					}
 				}
+				//각각 클라의 ready정보 받음
 				retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 				if (retval == SOCKET_ERROR) {
 					err_display("recv()");
@@ -270,13 +271,17 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 				GetSize = recv(client_sock, Buffer, len, 0);
 				Buffer[GetSize] = '\0';
 				ri = (ready_info*)Buffer;
-				ari.is_ready[ri->id] = ri->is_ready;
+				ari.is_ready[ri->id] = ri->is_ready; 
 				ari.Pt_Players[ri->id] = ri->pt_player;
 
+				if (ri->im_game_start == true) {
+					std::cout << ri->id <<": 시작함" << std::endl;
+					game_start = true;
+					break;
+				}
 				if (count_s == 1 && ari.is_ready[0]) {
 					ari.pt_clients_num = 1; //최종 참가하는 클라수 
 					ari.game_start = true;
-					game_start = true;
 					len = sizeof(ari);
 					for (int i = 0; i < count_s; i++) {
 						retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
@@ -292,16 +297,13 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 							//exit( 1 );
 						}
 					}
-
 					thread PhysicsThread(Calcutlaion_clients);
 					PhysicsThread.detach();
-					break;
 				}
 				if (count_s == 2 && ari.is_ready[0] && ari.is_ready[1]) {
 					ari.pt_clients_num = 2; //최종 참가하는 클라수 
 					ari.game_start = true;
 
-					game_start = true;
 
 					len = sizeof(ari);
 					for (int i = 0; i < count_s; i++) {
@@ -321,12 +323,10 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 					thread PhysicsThread(Calcutlaion_clients);
 					PhysicsThread.detach();
-					break;
 				}
 				if (count_s == 3 && ari.is_ready[0] && ari.is_ready[1] && ari.is_ready[2]) {
 					ari.pt_clients_num = 3; //최종 참가하는 클라수 
 					ari.game_start = true;
-					game_start = true;
 					
 					len = sizeof(ari);
 					for (int i = 0; i < count_s; i++) { //클라한테 게임시작 신호 보냄
@@ -346,14 +346,10 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 					thread PhysicsThread(Calcutlaion_clients);
 					PhysicsThread.detach();
-					break;
 				}
 			}
-		}
-		else if (game_start) { //게임 시작 
-			std::cout << "physics thread 생성!" << std::endl;
-			
-			while (game_start) {
+
+			while (game_start) {//게임 시작 
 
 				char retval = recv(client_sock, buf, 1, 0);
 			
@@ -412,7 +408,7 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 					//LeaveCriticalSection(&Msg_cs);
 				}
 			}
-		}
+		
 	}
 	//---------------------------------------------------------------------------------------------
 	closesocket(client_sock);
@@ -420,6 +416,7 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 }
 
 void Calcutlaion_clients() {
+	std::cout << "physics thread 생성!" << std::endl;
 	QueryPerformanceFrequency(&tSecond);
 	QueryPerformanceCounter(&tTime);
 

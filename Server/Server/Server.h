@@ -83,6 +83,7 @@ typedef struct ready_info
     short size = 0;
     BOOL pt_player{ false };
     BOOL is_ready{ false };
+    BOOL im_game_start{ false };
 }ready_info;
 
 typedef struct all_ready_info
