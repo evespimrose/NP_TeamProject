@@ -34,10 +34,13 @@ void init_player(Col_Player_data cpd);
 //void update_camera(Col_Player_data cpd, Col_Camera_data ccd);
 //void init_camera(Col_Camera_data ccd);
 
- //CRITICAL_SECTION cs;
+ CRITICAL_SECTION cs;
  CRITICAL_SECTION Msg_cs;
 //소켓함수 오류 출력 후 종료
 Game_data game_data;
+
+
+
 void err_quit(const char* msg)
 {
 
@@ -88,7 +91,7 @@ int count_s = 0;
 int main()
 {
 	//임계 영역 생성
-	//InitializeCriticalSection(&cs);
+	InitializeCriticalSection(&cs);
 	InitializeCriticalSection(&Msg_cs);
 	int retval;
 
@@ -159,7 +162,7 @@ int main()
 
 	}
 
-	//DeleteCriticalSection(&cs);
+	DeleteCriticalSection(&cs);
 	DeleteCriticalSection(&Msg_cs);
 	// closesocket()
 	closesocket(listen_sock);
@@ -240,8 +243,8 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 	while (true) {
 
-		if (!ari.game_start) { //게임 시작할때까지
-			while (1) {
+		if (!game_start) { //게임 시작할때까지
+			while (!game_start) {
 				//유저에게 모든 클라 ready 상태 전송
 				len = sizeof(ari);
 				for (int i = 0; i < count_s; i++) {
@@ -258,7 +261,6 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 						//exit( 1 );
 					}
 				}
-				cout << "여기5" << endl;
 				retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 				if (retval == SOCKET_ERROR) {
 					err_display("recv()");
@@ -271,11 +273,10 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 				ari.is_ready[ri->id] = ri->is_ready;
 				ari.Pt_Players[ri->id] = ri->pt_player;
 
-				cout << "여기6" << endl;
 				if (count_s == 1 && ari.is_ready[0]) {
 					ari.pt_clients_num = 1; //최종 참가하는 클라수 
 					ari.game_start = true;
-
+					game_start = true;
 					len = sizeof(ari);
 					for (int i = 0; i < count_s; i++) {
 						retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
@@ -300,6 +301,8 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 					ari.pt_clients_num = 2; //최종 참가하는 클라수 
 					ari.game_start = true;
 
+					game_start = true;
+
 					len = sizeof(ari);
 					for (int i = 0; i < count_s; i++) {
 						retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
@@ -323,9 +326,10 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 				if (count_s == 3 && ari.is_ready[0] && ari.is_ready[1] && ari.is_ready[2]) {
 					ari.pt_clients_num = 3; //최종 참가하는 클라수 
 					ari.game_start = true;
-
+					game_start = true;
+					
 					len = sizeof(ari);
-					for (int i = 0; i < count_s; i++) {
+					for (int i = 0; i < count_s; i++) { //클라한테 게임시작 신호 보냄
 						retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
 						if (retval == SOCKET_ERROR) {
 							err_display("send()");
@@ -346,15 +350,13 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 				}
 			}
 		}
-
-		if (ari.game_start) { //게임 시작 
+		else if (game_start) { //게임 시작 
 			std::cout << "physics thread 생성!" << std::endl;
 			
+			while (game_start) {
 
-			
-			while (ari.game_start) {
 				char retval = recv(client_sock, buf, 1, 0);
-
+			
 				// 클라이언트 접속 종료, recv 에러 처리
 				if (retval == 0 || retval == SOCKET_ERROR) {
 					closesocket(client_sock);
@@ -405,9 +407,9 @@ DWORD WINAPI recv_thread(LPVOID arg) {
 
 				if (msg.id != -1)
 				{
-					//EnterCriticalSection(&cs);
+					//EnterCriticalSection(&Msg_cs);
 					glo_MsgQueue.emplace(msg);
-					//LeaveCriticalSection(&cs);
+					//LeaveCriticalSection(&Msg_cs);
 				}
 			}
 		}
