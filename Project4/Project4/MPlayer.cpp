@@ -298,95 +298,33 @@ void MPlayer::multi_Init(float multirad)
 	glEnableVertexAttribArray(2);
 }
 
-void MPlayer::Move()
+
+void MPlayer::Update(Player_data pd)
 {
-	if (keyDownlist[0])
-	{
-		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+	//LARGE_INTEGER time;
+	//QueryPerformanceCounter(&time);
+	//fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
+	//tTime = time;
 
-		rad += 2.0f * Speed;
-		if (rad > 360)
-		{
-			rad -= 360;
-		}
+	//fDeltaTime *= 100;
 
-		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-	}
+	//if (Speed < 1.5)
+	//{
+	//	Speed += acc * fDeltaTime;
+	//}
 
-	if (keyDownlist[1])
-	{
-		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+	//PosVec.z += Speed * fDeltaTime;
 
-		rad -= 2.0f * Speed;
-		if (rad < 0)
-		{
-			rad += 360;
-		}
+	//PosMat = glm::translate(PosMat, glm::vec3(0.0f, 0.0f, Speed * fDeltaTime));
 
-		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-	}
-}
-
-void MPlayer::Update()
-{
-	LARGE_INTEGER time;
-	QueryPerformanceCounter(&time);
-	fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
-	tTime = time;
-
-	fDeltaTime *= 100;
-
-	if (Speed < 1.5)
-	{
-		Speed += acc * fDeltaTime;
-	}
-
-	PosVec.z += Speed * fDeltaTime;
-
-	PosMat = glm::translate(PosMat, glm::vec3(0.0f, 0.0f, Speed * fDeltaTime));
-
-	Move();
+	//Move();
+	RotMat = pd.RotMat;
+	PosVec = pd.Posvec;
+	PosMat = pd.PosMat;
+	SclMat = pd.SclMat;
 	ManageBullet();
 }
 
-void MPlayer::Key_Input(unsigned char key, bool state)
-{
-	if (key == ' ')
-	{
-		if (state)
-		{
-			keyDownlist[2] = true;
-		}
-
-		else
-			keyDownlist[2] = false;
-	}
-}
-
-void MPlayer::sKey_Input(int key, bool state)
-{
-	if (key == GLUT_KEY_RIGHT)
-	{
-		if (state)
-			keyDownlist[1] = true;
-
-		else
-			keyDownlist[1] = false;
-	}
-
-	if (key == GLUT_KEY_LEFT)
-	{
-		if (state)
-			keyDownlist[0] = true;
-
-		else
-			keyDownlist[0] = false;
-	}
-}
 
 void MPlayer::Render(GLuint ShaderProgram)
 {

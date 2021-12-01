@@ -52,6 +52,11 @@ typedef struct Player_data
     float camera_posz;
 }Player_data;
 
+typedef struct Game_data//최종 보낼 플레이어 데이터
+{
+    Player_data player_data[3];
+}Game_data;
+
 typedef struct Cube_data
 {
     glm::vec3 PosVec;
@@ -89,4 +94,4 @@ SOCKET init_sock();
 void send_Player(SOCKET sock, Player_data player);
 int get_ClientID(SOCKET sock);
 void Send_event(SOCKET sock, char buf);
-Player_data recv_Player(SOCKET sock);
+Game_data recv_Player(SOCKET sock);

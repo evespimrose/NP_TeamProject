@@ -57,6 +57,12 @@ typedef struct Player_data//최종 보낼 플레이어 데이터
     //vector<Bullet> BulletList;
 }Player_data;
 
+typedef struct Game_data//최종 보낼 플레이어 데이터
+{
+    Player_data player_data[3];
+}Game_data;
+
+
 LARGE_INTEGER tSecond;
 LARGE_INTEGER tTime;
 float acc= 0.0005f;

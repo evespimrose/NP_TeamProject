@@ -89,7 +89,7 @@ int recvn(SOCKET s, char* buf, int len, int flags) {
 	return (len - left);
 }
 
-Player_data recv_Player(SOCKET sock) {
+Game_data recv_Player(SOCKET sock) {
 	int retval;
 	int len;
 	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
@@ -104,7 +104,7 @@ Player_data recv_Player(SOCKET sock) {
 
 	int GetSize;
 	char suBuffer[BUFSIZE];
-	Player_data* player;
+	Game_data* game_data;
 	GetSize = recv(sock, suBuffer, len, 0);
 	if (GetSize == SOCKET_ERROR) {
 		MessageBox(NULL, "서버와의 연결이 끊어졌습니다..!\n이유 : \n 1. 서버가 종료되었습니다\n 2. 서버에 의해 강제퇴장 당하였습니다\n 3. 인터넷 연결이 올바르지 않습니다", "NetworkTermProject", 0);
@@ -112,11 +112,11 @@ Player_data recv_Player(SOCKET sock) {
 	}
 
 	suBuffer[GetSize] = '\0';
-	player = (Player_data*)suBuffer;
+	game_data = (Game_data*)suBuffer;
 
 	//printf( "%d\n", player[0]->camxrotate );
 
-	return *player;
+	return *game_data;
 }
 
 int get_ClientID(SOCKET sock) {

@@ -34,7 +34,7 @@ GLuint ShaderProgram;
 float ambient = 0.6f;
 
 Player player1;
-MPlayer mplayer;
+MPlayer mplayer[2];
 #ifdef Multi
 vector<Player> p;
 #endif
@@ -43,7 +43,7 @@ Map m;
 
 Data* dat;
 Player_data pd;
-Player_data player_data[3];
+Game_data game_data;
 
 vector<Cube_data> cd;
 all_ready_info* ari;
@@ -107,6 +107,7 @@ DWORD WINAPI JoinThread(LPVOID arg)
 		Buffer[GetSize] = '\0';
 		ari = (all_ready_info*)Buffer;
 		if (ari->game_start) {
+		
 			Scene = GAME_SCENE;
 			break;
 		}
@@ -114,12 +115,11 @@ DWORD WINAPI JoinThread(LPVOID arg)
 
 	while (1) {
 		//recv palyer data
-		for (int i = 0; i < ari->pt_clients_num; i++) {
-			player_data[i] = recv_Player(sock);
-			//cout << player_data[i].rotate << endl;
-		}
+			game_data = recv_Player(sock);
+		
+			
 	}
-
+	return 0;
 
 }
 
@@ -258,7 +258,11 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
-		mplayer.Render(ShaderProgram);
+		for (int i = 0; i < ari->pt_clients_num ; i++) {
+			mplayer[i].Render(ShaderProgram);
+		}
+
+		
 #ifdef Multi
 		for (auto i = p.begin(); i != p.end(); ++i)
 		{
@@ -396,13 +400,15 @@ GLvoid Timer(int Value)
 		//m.Fastest_Update(fpz);
 		//m.Slowest_Update(spz);
 
-		//player1.Update();
-		mplayer.Update();
-		//player2.Update();
 
-
-		//player1.Update(player_data[0]);
-		player1.Update(player_data[0]);
+		for (int i = 0; i < ari->pt_clients_num ; i++) {
+			if(i!=user_id) //내 아이디가 아니면
+			mplayer[i].Update(game_data.player_data[i]);
+			else {
+				player1.Update(game_data.player_data[i]);
+			}
+		}
+	
 		if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 		{
 			SoundManager::sharedManager()->play(CRUSH_SOUND);
@@ -658,7 +664,9 @@ int main(int argc, char** argv)
 	glewInit();
 
 	InitShader();
-	mplayer.Init();
+	
+		mplayer[0].Init();
+		mplayer[1].Init();
 	player1.Init();
 
 	m.Init();
