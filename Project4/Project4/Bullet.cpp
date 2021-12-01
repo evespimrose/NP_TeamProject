@@ -1,19 +1,19 @@
 #include "Bullet.h"
 
-void Bullet::Init(glm::vec3 playerPos, GLuint vao, float PlayerSpeed, float rad)
+void Bullet::Init(Player_data pd)
 {
 	QueryPerformanceFrequency(&tSecond);
 	QueryPerformanceCounter(&tTime);
 	fDeltaTime = 0;
 
-	PosVec = playerPos;
+	PosVec = pd.Posvec;
 	PosVec.z += 0.5f;
 
 	PosMat = glm::mat4(1.0f);
 	PosMat = glm::translate(PosMat, PosVec);
 
-	rotate = rad;
-	Speed = PlayerSpeed + 0.3f;
+	rotate = pd.rad;
+	Speed = pd.speed + 0.3f;
 	VAO = vao;
 }
 

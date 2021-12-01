@@ -52,6 +52,7 @@ typedef struct Player_data//최종 보낼 플레이어 데이터
     glm::mat4 SclMat= glm::mat4(1.0f);
     glm::mat4 RotMat= glm::mat4(1.0f);
     float rad = 0.0f;
+    float speed = 0.0f;
     float camera_posx = 0.0f;
     float camera_posy = 0.0f;
     float camera_posz = 0.0f;

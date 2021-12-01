@@ -318,7 +318,7 @@ void Player::Update(Player_data pd)
 	SclMat = pd.SclMat;
 	
 	
-	ManageBullet();
+	ManageBullet(pd);
 	
 	camera.setPosition(PosVec.z);
 }
@@ -410,7 +410,49 @@ void Player::Fire()
 
 }
 
+void Player::Fire(Player_data pd)
+{
+	std::chrono::milliseconds FireDelay(300);
+
+	std::chrono::duration<double> sec = std::chrono::system_clock::now() - PrevFireTime;
+	if (FireDelay < sec)
+	{
+		Bullet b;
+
+		b.Init(PosVec, BulletVAO, Speed, rad);
+		BulletList.push_back(b);
+
+		PrevFireTime = std::chrono::system_clock::now();
+
+		SoundManager::sharedManager()->play(ATTACK_SOUND);
+	}
+
+}
+
 void Player::ManageBullet()
+{
+	if (keyDownlist[2])
+	{
+		Fire();
+	}
+
+	std::vector<Bullet>::iterator iter = BulletList.begin();
+
+	for (; iter != BulletList.end();)
+	{
+		iter->Move();
+		if (iter->getzOffset() > PosVec.z + 50.0f)
+		{
+			iter = BulletList.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
+}
+
+void Player::ManageBullet(Player_data pd)
 {
 	if (keyDownlist[2])
 	{

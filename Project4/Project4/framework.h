@@ -48,6 +48,7 @@ typedef struct Player_data
     glm::mat4 SclMat;
     glm::mat4 RotMat;
     float rad = 0.0f;
+    float speed = 0.0f;
     float camera_posx;
     float camera_posy;
     float camera_posz;
