@@ -118,11 +118,7 @@ void Player::Init()
 	SclMat = glm::mat4(1.0f);
 	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 
-	//dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
-
 	Speed = 0.0f;
-
-	//acc = 0.0005f;
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;

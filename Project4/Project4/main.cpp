@@ -9,7 +9,7 @@
 #define TEXT_GAP 200
 #define BUFSIZE 1024
 // for TCP
-#define MULTI
+//#define MULTI
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
@@ -34,8 +34,6 @@ GLuint ShaderProgram;
 float ambient = 0.6f;
 
 Player player1;
-MPlayer mplayer2;
-MPlayer mplayer3;
 MPlayer mplayer[2];
 
 Map m;
@@ -257,7 +255,7 @@ GLvoid drawScene()
 #ifdef MULTI
 		mplayer2.Render(ShaderProgram);
 		mplayer3.Render(ShaderProgram);
-=======
+#endif
 		//2ΈνΐΟ¶§
 		if (ari->pt_clients_num == 2) {
 			mplayer[0].Render(ShaderProgram);
@@ -267,14 +265,6 @@ GLvoid drawScene()
 			mplayer[0].Render(ShaderProgram);
 			mplayer[1].Render(ShaderProgram);
 		}
-
-		
-#ifdef Multi
-		for (auto i = p.begin(); i != p.end(); ++i)
-		{
-			i->Render(ShaderProgram);
-		}
-#endif
 		string score = "Score : ";
 		score += std::to_string((int)player1.getPosition().z);
 		glutPrint(700.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, score);
@@ -410,7 +400,7 @@ GLvoid Timer(int Value)
 		//player2.Update();
 
 		//player1.Update(player_data[0]);
-		player1.Update(player_data[0]);
+		player1.Update(game_data.player_data[0]);
 #ifdef MULTI
 		mplayer2.Update(player_data[1]);
 		mplayer3.Update(player_data[2]);
@@ -698,7 +688,7 @@ int main(int argc, char** argv)
 	glewInit();
 
 	InitShader();
-	player1.Init(player_data[0]);
+	player1.Init(game_data.player_data[0]);
 #ifdef MULTI
 	mplayer2.Init();
 	mplayer3.Init();
