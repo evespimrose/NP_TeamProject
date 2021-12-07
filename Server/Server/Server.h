@@ -15,6 +15,13 @@ struct Message {
 //    Player_data PlayerData;
 //}Data;
 
+typedef struct Cube
+{
+    float zOffset;
+    float rotate;
+    int life;
+};
+
 typedef struct Col_Player_data //계산용 플레이어 데이터
 {
     glm::vec3 Posvec = glm::vec3(0.0f, -3.5f, 0.0f);

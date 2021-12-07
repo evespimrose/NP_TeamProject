@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <thread>
-
+#include <algorithm>
 #include <gl/glew.h>
 
 #include <glm/glm.hpp>
@@ -15,6 +15,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include "Server.h"
 #include "protocol.h"
+#include <vector>
 using namespace std;
 
 #define SERVERPORT 9000
@@ -24,7 +25,12 @@ using namespace std;
 int GetSize;
 char Buffer[BUFSIZE];
 
+float FirstPosZ=0.0f;
+float LastPosZ=0.0f;
 
+int cubecounter = 0;
+
+vector<Cube> CubeList_V;
 DWORD WINAPI recv_thread(LPVOID arg);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
 void Calcutlaion_clients();
@@ -467,7 +473,7 @@ void Calcutlaion_clients() {
 		EnterCriticalSection(&Msg_cs);
 		while (!glo_MsgQueue.empty()) {
 			glo_MsgQueue.pop();
-		LeaveCriticalSection(&Msg_cs);
+			LeaveCriticalSection(&Msg_cs);
 		}
 
 		while (!MsgQueue.empty()) {
@@ -536,7 +542,7 @@ void Calcutlaion_clients() {
 		//데이터 바꿔치기
 
 		for (int i = 0; i < count_s; i++) {
-		
+
 			game_data.player_data[i].PosMat = col_player_data[i].PosMat;
 			game_data.player_data[i].Posvec = col_player_data[i].Posvec;
 			game_data.player_data[i].SclMat = col_player_data[i].SclMat;
@@ -545,7 +551,7 @@ void Calcutlaion_clients() {
 			game_data.player_data[i].camera_posx = col_camera_data[i].posx;
 			game_data.player_data[i].camera_posy = col_camera_data[i].posy;
 			game_data.player_data[i].camera_posz = col_camera_data[i].posz;
-		
+
 
 		}
 		int len = sizeof(game_data);
@@ -563,6 +569,42 @@ void Calcutlaion_clients() {
 			}
 		}
 
+		/*----------------------------------------------------*/
+
+		if (count_s == 1)
+		{
+			FirstPosZ = game_data.player_data[0].Posvec.z;
+			LastPosZ = game_data.player_data[0].Posvec.z;
+		}
+
+		else if (count_s == 2)
+		{
+			FirstPosZ = max({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z });
+			LastPosZ = min({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z });
+		}
+
+		else if (count_s == 3)
+		{
+			FirstPosZ = max({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z,game_data.player_data[2].Posvec.z });
+			LastPosZ = min({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z,game_data.player_data[2].Posvec.z });
+		}
+
+		if ((int)FirstPosZ % 100 == 0 && FirstPosZ > 100.0f)
+		{
+			Cube c;
+			c.zOffset = FirstPosZ + 300.0f + rand() % 100;
+			c.rotate = rand() % 360;
+			c.life = 3;
+
+			CubeList_V.push_back(c);
+			cubecounter += 1;
+		}
+
+		Cube* CubeList_A = CubeList_V.data();
+		if (cubecounter != 0)
+			printf("%f\n", CubeList_A[0].zOffset);
+
+		
 	}
 }
 
