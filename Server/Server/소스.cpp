@@ -30,7 +30,7 @@ float LastPosZ=0.0f;
 
 int cubecounter = 0;
 
-vector<Cube> CubeList_V;
+vector<Cube_data> CubeList_V;
 DWORD WINAPI recv_thread(LPVOID arg);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
 void Calcutlaion_clients();
@@ -591,16 +591,16 @@ void Calcutlaion_clients() {
 
 		if ((int)FirstPosZ % 100 == 0 && FirstPosZ > 100.0f)
 		{
-			Cube c;
+			Cube_data c;
 			c.zOffset = FirstPosZ + 300.0f + rand() % 100;
 			c.rotate = rand() % 360;
-			c.life = 3;
+			c.life = rand() % 3;
 
 			CubeList_V.push_back(c);
 			cubecounter += 1;
 		}
 
-		Cube* CubeList_A = CubeList_V.data();
+		Cube_data* CubeList_A = CubeList_V.data();
 		if (cubecounter != 0)
 			printf("%f\n", CubeList_A[0].zOffset);
 
