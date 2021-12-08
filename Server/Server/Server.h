@@ -15,7 +15,7 @@ struct Message {
 //    Player_data PlayerData;
 //}Data;
 
-typedef struct Cube
+typedef struct Cube_data
 {
     float zOffset;
     float rotate;
