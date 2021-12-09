@@ -29,6 +29,7 @@
 #include <winsock2.h>
 
 #define Proto_IP "127.0.0.1"
+//#define Proto_IP "192.168.181.246"
 #define Proto_Port 9000
 #define BUFSIZE 1024
 
@@ -45,18 +46,15 @@ typedef struct Player_data
 {
     glm::vec3 Posvec;
     glm::mat4 PosMat;
-    glm::mat4 SclMat;
     glm::mat4 RotMat;
-    float rad = 0.0f;
-    float speed = 0.0f;
-    float camera_posx;
-    float camera_posy;
-    float camera_posz;
+    glm::mat4 SclMat;
+
 }Player_data;
 
 typedef struct Game_data//최종 보낼 플레이어 데이터
 {
     Player_data player_data[3];
+   // Bullet_data  bullet_data[100];
 }Game_data;
 
 typedef struct Cube_data
@@ -72,6 +70,16 @@ typedef struct Data
 
 }Data;
 
+
+
+typedef struct all_ready_info
+{
+    char Pt_Players[3];
+    char is_ready[3];
+    int pt_clients_num;
+    BOOL game_start{ false };
+}all_ready_info;
+
 typedef struct ready_info
 {
     int id = -1;
@@ -81,20 +89,17 @@ typedef struct ready_info
     BOOL im_game_start{ false };
 }ready_info;
 
-typedef struct all_ready_info
-{
-    BOOL Pt_Players[3]{ false };
-    BOOL is_ready[3]{ false };
-    int pt_clients_num;
-    BOOL game_start{ false };
-}all_ready_info;
 
 //int recvn(SOCKET s, char* buf, int len, int flags);
 
 void err_quit(const char* msg);
 void err_display(const char* msg);
 SOCKET init_sock();
+void Recv_Packet(SOCKET sock);
+void ProcessData(char* buf, size_t io_byte);
+void ProcessPacket(char* packet_buffer);
 void send_Player(SOCKET sock, Player_data player);
 int get_ClientID(SOCKET sock);
 void Send_event(SOCKET sock, char buf);
 Game_data recv_Player(SOCKET sock);
+

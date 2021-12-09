@@ -2,6 +2,10 @@
 
 void Bullet::Init(glm::vec3 playerPos, GLuint vao, float PlayerSpeed, float rad)
 {
+	QueryPerformanceFrequency(&tSecond);
+	QueryPerformanceCounter(&tTime);
+	fDeltaTime = 0;
+
 	PosVec = playerPos;
 	PosVec.z += 0.5f;
 
@@ -13,27 +17,12 @@ void Bullet::Init(glm::vec3 playerPos, GLuint vao, float PlayerSpeed, float rad)
 	VAO = vao;
 }
 
-void Bullet::Init(Player_data pd, GLuint vao)
-{
-	PosVec = pd.Posvec;
-	PosVec.z += 0.5f;
-
-	PosMat = glm::mat4(1.0f);
-	PosMat = glm::translate(PosMat, PosVec);
-
-	RotMat = pd.RotMat;
-
-	rotate = pd.rad;
-	Speed = pd.speed + 0.3f;
-	VAO = vao;
-}
-
 void Bullet::Render(GLuint ShaderProgram)
 {
 	unsigned int modelLocation = glGetUniformLocation(ShaderProgram, "modelTransform");
 
 	glm::mat4 TR;
-	TR = PosMat * RotMat;
+	TR = PosMat;
 	TR = glm::scale(TR, glm::vec3(0.1f, 0.1f, 0.1f));
 
 	unsigned int specularLocation = glGetUniformLocation(ShaderProgram, "spec_strength");

@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <thread>
-#include <algorithm>
+#include <float.h>
+
+
 #include <gl/glew.h>
 
 #include <glm/glm.hpp>
@@ -15,36 +17,27 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include "Server.h"
 #include "protocol.h"
-#include <vector>
-using namespace std;
+#include "packet.h"
 
 #define SERVERPORT 9000
-#define BUFSIZE 1024
+#define BUFSIZE 512
 #define MAXPLAYER 3
 
 int GetSize;
 char Buffer[BUFSIZE];
 
-float FirstPosZ=0.0f;
-float LastPosZ=0.0f;
 
-int cubecounter = 0;
-
-vector<Cube_data> CubeList_V;
-DWORD WINAPI recv_thread(LPVOID arg);
+DWORD WINAPI recv_thread(LPVOID iD);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
 void Calcutlaion_clients();
 void init_player(Col_Player_data cpd);
 //void update_player(Col_Player_data cpd);
 //void update_time();
-//void update_camera(Col_Player_data cpd, Col_Camera_data ccd);
-//void init_camera(Col_Camera_data ccd);
 
  CRITICAL_SECTION cs;
  CRITICAL_SECTION Msg_cs;
 //소켓함수 오류 출력 후 종료
 Game_data game_data;
-
 
 
 void err_quit(const char* msg)
@@ -92,7 +85,30 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 	return (len - left);
 }
 
-int count_s = 0;
+
+
+bool Is_GameStart() {
+	int count = 0;
+
+	for (int i = 0; i < count_s+1; ++i)
+	{
+		if (is_connected != false)
+		{
+			if (ri[i].is_ready == true)
+			{
+				count += 1;
+			}
+		}
+	}
+
+	std::cout << "numof cl : " << count_s + 1 << ", count : " << count << std::endl;
+
+	if (count_s + 1 > 1 && count == count_s + 1)
+		return true;
+	else
+		return false;
+
+}
 
 int main()
 {
@@ -134,10 +150,7 @@ int main()
 
 	char buf[BUFSIZE + 1];
 
-	bool check_ready[MAXPLAYER];
 	int clients_count = 0;
-	int ready_count = 0;
-	bool changestate = true;
 	int user_index = -1;
 
 	HANDLE hThread;
@@ -149,15 +162,49 @@ int main()
 			err_display("accept()");
 			break;
 		}
+
 		if (clients_count == MAXPLAYER) { //최대 클라 접속시 끊어버림
 			closesocket(client_sock);
 			continue;
 		}
+
+		for (int i = 0; i < MAXPLAYER; ++i) {
+			if (false == is_connected[i]) {
+				is_connected[i] = true;
+				user_index = i;
+				count_s++;
+				cout << "==============================" << endl;
+				cout << "ID " << i << " is connected" << endl;
+				cout << "==============================" << endl;
+
+				break;
+			}
+		}
+
 		Client_sock[count_s] = client_sock;
-		count_s++;
+		
+		
+		ri[user_index].id = user_index;
+		ri[user_index].pt_player = 1;
+		ri[user_index].is_ready = 0;
+
+		SendLoginOkPacket(user_index);
+		//나에게 나머지의 레디상황
+	//나머지 클라에게 나의 레디상황
+		for (int i = 0; i < MAXPLAYER; ++i)	// 유저아이디가 순서대로 증가할 때만 가능
+		{
+			if (true == is_connected[i])
+			{
+				SendReadyPacket(Client_sock[i], user_index);	//다른 클라에게 내 ready상태 전송
+			                                                                
+				SendReadyPacket(Client_sock[user_index], i);	//내 클라에게 다른 클라 ready상태 전송
+			
+			}
+			
+		}
 
 		//recv 스레드 생성
-		hThread = CreateThread(NULL, 0, recv_thread, (LPVOID)client_sock, 0, NULL);
+		hThread = CreateThread(NULL, 0, recv_thread, (LPVOID)user_index, 0, NULL);
 		if (hThread == NULL) {
 			closesocket(client_sock);
 		}
@@ -179,246 +226,99 @@ int main()
 
 }
 
-DWORD WINAPI recv_thread(LPVOID arg) {
-	//EnterCriticalSection(&cs);
-	SOCKET client_sock = (SOCKET)arg;
-	//LeaveCriticalSection(&cs);
-	SOCKADDR_IN clientaddr;
-	int addrlen;
-	int retval;
-	int len;
-	int user_index = -1;
-	char buf[BUFSIZE + 1];
+DWORD WINAPI recv_thread(LPVOID iD) {
 
-	// 클라이언트 정보 얻기
-	addrlen = sizeof(clientaddr);
-	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
-	for (int i = 0; i < MAXPLAYER; ++i) {
-		//EnterCriticalSection(&cs);
-		if (false == connectedCls[i].is_connected) {
-			connectedCls[i].is_connected = true;
-			user_index = i;
-			cout << "==============================" << endl;
-			cout << "ID " << i << " is connected" << endl;
-			cout << "==============================" << endl;
+	char id = (char)iD;
 
-			break;
-		}
-		//LeaveCriticalSection(&cs);
-	}
-	//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//클라에게 유저 id 전송
-	char user_index_c[10];
-	//EnterCriticalSection(&cs);
-	itoa(user_index, user_index_c, 10);
-	len = sizeof(user_index_c);
-	retval = send(client_sock, (char*)&len, sizeof(int), 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-	}
+	SOCKET client_sock = Client_sock[id];
 	//LeaveCriticalSection(&cs);
-	// 데이터 보내기
-	//EnterCriticalSection(&cs);
-	retval = send(client_sock, (char*)&user_index_c, sizeof(user_index_c), 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-		//exit( 1 );
-	}
-	printf("데이터 전송");
-	//LeaveCriticalSection(&cs);
-	//--------------------------------------------------------------------------------
-	//참가 유저 정보 받기
-	//EnterCriticalSection(&cs);
-	cout << "여기1" << endl;
-	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	else if (retval == 0) {
-	}
-	GetSize = recv(client_sock, Buffer, len, 0);
-	//Buffer[GetSize] = '\0';
-	ri = (ready_info*)Buffer;
-	ari.is_ready[ri->id] = ri->is_ready;
-	ari.Pt_Players[ri->id] = ri->pt_player;
-	//LeaveCriticalSection(&cs);
-	//---------------------------------------------------------------------------------
-
-
 	Message msg{};
 
-	while (true) {
+	while (true)
+	{
 
-		 //게임 시작할때까지
-			while (1) {
-				//유저에게 모든 클라 ready 상태 전송
-				len = sizeof(ari);
-				for (int i = 0; i < count_s; i++) {
-					retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
-					if (retval == SOCKET_ERROR) {
-						err_display("send()");
+		msg.id = -1;
+		char buf[BUFSIZE];
+		cout << "여기1" << endl;
+		char retval = recv(client_sock, buf, 1, 0);
+		cout << retval << endl;
+		// 클라이언트 접속 종료, recv 에러 처리
+		if (retval == 0 || retval == SOCKET_ERROR) {
+			closesocket(client_sock);
+			cout << "여기55" << endl;
+			/*	g_clients.erase(id);
 
-					}
+				for (auto& cl : g_clients)
+					SendRemovePlayerPacket(cl.first, id);
 
-					// 데이터 보내기
-					retval = send(Client_sock[i], (char*)&ari, len, 0);
-					if (retval == SOCKET_ERROR) {
-						err_display("send()");
-						//exit( 1 );
-					}
-				}
-				//각각 클라의 ready정보 받음
-				retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
-				if (retval == SOCKET_ERROR) {
-					err_display("recv()");
-				}
-				else if (retval == 0) {
-				}
-				GetSize = recv(client_sock, Buffer, len, 0);
-				Buffer[GetSize] = '\0';
-				ri = (ready_info*)Buffer;
-				ari.is_ready[ri->id] = ri->is_ready; 
-				ari.Pt_Players[ri->id] = ri->pt_player;
+				g_connectedCls[id].is_connected = false;
+				g_connectedClsLock.unlock();
+				--numOfCls;*/
 
-				if (ri->im_game_start == true) {
-					std::cout << ri->id <<": 시작함" << std::endl;
-					game_start = true;
-					break;
-				}
-				if (count_s == 1 && ari.is_ready[0]) {
-					ari.pt_clients_num = 1; //최종 참가하는 클라수 
-					ari.game_start = true;
-					len = sizeof(ari);
-					for (int i = 0; i < count_s; i++) {
-						retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
-						if (retval == SOCKET_ERROR) {
-							err_display("send()");
+				//cout << "======================================================" << endl;
+				//cout << "ID " << (int)id << " is out. And this Id slot is empty" << endl;
+				//cout << "======================================================" << endl;
 
-						}
+			/*	if (retval == SOCKET_ERROR)
+					ErrDisplay("RecvThread occured Error!");*/
+			return 0;
+		}
+		// Message 재사용을 위한 초기화
+		ZeroMemory(&msg, sizeof(Message));
+		msg.id = -1;
+		switch ((int)buf[0])
+		{
+		case CS_PLAYER_LEFT_DOWN:
+		{
+			cout << "왼쪽" << endl;
+			msg.id = id;
+			msg.type = TYPE_PLAYER;
+			msg.dir = DIR_LEFT_GO;
+			msg.isPushed = true;
+			break;
+		}
+		case CS_PLAYER_RIGHT_DOWN:
+		{
+			cout << "오른쪽" << endl;
+			msg.id = id;
+			msg.type = TYPE_PLAYER;
+			msg.dir = DIR_RIGHT_GO;
+			msg.isPushed = true;
+			break;
+		}
 
-						// 데이터 보내기
-						retval = send(Client_sock[i], (char*)&ari, len, 0);
-						if (retval == SOCKET_ERROR) {
-							err_display("send()");
-							//exit( 1 );
-						}
-					}
-					thread PhysicsThread(Calcutlaion_clients);
-					PhysicsThread.detach();
-				}
-				if (count_s == 2 && ari.is_ready[0] && ari.is_ready[1]) {
-					ari.pt_clients_num = 2; //최종 참가하는 클라수 
-					ari.game_start = true;
-
-
-					len = sizeof(ari);
-					for (int i = 0; i < count_s; i++) {
-						retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
-						if (retval == SOCKET_ERROR) {
-							err_display("send()");
-
-						}
-
-						// 데이터 보내기
-						retval = send(Client_sock[i], (char*)&ari, len, 0);
-						if (retval == SOCKET_ERROR) {
-							err_display("send()");
-							//exit( 1 );
-						}
-					}
-
-					thread PhysicsThread(Calcutlaion_clients);
-					PhysicsThread.detach();
-				}
-				if (count_s == 3 && ari.is_ready[0] && ari.is_ready[1] && ari.is_ready[2]) {
-					ari.pt_clients_num = 3; //최종 참가하는 클라수 
-					ari.game_start = true;
-					
-					len = sizeof(ari);
-					for (int i = 0; i < count_s; i++) { //클라한테 게임시작 신호 보냄
-						retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
-						if (retval == SOCKET_ERROR) {
-							err_display("send()");
-
-						}
-
-						// 데이터 보내기
-						retval = send(Client_sock[i], (char*)&ari, len, 0);
-						if (retval == SOCKET_ERROR) {
-							err_display("send()");
-							//exit( 1 );
-						}
-					}
-
-					thread PhysicsThread(Calcutlaion_clients);
-					PhysicsThread.detach();
-				}
+		case CS_READY:
+		{
+			if (ri[id].is_ready) {
+				ri[id].is_ready = 0;
 			}
+			else {
+				ri[id].is_ready = 1;
+			} //ready상태 갱신
 
-			while (game_start) {//게임 시작 
+			for (auto& Csock : Client_sock) //다른 클라한테 ri정보 send
+				SendReadyPacket(Csock, id);
 
-				char retval = recv(client_sock, buf, 1, 0);
-			
-				// 클라이언트 접속 종료, recv 에러 처리
-				if (retval == 0 || retval == SOCKET_ERROR) {
-					closesocket(client_sock);
-
-					//에러처리 코드
-				}
-
-				//메세지 초기화
-				ZeroMemory(&msg, sizeof(Message));
-				msg.id = -1;
-
-				switch ((int)buf[0])
-				{
-				case SC_PLAYER_LEFT_DOWN:
-				{
-					cout << user_index << endl;
-					msg.id = user_index;
-					msg.type = TYPE_PLAYER;
-					msg.dir = DIR_LEFT_GO;
-					msg.isPushed = true;
-					break;
-				}
-				case SC_PLAYER_LEFT_UP:
-				{
-					msg.id = user_index;
-					msg.type = TYPE_PLAYER;
-					msg.dir = DIR_LEFT_STOP;
-					msg.isPushed = true;
-					break;
-				}
-				case SC_PLAYER_RIGHT_DOWN:
-				{
-					msg.id = user_index;
-					msg.type = TYPE_PLAYER;
-					msg.dir = DIR_RIGHT_GO;
-					msg.isPushed = true;
-					break;
-				}
-				case SC_PLAYER_RIGHT_UP:
-				{
-					msg.id = user_index;
-					msg.type = TYPE_PLAYER;
-					msg.dir = DIR_RIGHT_STOP;
-					msg.isPushed = true;
-					break;
-				}
-				}
-
-				if (msg.id != -1)
-				{
-					//EnterCriticalSection(&Msg_cs);
-					glo_MsgQueue.emplace(msg);
-					//LeaveCriticalSection(&Msg_cs);
-				}
+			if (Is_GameStart())
+			{
+				SendGameStartPacket();
+				cout << "게임시작" << endl;
+				// Physics Thread 생성
+				std::cout << "physics thread 생성!" << std::endl;
+				thread PhysicsThread(Calcutlaion_clients);
+				PhysicsThread.detach();
 			}
-		
+			break;
+		}
+		default:
+			cout << "Packet Type Error! - " << buf[0] << endl;
+			while (true);
+		}
+		if (msg.id != -1)
+		{
+			glo_MsgQueue.emplace(msg);
+		}
 	}
-	//---------------------------------------------------------------------------------------------
-	closesocket(client_sock);
-	return 0;
 }
 
 void Calcutlaion_clients() {
@@ -426,27 +326,36 @@ void Calcutlaion_clients() {
 	QueryPerformanceFrequency(&tSecond);
 	QueryPerformanceCounter(&tTime);
 
+
 	std::queue <Message> MsgQueue;
 	Message Msg;
 	Col_Player_data col_player_data[3];
-	Col_Camera_data col_camera_data[3];
 	int retval;
 
-	for (int i = 0; i < count_s; i++) {
+	for (int i = 0; i <3; i++) {
 		col_player_data[i].Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
 		col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
-		col_player_data[i].rad = (-120.0f * i);
+		col_player_data[i].rad = (-120.0f * (1+i));
 		col_player_data[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 		col_player_data[i].dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
 		col_player_data[i].Speed = 0.0f;
-
-		col_camera_data[i].cameraPos = glm::vec3(0.0f, 2.0f, -10.0f);
-		col_camera_data[i].cameraDirection = col_camera_data[i].AT;
-		col_camera_data[i].cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		col_camera_data[i].AT = glm::vec3(0, 0, 0.0f);
-		col_camera_data[i].view = glm::lookAt(col_camera_data[i].cameraPos, col_camera_data[i].cameraDirection, col_camera_data[i].cameraUp);
+		col_player_data[i].TR = col_player_data[i].RotMat * col_player_data[i].PosMat * col_player_data[i].SclMat;
 	}
+
+	Player_pos players[3];
+	for (int i = 0; i < 3; i++) {
+		players[i].PosX = 0.0f;
+		players[i].PosY = -3.5f;
+		players[i].PosZ = 0.0f;
+		//players [i].TR=col_player_data[i].TR;
+		players[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
+		players[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		players[i].SclMat = col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
+	}
+
+	vector<Cube_pos> CubeList_V;
+	int Cubecnt = 0;
 
 	while (true) {
 		EnterCriticalSection(&Msg_cs);
@@ -461,7 +370,7 @@ void Calcutlaion_clients() {
 
 		fDeltaTime *= 100;
 
-		for (int i = 0; i < count_s; i++) {
+		for (int i = 0; i < count_s+1; i++) {
 			if (col_player_data[i].Speed < 1.5)
 			{
 				col_player_data[i].Speed += acc * fDeltaTime;
@@ -473,11 +382,11 @@ void Calcutlaion_clients() {
 		EnterCriticalSection(&Msg_cs);
 		while (!glo_MsgQueue.empty()) {
 			glo_MsgQueue.pop();
-			LeaveCriticalSection(&Msg_cs);
+		LeaveCriticalSection(&Msg_cs);
 		}
 
 		while (!MsgQueue.empty()) {
-
+			cout << "뭔가 왔음" << endl;
 
 
 			Msg = MsgQueue.front();
@@ -486,11 +395,11 @@ void Calcutlaion_clients() {
 				switch (Msg.dir)
 				{
 				case DIR_LEFT_GO://왼쪽
-
+					cout << "왼쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
-					col_player_data[Msg.id].rad += 2.0f * col_player_data[Msg.id].Speed;
+					col_player_data[Msg.id].rad += 30.0f * col_player_data[Msg.id].Speed;
 					if (col_player_data[Msg.id].rad > 360)
 					{
 						col_player_data[Msg.id].rad -= 360;
@@ -500,15 +409,13 @@ void Calcutlaion_clients() {
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
 					break;
-				case DIR_LEFT_STOP:
-					cout << "하이7" << endl;
-
-					break;
-				case DIR_RIGHT_GO://왼쪽
+		
+				case DIR_RIGHT_GO://오른쪽
+					cout << "오른쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
-					col_player_data[Msg.id].rad -= 2.0f * col_player_data[Msg.id].Speed;
+					col_player_data[Msg.id].rad -= 30.0f * col_player_data[Msg.id].Speed;
 					if (col_player_data[Msg.id].rad < 0)
 					{
 						col_player_data[Msg.id].rad += 360;
@@ -518,11 +425,7 @@ void Calcutlaion_clients() {
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
 					break;
-					/*case DIR_RIGHT:
-						phyPlayers[phyMsg.id].SetKeyD(phyMsg.isPushed);
-						break;*/
-				case DIR_RIGHT_STOP:
-					break;
+				
 				}
 			}
 
@@ -530,81 +433,32 @@ void Calcutlaion_clients() {
 				break;
 			}
 		}
-		//카메라 정보 업데이트 
-		for (int i = 0; i < count_s; i++) {
-			col_camera_data[i].posx = col_player_data[i].Posvec.x;
-			col_camera_data[i].posy = col_player_data[i].Posvec.y;
-			col_camera_data[i].posz = col_player_data[i].Posvec.z;
-			col_camera_data[i].rotate = col_player_data[i].rad;
-			col_camera_data[i].pSpeed = col_player_data[i].Speed * fDeltaTime;
-			col_camera_data[i].AT = glm::vec3(0, 0, 0.0f);
-		}
+
+		float fpz = 0.0f;
+		float spz = FLT_MAX;
+
 		//데이터 바꿔치기
-
-		for (int i = 0; i < count_s; i++) {
-
-			game_data.player_data[i].PosMat = col_player_data[i].PosMat;
+		for (int i = 0; i < count_s+1; i++) {
+			//game_data.player_data[i].BulletList.push_back(2);
+			//cout << game_data.player_data[i].BulletList[0] << endl;
+			/*game_data.player_data[i].PosMat = col_player_data[i].PosMat;
 			game_data.player_data[i].Posvec = col_player_data[i].Posvec;
 			game_data.player_data[i].SclMat = col_player_data[i].SclMat;
 			game_data.player_data[i].RotMat = col_player_data[i].RotMat;
-			game_data.player_data[i].rad = col_player_data[i].rad;
-			game_data.player_data[i].camera_posx = col_camera_data[i].posx;
-			game_data.player_data[i].camera_posy = col_camera_data[i].posy;
-			game_data.player_data[i].camera_posz = col_camera_data[i].posz;
-
-
+			game_data.player_data[i].rad = col_player_data[i].rad;*/
+			players[i].PosX = col_player_data[i].Posvec.x;
+			players[i].PosY = col_player_data[i].Posvec.y;
+			players[i].PosZ = col_player_data[i].Posvec.z;
+			//players[i].TR = col_player_data[i].RotMat * col_player_data[i].PosMat * col_player_data[i].SclMat;
+			players[i].PosMat = col_player_data[i].PosMat;
+			players[i].RotMat = col_player_data[i].RotMat;
+			players[i].SclMat = col_player_data[i].SclMat;
+			
 		}
-		int len = sizeof(game_data);
-
-		for (int i = 0; i < count_s; i++) { //플레이어 수만큼
-			retval = send(Client_sock[i], (char*)&len, sizeof(int), 0);
-			if (retval == SOCKET_ERROR) {
-				err_display("send()");
-
-			}
-			retval = send(Client_sock[i], (char*)&game_data, sizeof(game_data), 0);
-			if (retval == SOCKET_ERROR) {
-				err_display("send()");
-
-			}
-		}
-
-		/*----------------------------------------------------*/
-
-		if (count_s == 1)
-		{
-			FirstPosZ = game_data.player_data[0].Posvec.z;
-			LastPosZ = game_data.player_data[0].Posvec.z;
-		}
-
-		else if (count_s == 2)
-		{
-			FirstPosZ = max({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z });
-			LastPosZ = min({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z });
-		}
-
-		else if (count_s == 3)
-		{
-			FirstPosZ = max({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z,game_data.player_data[2].Posvec.z });
-			LastPosZ = min({ game_data.player_data[0].Posvec.z,game_data.player_data[1].Posvec.z,game_data.player_data[2].Posvec.z });
-		}
-
-		if ((int)FirstPosZ % 100 == 0 && FirstPosZ > 100.0f)
-		{
-			Cube_data c;
-			c.zOffset = FirstPosZ + 300.0f + rand() % 100;
-			c.rotate = rand() % 360;
-			c.life = rand() % 3;
-
-			CubeList_V.push_back(c);
-			cubecounter += 1;
-		}
-
-		Cube_data* CubeList_A = CubeList_V.data();
-		if (cubecounter != 0)
-			printf("%f\n", CubeList_A[0].zOffset);
-
 		
+
+		SendPlayerPosPacket(*players);
+
 	}
 }
 
@@ -642,20 +496,3 @@ void init_player(Col_Player_data cpd) {
 //	cpd.PosMat = glm::translate(cpd.PosMat, glm::vec3(0.0f, 0.0f, cpd.Speed * fDeltaTime));
 //}
 //
-//void update_camera(Col_Player_data cpd, Col_Camera_data ccd) {
-//	ccd.posx = cpd.Posvec.x;
-//	ccd.posy = cpd.Posvec.y;
-//	ccd.posz = cpd.Posvec.z;
-//	ccd.rotate = cpd.rad;
-//	ccd.pSpeed = cpd.Speed * fDeltaTime;
-//	ccd.AT = glm::vec3(0, 0, 0.0f);
-//}
-//
-//void init_camera(Col_Camera_data ccd)
-//{
-//	ccd.cameraPos = glm::vec3(0.0f, 2.0f, -10.0f);
-//	ccd.cameraDirection = ccd.AT;//
-//	ccd.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-//	ccd.AT = glm::vec3(0, 0, 0.0f);
-//	ccd.view = glm::lookAt(ccd.cameraPos, ccd.cameraDirection, ccd.cameraUp);
-//}

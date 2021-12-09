@@ -45,6 +45,8 @@ private:
 	glm::mat4 RotMat;
 	glm::mat4 SclMat;
 
+	glm::mat4 TR;
+
 	GLuint VAO;
 	GLuint VBO[3];
 	GLuint EBO;
@@ -116,6 +118,8 @@ public:
 	void Init();
 	void Move();
 	void Update(Player_data pd);
+	void Key_Input(unsigned char key, bool state);
+	void sKey_Input(int key, bool state);
 	void Render(GLuint ShaderProgram);
 	float getSpeed();
 	float getRotate();

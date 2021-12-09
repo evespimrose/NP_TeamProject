@@ -12,7 +12,6 @@ private:
 	float rotate;
 	GLuint VAO;
 	glm::mat4 PosMat;
-	glm::mat4 RotMat;
 	float Speed;
 	glm::vec3 PosVec;
 
@@ -22,8 +21,7 @@ private:
 	float fDeltaTime;
 
 public:
-	void Bullet::Init(glm::vec3 playerPos, GLuint vao, float PlayerSpeed, float rad);
-	void Bullet::Init(Player_data pd, GLuint vao);
+	void Init(glm::vec3 playerPos, GLuint vao, float PlayerSpeed, float Rotate);
 	void Render(GLuint ShaderProgram);
 	void Move();
 	float getzOffset();

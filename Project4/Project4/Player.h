@@ -46,6 +46,7 @@ private:
 	glm::mat4 RotMat;
 	glm::mat4 SclMat;
 
+	glm::mat4 TR;
 	GLuint VAO;
 	GLuint VBO[3];
 	GLuint EBO;
@@ -103,14 +104,14 @@ private:
 	};
 
 	const GLfloat Color[8][3] = {
-		{1.0, 0.0, 0.0},
-		{1.0, 0.0, 0.0},
-		{1.0, 0.0, 0.0},
-		{1.0, 0.0, 0.0},
-		{1.0, 0.0, 0.0},
-		{1.0, 0.0, 0.0},
-		{1.0, 0.0, 0.0},
-		{1.0, 0.0, 0.0}
+		{0.7, 0.7, 0.7},
+		{0.7, 0.7, 0.7},
+		{0.7, 0.7, 0.7},
+		{0.7, 0.7, 0.7},
+		{0.7, 0.7, 0.7},
+		{0.7, 0.7, 0.7},
+		{0.7, 0.7, 0.7},
+		{0.7, 0.7, 0.7}
 	};
 
 public:
@@ -128,11 +129,9 @@ public:
 	//int getLife();
 	//void setSpeed(float speed);
 	void Fire();
-	void Fire(Player_data pd);
 	std::vector<Bullet> getBulletList();
 	void setBulletList(std::vector<Bullet> tmpList);
 	void ManageBullet();
-	void ManageBullet(Player_data pd);
 	void setRad(float radian);
 	glm::vec3 getPosition();
 	Camera getCamera();

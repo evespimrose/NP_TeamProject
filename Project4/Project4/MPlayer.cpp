@@ -221,9 +221,9 @@ void MPlayer::Move()
 
 void MPlayer::Update(Player_data pd)
 {
+	RotMat = pd.RotMat;
 	PosVec = pd.Posvec;
 	PosMat = pd.PosMat;
-	RotMat = pd.RotMat;
 	SclMat = pd.SclMat;
 }
 

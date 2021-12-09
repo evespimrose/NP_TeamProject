@@ -198,12 +198,12 @@ void Player::Init(Player_data pd)
 
 	PosVec = pd.Posvec;
 
-	PosMat = pd.PosMat;
+	//PosMat = pd.PosMat;
 
-	rad = pd.rad;
-	RotMat = pd.RotMat;
+	//rad = pd.rad;
+	//RotMat = pd.RotMat;
 
-	SclMat = pd.SclMat;
+	//SclMat = pd.SclMat;
 
 	//dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
 
@@ -317,8 +317,7 @@ void Player::Update(Player_data pd)
 	PosMat = pd.PosMat;
 	SclMat = pd.SclMat;
 	
-	
-	ManageBullet(pd);
+	ManageBullet();
 	
 	camera.setPosition(PosVec.z);
 }
@@ -329,11 +328,14 @@ void Player::Key_Input(unsigned char key, bool state)
 	{
 		if (state)
 		{
+			//총알 발사 이벤트 send 
 			keyDownlist[2] = true;
 		}
 
-		else
+		else {
+
 			keyDownlist[2] = false;
+		}
 	}
 }
 
@@ -344,9 +346,7 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 		if (state) {
 			Send_event(sock, CS_PLAYER_RIGHT_DOWN); //누름
 		}
-		else {
-			Send_event(sock, CS_PLAYER_RIGHT_UP);
-		}
+	
 	}
 
 	if (key == GLUT_KEY_LEFT)
@@ -354,15 +354,13 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 		if (state) {
 		Send_event(sock, CS_PLAYER_LEFT_DOWN); //누름
 	}
-		else
-		{
-			Send_event(sock, CS_PLAYER_LEFT_UP);
-		}
+		
 	}
 }
 
 void Player::Render(GLuint ShaderProgram)
 {
+
 	camera.Render(ShaderProgram);
 
 	unsigned int modelLocation = glGetUniformLocation(ShaderProgram, "modelTransform");
@@ -409,53 +407,11 @@ void Player::Fire()
 
 }
 
-void Player::Fire(Player_data pd)
-{
-	std::chrono::milliseconds FireDelay(300);
-
-	std::chrono::duration<double> sec = std::chrono::system_clock::now() - PrevFireTime;
-	if (FireDelay < sec)
-	{
-		Bullet b;
-
-		b.Init(pd, BulletVAO);
-		BulletList.push_back(b);
-
-		PrevFireTime = std::chrono::system_clock::now();
-
-		SoundManager::sharedManager()->play(ATTACK_SOUND);
-	}
-
-}
-
 void Player::ManageBullet()
 {
 	if (keyDownlist[2])
 	{
-		Fire();
-	}
-
-	std::vector<Bullet>::iterator iter = BulletList.begin();
-
-	for (; iter != BulletList.end();)
-	{
-		iter->Move();
-		if (iter->getzOffset() > PosVec.z + 50.0f)
-		{
-			iter = BulletList.erase(iter);
-		}
-		else
-		{
-			iter++;
-		}
-	}
-}
-
-void Player::ManageBullet(Player_data pd)
-{
-	if (keyDownlist[2])
-	{
-		Fire(pd);
+		Fire();//생성하고 데이터는 서버에서 가져온것로
 	}
 
 	std::vector<Bullet>::iterator iter = BulletList.begin();
@@ -483,6 +439,8 @@ float Player::getRotate()
 {
 	return rad;
 }
+
+
 
 std::vector<Bullet> Player::getBulletList()
 {
