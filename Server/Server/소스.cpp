@@ -86,7 +86,6 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 }
 
 
-
 bool Is_GameStart() {
 	int count = 0;
 
@@ -183,7 +182,6 @@ int main()
 
 		Client_sock[count_s] = client_sock;
 		
-		
 		ri[user_index].id = user_index;
 		ri[user_index].pt_player = 1;
 		ri[user_index].is_ready = 0;
@@ -211,8 +209,6 @@ int main()
 		else {
 			CloseHandle(hThread);
 		}
-
-
 	}
 
 	DeleteCriticalSection(&cs);
@@ -223,7 +219,6 @@ int main()
 	// 윈속 종료
 	WSACleanup();
 	return 0;
-
 }
 
 DWORD WINAPI recv_thread(LPVOID iD) {
@@ -481,8 +476,8 @@ void Calcutlaion_clients() {
 				Citer = CubeList_V.end() - 1;
 			}
 		}
-		SendPlayerPosPacket(*players);
 
+		SendPlayerPosPacket(*players);
 	}
 }
 
