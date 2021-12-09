@@ -446,8 +446,6 @@ GLvoid Timer(int Value)
 		mplayer2.Update(player_data[1]);
 		mplayer3.Update(player_data[2]);
 #endif
-
-	
 			player1.Update(game_data.player_data[user_id]);
 
 			if (ari.pt_clients_num == 2) {
@@ -461,7 +459,7 @@ GLvoid Timer(int Value)
 						mplayer[0].Update(game_data.player_data[i]);
 						cnt++;
 					}
-					else if(i != user_id){
+					else if (i != user_id) {
 						mplayer[1].Update(game_data.player_data[i]);
 					}
 				}
