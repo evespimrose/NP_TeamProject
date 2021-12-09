@@ -453,10 +453,34 @@ void Calcutlaion_clients() {
 			players[i].PosMat = col_player_data[i].PosMat;
 			players[i].RotMat = col_player_data[i].RotMat;
 			players[i].SclMat = col_player_data[i].SclMat;
-			
+			fpz = max(fpz, col_player_data[i].Posvec.z);
+			spz = min(spz, col_player_data[i].Posvec.z);
 		}
 		
+		if ((int)fpz % 100 == 0 && fpz > 100.0f)
+		{
+			Cube_pos c;
+			c.life = rand() % 3;
+			c.PosZ = fpz + 300.0f + rand() % 100;
+			glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+			float rad = rand() % 360;
+			c.PosMat = glm::translate(c.PosMat, cpos);
+			c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
+
+			CubeList_V.push_back(c);
+			Cubecnt += 1;
+		}
+
+		if (!CubeList_V.empty())
+		{
+			std::vector<Cube_pos>::iterator Citer = CubeList_V.begin();
+			if (Citer->PosZ + 50.0f < spz)
+			{
+				CubeList_V.erase(Citer);
+				Citer = CubeList_V.end() - 1;
+			}
+		}
 		SendPlayerPosPacket(*players);
 
 	}
