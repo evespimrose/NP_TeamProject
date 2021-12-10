@@ -62,6 +62,14 @@ void SendBulletPosPacket(Bullet_pos& bp)
 	packet.size = sizeof(packet);
 	packet.type = SC_BULLET_POS;
 	memcpy(&packet.bullets, &bp, sizeof(packet.bullets));
+	SendPacket(&packet);//모든 클라에게 전송
+}
 
+void SendCubePosPacket(Cube_pos& ps)
+{
+	sc_packet_cube_pos packet;
+	packet.size = sizeof(packet);
+	packet.type = SC_CUBE_POS;
+	memcpy(&packet.cubes, &ps, sizeof(packet.cubes));
 	SendPacket(&packet);//모든 클라에게 전송
 }
