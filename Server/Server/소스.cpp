@@ -350,6 +350,7 @@ void Calcutlaion_clients() {
 	}
 
 	vector<Cube_pos> CubeList_V;
+	Cube_pos* cubelist;
 	CubeList_V.reserve(20);
 	int Cubecnt = 10;
 
@@ -480,13 +481,14 @@ void Calcutlaion_clients() {
 		if (!CubeList_V.empty())
 		{
 			std::vector<Cube_pos>::iterator Citer = CubeList_V.begin();
-			if (Citer->PosZ + 50.0f < spz)
+			if (Citer->PosZ + 10.0f < spz)
 			{
 				CubeList_V.erase(Citer);
 				Citer = CubeList_V.end() - 1;
 				cout << "»èÁ¦µÊ" << CubeList_V.size() << endl;
 			}
 		}
+
 		//memcpy();
 		SendPlayerPosPacket(*players);
 	}
