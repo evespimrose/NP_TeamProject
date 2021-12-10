@@ -170,7 +170,7 @@ void ProcessPacket(char* packet_buffer)
 	{
 		sc_packet_cube_pos packet;
 		memcpy(&packet, ptr, sizeof(packet));
-		for (int i = 0; i < MAX_BULLET; i++) {
+		for (int i = 0; i < MAX_CUBE; i++) {
 			cube[i].set(packet.cubes[i].life, packet.cubes[i].PosMat, packet.cubes[i].RotMat);
 		}
 		break;

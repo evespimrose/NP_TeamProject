@@ -71,5 +71,5 @@ struct sc_packet_bullet_pos {
 struct sc_packet_cube_pos {
 	short size;
 	char type;
-	Cube_pos cubes[20];
+	Cube_pos cubes[MAX_CUBE];
 };
