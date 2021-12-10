@@ -73,10 +73,7 @@ typedef struct Data
 {
     Player_data PlayerData;
     Cube_data CubeData;
-
 }Data;
-
-
 
 typedef struct all_ready_info
 {

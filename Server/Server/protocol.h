@@ -66,4 +66,5 @@ struct sc_packet_bullet_pos {
 	short size;
 	char type;
 	Bullet_pos bullets[MAX_BULLET];
+	Cube_pos cubes[20];
 };

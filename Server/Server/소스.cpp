@@ -86,13 +86,12 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 }
 
 
-
 bool Is_GameStart() {
 	int count = 0;
 
 	for (int i = 0; i < count_s+1; ++i)
 	{
-		if (is_connected != false)
+		if (is_connected[i] != false)
 		{
 			if (ri[i].is_ready == true)
 			{
@@ -183,7 +182,6 @@ int main()
 
 		Client_sock[count_s] = client_sock;
 		
-		
 		ri[user_index].id = user_index;
 		ri[user_index].pt_player = 1;
 		ri[user_index].is_ready = 0;
@@ -211,8 +209,6 @@ int main()
 		else {
 			CloseHandle(hThread);
 		}
-
-
 	}
 
 	DeleteCriticalSection(&cs);
@@ -223,7 +219,6 @@ int main()
 	// 윈속 종료
 	WSACleanup();
 	return 0;
-
 }
 
 DWORD WINAPI recv_thread(LPVOID iD) {
@@ -270,7 +265,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		{
 		case CS_PLAYER_LEFT_DOWN:
 		{
-			cout << "왼쪽" << endl;
+			//cout << "왼쪽" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_LEFT_GO;
@@ -279,7 +274,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		}
 		case CS_PLAYER_RIGHT_DOWN:
 		{
-			cout << "오른쪽" << endl;
+			//cout << "오른쪽" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_RIGHT_GO;
@@ -366,6 +361,11 @@ void Calcutlaion_clients() {
 		players[i].SclMat = col_player_data[i].SclMat ;
 	}
 
+	vector<Cube_pos> CubeList_V;
+	Cube_pos* cubelist;
+	CubeList_V.reserve(20);
+	int Cubecnt = 10;
+
 	while (true) {
 		EnterCriticalSection(&Msg_cs);
 		MsgQueue = glo_MsgQueue;
@@ -395,7 +395,7 @@ void Calcutlaion_clients() {
 		}
 
 		while (!MsgQueue.empty()) {
-			cout << "뭔가 왔음" << endl;
+			//cout << "뭔가 왔음" << endl;
 
 
 			Msg = MsgQueue.front();
@@ -404,7 +404,7 @@ void Calcutlaion_clients() {
 				switch (Msg.dir)
 				{
 				case DIR_LEFT_GO://왼쪽
-					cout << "왼쪽 누름" << endl;
+					//cout << "왼쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -420,7 +420,7 @@ void Calcutlaion_clients() {
 					break;
 		
 				case DIR_RIGHT_GO://오른쪽
-					cout << "오른쪽 누름" << endl;
+					//cout << "오른쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -468,6 +468,7 @@ void Calcutlaion_clients() {
 			players[i].PosMat = col_player_data[i].PosMat;
 			players[i].RotMat = col_player_data[i].RotMat;
 			players[i].SclMat = col_player_data[i].SclMat;
+<<<<<<< HEAD
 		}
 
 		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼
@@ -477,6 +478,49 @@ void Calcutlaion_clients() {
 
 		SendPlayerPosPacket(*players);
 		SendBulletPosPacket(*bullets);
+=======
+			fpz = max(fpz, col_player_data[i].Posvec.z);
+			spz = min(spz, col_player_data[i].Posvec.z);
+		}
+		
+		if ((int)fpz % 100 == 0 && fpz > 100.0f)
+		{
+			if (Cubecnt > 0)
+			{
+				Cubecnt--;
+				Cube_pos c;
+				c.life = rand() % 3;
+				c.PosZ = fpz + 300.0f + rand() % 100;
+				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+				float rad = rand() % 360;
+				c.PosMat = glm::translate(c.PosMat, cpos);
+				c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+				CubeList_V.push_back(c);
+
+				cout << "추가됨" << CubeList_V.size() << endl;
+			}
+			else if (Cubecnt == 0)
+			{
+				Cubecnt = 10;
+			}
+		}
+
+		if (!CubeList_V.empty())
+		{
+			std::vector<Cube_pos>::iterator Citer = CubeList_V.begin();
+			if (Citer->PosZ + 10.0f < spz)
+			{
+				CubeList_V.erase(Citer);
+				Citer = CubeList_V.end() - 1;
+				cout << "삭제됨" << CubeList_V.size() << endl;
+			}
+		}
+
+		//memcpy();
+		SendPlayerPosPacket(*players);
+>>>>>>> HT_4
 	}
 }
 
