@@ -43,12 +43,12 @@ typedef struct Player_data//최종 보낼 플레이어 데이터
 {
     //std::vector<int> BulletList;
     glm::vec3 Posvec = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::mat4 PosMat= glm::mat4(1.0f);
-    glm::mat4 SclMat= glm::mat4(1.0f);
-    glm::mat4 RotMat= glm::mat4(1.0f);
-   // glm::mat4 TR = glm::mat4(1.0f);
+    glm::mat4 PosMat = glm::mat4(1.0f);
+    glm::mat4 SclMat = glm::mat4(1.0f);
+    glm::mat4 RotMat = glm::mat4(1.0f);
+    // glm::mat4 TR = glm::mat4(1.0f);
     float rad = 0.0f;
-    
+
 }Player_data;
 
 
@@ -71,14 +71,14 @@ typedef struct Bullet_data//최종 보낼 플레이어 데이터
 typedef struct Game_data//최종 보낼 플레이어 데이터
 {
     Player_data player_data[3];
-  //  Bullet_data bullet_data[100];
+    //  Bullet_data bullet_data[100];
 }Game_data;
 
 
 LARGE_INTEGER tSecond;
 LARGE_INTEGER tTime;
-float acc= 0.0001f;
-float fDeltaTime=0;
+float acc = 0.0001f;
+float fDeltaTime = 0;
 
 
 typedef struct ready_info
