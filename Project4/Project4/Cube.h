@@ -18,9 +18,11 @@ private:
 	glm::mat4 PosMat;
 	glm::mat4 RotMat;
 	glm::vec3 PosVec;
+	glm::mat4 SclMat;
 
 public:
 	void Init(float Offset, GLuint* vao);
+	void Init(GLuint vao1, GLuint vao2, GLuint vao3);
 	void Render(GLuint ShaderProgram);
 	int getLife();
 	void MinusLife();

@@ -166,7 +166,7 @@ void ProcessPacket(char* packet_buffer)
 
 		break;
 	}
-	case SC_MAP_CUBE:
+	/*/case SC_MAP_CUBE:
 	{
 		sc_packet_cube_pos packet;
 		memcpy(&packet, ptr, sizeof(packet));
@@ -174,7 +174,7 @@ void ProcessPacket(char* packet_buffer)
 			cube[i].set(packet.cubes[i].life, packet.cubes[i].PosMat, packet.cubes[i].RotMat);
 		}
 		break;
-	}
+	}*/
 	default:
 		std::cout << "None Receive Packet" << std::endl;
 		break;
@@ -722,7 +722,7 @@ int main(int argc, char** argv)
 		mplayer[1].Init();
 	//player1.Init(bullet);
 	
-	m.Init();
+	m.Init(cube);
 
 	glutTimerFunc(1, Timer, 0);
 	glutKeyboardFunc(Keyboard);

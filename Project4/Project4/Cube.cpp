@@ -23,11 +23,19 @@ void Cube::Init(float Offset, GLuint* vao)
 	PosVec = glm::rotate(PosVec, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
+void Cube::Init(GLuint vao1, GLuint vao2, GLuint vao3)
+{
+	VAO[0] = vao1;
+	VAO[1] = vao2;
+	VAO[2] = vao3;
+}
+
 void Cube::Render(GLuint ShaderProgram)
 {
 	unsigned int modelLocation = glGetUniformLocation(ShaderProgram, "modelTransform");
+	SclMat = glm::scale(SclMat, glm::vec3(3.0f, 3.0f, 3.0f));
 	glm::mat4 TR;
-	TR = RotMat * PosMat;
+	TR = RotMat * PosMat * SclMat;
 
 	unsigned int specularLocation = glGetUniformLocation(ShaderProgram, "spec_strength");
 	unsigned int diffuseLocation = glGetUniformLocation(ShaderProgram, "diffuse_strength");
@@ -36,7 +44,6 @@ void Cube::Render(GLuint ShaderProgram)
 	glUniform1f(specularLocation, specular);
 	glUniform1f(diffuseLocation, diffuse);
 	glUniform1i(shininessLocation, shininess);
-
 
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &TR[0][0]);
 	glBindVertexArray(VAO[Life]);

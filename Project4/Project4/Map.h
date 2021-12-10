@@ -97,6 +97,7 @@ private:
 
 public:
 	void Init();
+	void Init(Cube* cube);
 	void Fastest_Update(float pz);
 	void Slowest_Update(float pz);
 	void Render(GLuint ShaderProgram);

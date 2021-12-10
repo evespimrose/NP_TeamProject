@@ -368,6 +368,14 @@ void Calcutlaion_clients() {
 		players[i].SclMat = col_player_data[i].SclMat ;
 	}
 
+	for (int i = 0; i < MAX_CUBE; ++i)
+	{
+		ccd[i].life = rand() % 3;
+		ccd[i].PosZ = 0.0f;
+		glm::vec3 cpos = glm::vec3(0.0f, -3.5f, ccd[i].PosZ);
+		ccd[i].PosMat = glm::translate(ccd[i].PosMat, cpos);
+	}
+
 	while (true) {
 		EnterCriticalSection(&Msg_cs);
 		MsgQueue = glo_MsgQueue;
@@ -461,16 +469,6 @@ void Calcutlaion_clients() {
 			cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
 		}
 
-		for (int i = 0; i < MAX_CUBE; ++i)
-		{
-			Col_Cube_data c;
-			c.life = rand() % 3;
-			c.PosZ = 0.0f;
-			glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-			c.PosMat = glm::translate(c.PosMat, cpos);
-			ccd[i] = c;
-		}
-
 		float fpz = 0.0f;
 		float spz = FLT_MAX;
 
@@ -496,14 +494,12 @@ void Calcutlaion_clients() {
 		{
 			if (ccd[i].PosZ + 50.0f < spz)
 			{
-				Col_Cube_data c;
-				c.life = rand() % 3;
-				c.PosZ = fpz + 300.0f + rand() % 100;
-				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+				ccd[i].life = rand() % 3;
+				ccd[i].PosZ = fpz + 300.0f + rand() % 100;
+				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, ccd[i].PosZ);
 				float rad = rand() % 360;
-				c.PosMat = glm::translate(c.PosMat, cpos);
-				c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-				ccd[i] = c;
+				ccd[i].PosMat = glm::translate(ccd[i].PosMat, cpos);
+				ccd[i].RotMat = glm::rotate(ccd[i].RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
 			}
 		}
 
