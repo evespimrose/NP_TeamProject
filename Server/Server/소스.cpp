@@ -362,11 +362,6 @@ void Calcutlaion_clients() {
 		players[i].SclMat = col_player_data[i].SclMat;
 	}
 
-	vector<Cube_pos> Cube_V;
-	Cube_pos CubeList[20];
-	//Cube_V.reserve(20);
-	int Cubecnt = 10;
-
 	while (true) {
 		EnterCriticalSection(&Msg_cs);
 		MsgQueue = glo_MsgQueue;
@@ -480,6 +475,11 @@ void Calcutlaion_clients() {
 
 			bullets[i].PosMat = cbd[i].PosMat;
 		}
+
+		vector<Cube_pos> Cube_V;
+		//Cube_pos CubeList[20];
+		//Cube_V.reserve(20);
+		int Cubecnt = 10;
 
 		if ((int)fpz % 100 == 0 && fpz > 100.0f)
 		{
