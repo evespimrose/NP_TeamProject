@@ -503,7 +503,7 @@ void Calcutlaion_clients() {
 			}
 		}
 
-		for (int i = 0; i < 20; ++i)
+		for (int i = 0; i < MAX_CUBE; ++i)
 		{
 			cubes[i].PosMat = ccd[i].PosMat;
 			cubes[i].RotMat = ccd[i].RotMat;

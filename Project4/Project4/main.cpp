@@ -33,7 +33,7 @@ float ambient = 0.6f;
 Player player1;
 MPlayer mplayer[2];
 Bullet bullet[MAX_BULLET];
-Cube cube[MAX_CUBE];
+Cube cubess[MAX_CUBE];
 
 Map m;
 
@@ -166,15 +166,15 @@ void ProcessPacket(char* packet_buffer)
 
 		break;
 	}
-	/*/case SC_MAP_CUBE:
+	case SC_MAP_CUBE:
 	{
 		sc_packet_cube_pos packet;
 		memcpy(&packet, ptr, sizeof(packet));
 		for (int i = 0; i < MAX_CUBE; i++) {
-			cube[i].set(packet.cubes[i].life, packet.cubes[i].PosMat, packet.cubes[i].RotMat);
+			cubess[i].set(packet.cubes[i].life, packet.cubes[i].PosMat, packet.cubes[i].RotMat);
 		}
 		break;
-	}*/
+	}
 	default:
 		std::cout << "None Receive Packet" << std::endl;
 		break;
@@ -335,7 +335,7 @@ GLvoid drawScene()
 			bullet[i].Render(ShaderProgram);
 		}
 		for (int i = 0; i < MAX_CUBE; i++) {
-			cube[i].Render(ShaderProgram);
+			cubess[i].Render(ShaderProgram);
 		}
 
 		string score = "Score : ";
@@ -722,7 +722,7 @@ int main(int argc, char** argv)
 		mplayer[1].Init();
 	//player1.Init(bullet);
 	
-	m.Init(cube);
+	m.Init();
 
 	glutTimerFunc(1, Timer, 0);
 	glutKeyboardFunc(Keyboard);
