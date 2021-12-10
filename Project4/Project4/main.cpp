@@ -80,12 +80,12 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 DWORD WINAPI JoinThread(LPVOID arg)
 {
 	sock = init_sock();
-
-
+	
+	
 	while (1) {
 		Recv_Packet(sock);
-		//game_data = recv_Player(sock);
-		//cout << game_data.player_data->BulletList[0] << endl;
+			//game_data = recv_Player(sock);
+			//cout << game_data.player_data->BulletList[0] << endl;
 
 
 	}
@@ -106,8 +106,8 @@ void ProcessPacket(char* packet_buffer)
 		memcpy(&packet, ptr, sizeof(packet));
 		user_id = packet.id;
 		cout << user_id << endl;
-		//	ari.Pt_Players[user_id] = true;
-		//	ari.is_ready[user_id] = false;
+	//	ari.Pt_Players[user_id] = true;
+	//	ari.is_ready[user_id] = false;
 		break;
 
 	}
@@ -134,21 +134,21 @@ void ProcessPacket(char* packet_buffer)
 	}
 	case SC_PLAYER_POS:
 	{
-
+		
 		sc_packet_player_pos packet;
 		memcpy(&packet, ptr, sizeof(packet));
 		for (int i = 0; i < 3; i++) {
 			if (packet.players[i].id != -1)
 			{
-				if (packet.players[i].PosY != NULL && packet.players[i].PosZ != NULL)
-				{
-					game_data.player_data[i].Posvec.x = packet.players[i].PosX;
-					game_data.player_data[i].Posvec.y = packet.players[i].PosY;
-					game_data.player_data[i].Posvec.z = packet.players[i].PosZ;
-					game_data.player_data[i].PosMat = packet.players[i].PosMat;
-					game_data.player_data[i].RotMat = packet.players[i].RotMat;
-					game_data.player_data[i].SclMat = packet.players[i].SclMat;
-				}
+					if ( packet.players[i].PosY != NULL && packet.players[i].PosZ != NULL)
+					{
+							game_data.player_data[i].Posvec.x = packet.players[i].PosX;
+							game_data.player_data[i].Posvec.y = packet.players[i].PosY;
+							game_data.player_data[i].Posvec.z = packet.players[i].PosZ;
+							game_data.player_data[i].PosMat = packet.players[i].PosMat;
+							game_data.player_data[i].RotMat = packet.players[i].RotMat;
+							game_data.player_data[i].SclMat = packet.players[i].SclMat;
+					}
 			}
 		}
 
@@ -312,12 +312,12 @@ GLvoid drawScene()
 		mplayer3.Render(ShaderProgram);
 #endif
 		//2명일때
-
+		
 		if (ari.pt_clients_num == 2) {
 			mplayer[0].Render(ShaderProgram);
 		}
 		//3명일때 
-		else if (ari.pt_clients_num == 3) {
+		else if(ari.pt_clients_num == 3){
 			mplayer[0].Render(ShaderProgram);
 			mplayer[1].Render(ShaderProgram);
 		}
@@ -369,7 +369,7 @@ GLvoid drawScene()
 	{
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		
 		glutPrint(WIDTH / 2.5f - 25, HEIGHT / 1.5f + 100, GLUT_BITMAP_TIMES_ROMAN_24, "Waiting for players...");
 		//플레이어 1
 		glutPrint(WIDTH / 5.5f, HEIGHT / 2.0f, GLUT_BITMAP_HELVETICA_18, "----------");//상단
@@ -449,45 +449,45 @@ GLvoid Timer(int Value)
 		m.Fastest_Update(pz);
 		m.Slowest_Update(pz);
 
-
+	
 #ifdef MULTI
 		mplayer2.Update(player_data[1]);
 		mplayer3.Update(player_data[2]);
 #endif
 
+	
+			player1.Update(game_data.player_data[user_id]);
 
-		player1.Update(game_data.player_data[user_id]);
+			if (ari.pt_clients_num == 2) {
 
-		if (ari.pt_clients_num == 2) {
+				mplayer[0].Update(game_data.player_data[user_id == 1 ? 0 : 1]);
+			}
 
-			mplayer[0].Update(game_data.player_data[user_id == 1 ? 0 : 1]);
-		}
-
-		if (ari.pt_clients_num == 3) {
-			for (int i = 0; i < 3; i++) {
-				if (i != user_id && cnt == 0) {
-					mplayer[0].Update(game_data.player_data[i]);
-					cnt++;
-				}
-				else if (i != user_id) {
-					mplayer[1].Update(game_data.player_data[i]);
+			if (ari.pt_clients_num == 3) {
+				for (int i = 0; i < 3; i++) {
+					if (i != user_id && cnt == 0) {
+						mplayer[0].Update(game_data.player_data[i]);
+						cnt++;
+					}
+					else if(i != user_id){
+						mplayer[1].Update(game_data.player_data[i]);
+					}
 				}
 			}
-		}
 
-		cnt = 0;
+			cnt = 0;
 
-		/*	if (m.PlayerCollisionCheck(pz, player1.getRotate()))
+	/*	if (m.PlayerCollisionCheck(pz, player1.getRotate()))
 
+		{
+			SoundManager::sharedManager()->play(CRUSH_SOUND);
+
+			if (player1.collision())
 			{
-				SoundManager::sharedManager()->play(CRUSH_SOUND);
-
-				if (player1.collision())
-				{
-					Scene = OVER_SCENE;
-					glutPostRedisplay();
-				}
-			}*/
+				Scene = OVER_SCENE;
+				glutPostRedisplay();
+			}
+		}*/
 
 		std::vector<Bullet> tmpList = player1.getBulletList();
 		m.BulletCollisionCheck(tmpList);
@@ -529,7 +529,7 @@ void Reset()
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	player1.Key_Input(sock, key, TRUE);
+	player1.Key_Input(sock,key, TRUE);
 
 	switch (key)
 	{
@@ -635,7 +635,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			for (string word : words)
 				ip_add += word;
 
-
+			
 			//Send_event(sock, CS_READY);
 			printf("전송완료");
 			Scene = LOBBY_SCENE;
@@ -660,23 +660,23 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 GLvoid KeyboardUp(unsigned char key, int x, int y)
 {
-	player1.Key_Input(sock, key, FALSE);
+	player1.Key_Input(sock,key, FALSE);
 }
 
 GLvoid sKeyboard(int key, int x, int y)
 {
-	player1.sKey_Input(sock, key, TRUE);
+	player1.sKey_Input(sock,key, TRUE);
 }
 
-GLvoid sKeyboardUp(int key, int x, int y)
+GLvoid sKeyboardUp( int key, int x, int y)
 {
-	player1.sKey_Input(sock, key, FALSE);
+	player1.sKey_Input(sock,key, FALSE);
 }
 
 int main(int argc, char** argv)
 {
 	srand((unsigned int)time(NULL));
-
+	
 	HANDLE hThread_Join;
 	hThread_Join = CreateThread(NULL, 0, JoinThread, NULL, 0, 0);
 
@@ -698,17 +698,17 @@ int main(int argc, char** argv)
 	glewInit();
 
 	InitShader();
-
+	
 	player1.Init(game_data.player_data[0], bullet);
 #ifdef MULTI
 	mplayer2.Init();
 	mplayer3.Init();
 #endif
-
-	mplayer[0].Init();
-	mplayer[1].Init();
+	
+		mplayer[0].Init();
+		mplayer[1].Init();
 	//player1.Init(bullet);
-
+	
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);

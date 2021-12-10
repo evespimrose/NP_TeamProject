@@ -17,9 +17,9 @@ void SendLoginOkPacket(char id)
 	packet.id = id;
 	packet.size = sizeof(packet);
 	packet.type = SC_LOGIN_OK;
-
+	
 	send(Client_sock[id], (char*)&packet, sizeof(packet), 0);
-	cout << "아이디 :" << id << endl;
+	cout << "아이디 :"<< id << endl;
 }
 
 void SendReadyPacket(SOCKET sock, char other)
@@ -29,7 +29,7 @@ void SendReadyPacket(SOCKET sock, char other)
 	packet.size = sizeof(packet);
 	packet.type = SC_READY;
 	packet.pt = ri[other].pt_player;
-	packet.ready = ri[other].is_ready;
+	packet.ready = ri[other].is_ready; 
 	send(sock, (char*)&packet, sizeof(packet), 0);
 }
 
@@ -41,7 +41,7 @@ void SendGameStartPacket()
 	sc_packet_game_start packet;
 	packet.size = sizeof(packet);
 	packet.type = SC_GAMESTART;
-	packet.clients_num = count_s + 1;
+	packet.clients_num = count_s+1;
 	//memcpy(&packet.players, &tempPlayer, sizeof(tempPlayer));
 	SendPacket(&packet);//모든 클라에게 전송
 }
@@ -62,16 +62,6 @@ void SendBulletPosPacket(Bullet_pos& bp)
 	packet.size = sizeof(packet);
 	packet.type = SC_BULLET_POS;
 	memcpy(&packet.bullets, &bp, sizeof(packet.bullets));
-
-	SendPacket(&packet);//모든 클라에게 전송
-}
-
-void SendCubePosPacket(Cube_pos& ps)
-{
-	sc_packet_cube_pos packet;
-	packet.size = sizeof(packet);
-	packet.type = SC_CUBE_POS;
-	memcpy(&packet.cubes, &ps, sizeof(packet.cubes));
 
 	SendPacket(&packet);//모든 클라에게 전송
 }
