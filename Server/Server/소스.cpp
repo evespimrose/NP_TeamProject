@@ -364,7 +364,7 @@ void Calcutlaion_clients() {
 
 	vector<Cube_pos> Cube_V;
 	Cube_pos CubeList[20];
-	Cube_V.reserve(20);
+	//Cube_V.reserve(20);
 	int Cubecnt = 10;
 
 	while (true) {
@@ -513,7 +513,7 @@ void Calcutlaion_clients() {
 				Citer = Cube_V.end() - 1;
 				cout << "»èÁ¦µÊ" << Cube_V.size() << endl;
 			}
-			copy(Cube_V.begin(), Cube_V.end(), CubeList);
+			//copy(Cube_V.begin(), Cube_V.end(), CubeList);
 			cout << "º¹»çµÊ" << endl;
 		}
 
