@@ -32,6 +32,7 @@ float ambient = 0.6f;
 
 Player player1;
 MPlayer mplayer[2];
+Bullet bullet[MAX_BULLET];
 
 Map m;
 
@@ -79,6 +80,7 @@ Data* pack_data(Player_data* pd, Cube_data* cd)
 DWORD WINAPI JoinThread(LPVOID arg)
 {
 	sock = init_sock();
+	
 	
 	while (1) {
 		Recv_Packet(sock);
@@ -138,25 +140,27 @@ void ProcessPacket(char* packet_buffer)
 		for (int i = 0; i < 3; i++) {
 			if (packet.players[i].id != -1)
 			{
-				//cout << i << "---------" << packet.players[i].PosX << endl;
 					if ( packet.players[i].PosY != NULL && packet.players[i].PosZ != NULL)
 					{
-					/*	game_data.player_data[user_id].Posvec.x = packet.players[user_id].PosX;
-						game_data.player_data[user_id].Posvec.y = packet.players[user_id].PosY;
-						game_data.player_data[user_id].Posvec.z = packet.players[user_id].PosZ;
-						game_data.player_data[user_id].TR = packet.players[user_id].TR;*/
-						
-						for (int i = 0; i < 3; i++) {
 							game_data.player_data[i].Posvec.x = packet.players[i].PosX;
 							game_data.player_data[i].Posvec.y = packet.players[i].PosY;
 							game_data.player_data[i].Posvec.z = packet.players[i].PosZ;
 							game_data.player_data[i].PosMat = packet.players[i].PosMat;
 							game_data.player_data[i].RotMat = packet.players[i].RotMat;
 							game_data.player_data[i].SclMat = packet.players[i].SclMat;
-						}
-						
 					}
 			}
+		}
+
+		break;
+	}
+	case SC_BULLET_POS:
+	{
+
+		sc_packet_bullet_pos packet;
+		memcpy(&packet, ptr, sizeof(packet));
+		for (int i = 0; i < MAX_BULLET; i++) {
+			bullet[i].setposMat(packet.bullets[i].PosMat);
 		}
 
 		break;
@@ -317,6 +321,10 @@ GLvoid drawScene()
 			mplayer[0].Render(ShaderProgram);
 			mplayer[1].Render(ShaderProgram);
 		}
+		for (int i = 0; i < MAX_BULLET; i++) {
+			bullet[i].Render(ShaderProgram);
+		}
+
 		string score = "Score : ";
 		score += std::to_string((int)player1.getPosition().z);
 		glutPrint(700.0f, 580.0f, GLUT_BITMAP_HELVETICA_18, score);
@@ -521,7 +529,7 @@ void Reset()
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	player1.Key_Input(key, TRUE);
+	player1.Key_Input(sock,key, TRUE);
 
 	switch (key)
 	{
@@ -652,17 +660,17 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 GLvoid KeyboardUp(unsigned char key, int x, int y)
 {
-	player1.Key_Input(key, FALSE);
+	player1.Key_Input(sock,key, FALSE);
 }
 
 GLvoid sKeyboard(int key, int x, int y)
 {
-	player1.sKey_Input(sock, key, TRUE);
+	player1.sKey_Input(sock,key, TRUE);
 }
 
 GLvoid sKeyboardUp( int key, int x, int y)
 {
-	player1.sKey_Input(sock, key, FALSE);
+	player1.sKey_Input(sock,key, FALSE);
 }
 
 int main(int argc, char** argv)
@@ -690,7 +698,8 @@ int main(int argc, char** argv)
 	glewInit();
 
 	InitShader();
-	player1.Init(game_data.player_data[0]);
+	
+	player1.Init(game_data.player_data[0], bullet);
 #ifdef MULTI
 	mplayer2.Init();
 	mplayer3.Init();
@@ -698,8 +707,8 @@ int main(int argc, char** argv)
 	
 		mplayer[0].Init();
 		mplayer[1].Init();
-	player1.Init();
-
+	//player1.Init(bullet);
+	
 	m.Init();
 
 	glutTimerFunc(1, Timer, 0);

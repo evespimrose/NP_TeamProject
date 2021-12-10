@@ -15,16 +15,6 @@ struct Message {
 //}Data;
 using namespace std;
 
-typedef struct Col_Bullet_data //계산용 플레이어 데이터
-{
-   
-    glm::mat4 PosMat;
-    float Speed;
-    glm::vec3 PosVec;
-
-
-}Col_Bullet_data;
-
 typedef struct Col_Player_data //계산용 플레이어 데이터
 {
     glm::vec3 Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
@@ -39,7 +29,15 @@ typedef struct Col_Player_data //계산용 플레이어 데이터
 
 }Col_Player_data;
 
+typedef struct Col_Bullet_data//계산용 총알 데이터
+{
+    float rotate = 0.0f;
+    glm::mat4 PosMat = glm::mat4(1.0f);
+    float Speed = 0.0f;
+    glm::vec3 PosVec = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::mat4 RotMat = glm::mat4(1.0f);
 
+}Col_Bullet_data;
 
 typedef struct Player_data//최종 보낼 플레이어 데이터
 {
@@ -52,6 +50,8 @@ typedef struct Player_data//최종 보낼 플레이어 데이터
     float rad = 0.0f;
     
 }Player_data;
+
+
 
 typedef struct Bullet_data//최종 보낼 플레이어 데이터
 {
@@ -101,6 +101,4 @@ SOCKET Client_sock[3];
 std::queue <Message> glo_MsgQueue;
 
 int count_s = -1;
-
-
-
+int Bullet_num = 0;//발사된 총알 개수

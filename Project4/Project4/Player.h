@@ -115,11 +115,11 @@ private:
 	};
 
 public:
-	void Init();
-	void Init(Player_data pd);
+	//void Init(Bullet bullet);
+	void Init(Player_data pd, Bullet* bullet);
 	void Move(Player_data pd);
 	void Update(Player_data pd);
-	void Key_Input(unsigned char key, bool state);
+	void Key_Input(SOCKET sock,  unsigned char key, bool state);
 	void sKey_Input(SOCKET sock, int key, bool state);
 	void Render(GLuint ShaderProgram);
 	float getSpeed();
@@ -128,7 +128,7 @@ public:
 	//bool MinusLife();
 	//int getLife();
 	//void setSpeed(float speed);
-	void Fire();
+	void Fire(Bullet bullet);
 	std::vector<Bullet> getBulletList();
 	void setBulletList(std::vector<Bullet> tmpList);
 	void ManageBullet();

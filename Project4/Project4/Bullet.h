@@ -21,9 +21,10 @@ private:
 	float fDeltaTime;
 
 public:
-	void Init(glm::vec3 playerPos, GLuint vao, float PlayerSpeed, float Rotate);
+	void Init(GLuint vao);
 	void Render(GLuint ShaderProgram);
 	void Move();
+	void setposMat(glm::mat4 posmat);
 	float getzOffset();
 	float getRotate();
 };

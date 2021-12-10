@@ -265,7 +265,7 @@ void MPlayer::Fire()
 	{
 		Bullet b;
 
-		b.Init(PosVec, BulletVAO, Speed, rad);
+		//b.Init(PosVec, BulletVAO, Speed, rad);
 		BulletList.push_back(b);
 
 		PrevFireTime = std::chrono::system_clock::now();

@@ -88,8 +88,7 @@ void ProcessData(char* buf, size_t io_byte )
 
 	while (0 != io_byte) {
 		if (0 == in_packet_size) in_packet_size = MAKEWORD(ptr[0], ptr[1]); // 처음받은 메시지 크기를 저장
-		if (io_byte + saved_packet_size >= in_packet_size) 
-		{   // 처음받은 메시지 크기보다 새로 받은 바이트 수 + 저장하고 있던 바이트 수가 크면 processPacket 호출, 넘겨준 바이트 만큼 버퍼 포인터, 받은 바이트 수 갱신
+		if (io_byte + saved_packet_size >= in_packet_size) {   // 처음받은 메시지 크기보다 새로 받은 바이트 수 + 저장하고 있던 바이트 수가 크면 processPacket 호출, 넘겨준 바이트 만큼 버퍼 포인터, 받은 바이트 수 갱신
 			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
 			ProcessPacket(packet_buffer);
 			ptr += in_packet_size - saved_packet_size;
@@ -129,6 +128,7 @@ void Send_event(SOCKET sock, char buf)
 {
 	send(sock, &buf, sizeof(char), 0);
 }
+
 
 int recvn(SOCKET s, char* buf, int len, int flags) {
 	int received;

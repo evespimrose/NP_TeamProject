@@ -55,3 +55,13 @@ void SendPlayerPosPacket(Player_pos& ps)
 
 	SendPacket(&packet);//모든 클라에게 전송
 }
+
+void SendBulletPosPacket(Bullet_pos& bp)
+{
+	sc_packet_bullet_pos packet;
+	packet.size = sizeof(packet);
+	packet.type = SC_BULLET_POS;
+	memcpy(&packet.bullets, &bp, sizeof(packet.bullets));
+
+	SendPacket(&packet);//모든 클라에게 전송
+}

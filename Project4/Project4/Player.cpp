@@ -96,98 +96,9 @@ bool Player::loadOBJ(
 	return true;
 }
 
-void Player::Init()
-{
-	PrevFireTime = std::chrono::system_clock::now();
-	fDeltaTime = 0.0f;
 
-	for (int i = 0; i < 3; ++i)
-	{
-		keyDownlist[i] = false;
-	}
 
-	PosVec = glm::vec3(0.0f, -3.5f, 0.0f);
-
-	PosMat = glm::mat4(1.0f);
-	PosMat = glm::translate(PosMat, PosVec);
-
-	rad = 0.0f;
-	RotMat = glm::mat4(1.0f);
-	RotMat = glm::rotate(RotMat, glm::radians(-120.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	SclMat = glm::mat4(1.0f);
-	SclMat = glm::scale(SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
-
-	Speed = 0.0f;
-
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec2> uvs;
-	std::vector<glm::vec3> normals;
-
-	loadOBJ("Sphere.obj", vertices, uvs, normals);
-
-	for (int i = 0; i < vertices.size(); ++i)
-	{
-		Sphere[i][0] = vertices[i].x;
-		Sphere[i][1] = vertices[i].y;
-		Sphere[i][2] = vertices[i].z;
-
-		SphereNormal[i][0] = normals[i].x;
-		SphereNormal[i][1] = normals[i].y;
-		SphereNormal[i][2] = normals[i].z;
-
-		SphereColor[i][0] = 1.0f;
-		SphereColor[i][1] = 1.0f;
-		SphereColor[i][2] = 0.0f;
-	}
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glGenBuffers(3, VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), Cube, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), Color, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), Normal, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), Indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(3);
-
-	glGenVertexArrays(1, &BulletVAO);
-	glBindVertexArray(BulletVAO);
-	glGenBuffers(3, BulletVBO);
-	glGenBuffers(1, &BulletEBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, BulletVBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), Sphere, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, BulletVBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), SphereColor, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, BulletVBO[2]);
-	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), SphereNormal, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(2);
-}
-
-void Player::Init(Player_data pd)
+void Player::Init(Player_data pd,Bullet* bullet)
 {
 	PrevFireTime = std::chrono::system_clock::now();
 
@@ -232,6 +143,7 @@ void Player::Init(Player_data pd)
 		SphereColor[i][2] = 0.0f;
 	}
 
+
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(3, VBO);
@@ -276,38 +188,15 @@ void Player::Init(Player_data pd)
 	glBufferData(GL_ARRAY_BUFFER, 144 * 3 * sizeof(GLfloat), SphereNormal, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
+
+	for (int i = 0; i < MAX_BULLET; i++)
+		bullet[i].Init(BulletVAO);
 }
 
 void Player::Move(Player_data pd)
 {
 	  
 
-		/*RotMat = glm::rotate(RotMat, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		rad += 2.0f * Speed;
-		if (rad > 360)
-		{
-			rad -= 360;
-		}
-
-		RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));*/
-
-	/*if (keyDownlist[1])
-	{
-		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		rad -= 2.0f * Speed;
-		if (rad < 0)
-		{
-			rad += 360;
-		}
-
-		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-	}*/
 }
 
 void Player::Update(Player_data pd)
@@ -317,33 +206,33 @@ void Player::Update(Player_data pd)
 	PosMat = pd.PosMat;
 	SclMat = pd.SclMat;
 	
-	ManageBullet();
+	//ManageBullet();
 	
 	camera.setPosition(PosVec.z);
 }
 
-void Player::Key_Input(unsigned char key, bool state)
+void Player::Key_Input(SOCKET sock, unsigned char key, bool state)
 {
 	if (key == ' ')
 	{
 		if (state)
 		{
-			//총알 발사 이벤트 send 
+			//Fire(bullet);
+			Send_event(sock, CS_FIRE);
 			keyDownlist[2] = true;
 		}
-
 		else {
-
 			keyDownlist[2] = false;
 		}
 	}
 }
 
-void Player::sKey_Input(SOCKET sock, int key, bool state)
+void Player::sKey_Input(SOCKET sock ,int key, bool state)
 {
 	if (key == GLUT_KEY_RIGHT)
 	{
 		if (state) {
+			
 			Send_event(sock, CS_PLAYER_RIGHT_DOWN); //누름
 		}
 	
@@ -352,6 +241,7 @@ void Player::sKey_Input(SOCKET sock, int key, bool state)
 	if (key == GLUT_KEY_LEFT)
 	{
 		if (state) {
+			
 		Send_event(sock, CS_PLAYER_LEFT_DOWN); //누름
 	}
 		
@@ -380,25 +270,23 @@ void Player::Render(GLuint ShaderProgram)
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-	std::vector<Bullet>::iterator iter = BulletList.begin();
+	//std::vector<Bullet>::iterator iter = BulletList.begin();
 
-	for (; iter != BulletList.end(); ++iter)
-	{
-		iter->Render(ShaderProgram);
-	}
+	//for (; iter != BulletList.end(); ++iter)
+	//{
+	//	iter->Render(ShaderProgram);
+	//}
 }
 
-void Player::Fire()
+void Player::Fire(Bullet bullet)
 {
 	std::chrono::milliseconds FireDelay(300);
 
 	std::chrono::duration<double> sec = std::chrono::system_clock::now() - PrevFireTime;
 	if (FireDelay < sec)
 	{
-		Bullet b;
-
-		b.Init(PosVec, BulletVAO, Speed, rad);
-		BulletList.push_back(b);
+		std::cout << "아왔다고" << std::endl;
+		
 
 		PrevFireTime = std::chrono::system_clock::now();
 
@@ -409,10 +297,11 @@ void Player::Fire()
 
 void Player::ManageBullet()
 {
-	if (keyDownlist[2])
-	{
-		Fire();//생성하고 데이터는 서버에서 가져온것로
-	}
+	//if (keyDownlist[2])
+	//{
+
+	//	Fire();//생성하고 데이터는 서버에서 가져온것로
+	//}
 
 	std::vector<Bullet>::iterator iter = BulletList.begin();
 
@@ -480,7 +369,7 @@ bool Player::MinusLife()
 void Player::Reset()
 {
 	BulletList.clear();
-	Init();
+	//Init(player);
 }
 
 void Player::setBulletList(std::vector<Bullet> tmpList)

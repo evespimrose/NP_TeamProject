@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <thread>
-#include <float.h>
 
 
 #include <gl/glew.h>
@@ -22,6 +21,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 #define MAXPLAYER 3
+#define MAX_BULLET 10
 
 int GetSize;
 char Buffer[BUFSIZE];
@@ -310,6 +310,13 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 			}
 			break;
 		}
+		case CS_FIRE:
+			msg.id = id;
+			msg.type = TYPE_BULLET;
+			msg.dir = SHOOT_FIRE;
+			msg.isPushed = true;
+
+			break;
 		default:
 			cout << "Packet Type Error! - " << buf[0] << endl;
 			while (true);
@@ -330,6 +337,10 @@ void Calcutlaion_clients() {
 	std::queue <Message> MsgQueue;
 	Message Msg;
 	Col_Player_data col_player_data[3];
+	Col_Bullet_data cbd[MAX_BULLET];
+	Bullet_pos bullets[MAX_BULLET];
+	glm::mat4 fixed_RotMat[3];
+
 	int retval;
 
 	for (int i = 0; i <3; i++) {
@@ -337,6 +348,7 @@ void Calcutlaion_clients() {
 		col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
 		col_player_data[i].rad = (-120.0f * (1+i));
 		col_player_data[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		fixed_RotMat[i] = col_player_data[i].RotMat;
 		col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 		col_player_data[i].dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
 		col_player_data[i].Speed = 0.0f;
@@ -346,16 +358,13 @@ void Calcutlaion_clients() {
 	Player_pos players[3];
 	for (int i = 0; i < 3; i++) {
 		players[i].PosX = 0.0f;
-		players[i].PosY = -3.5f;
+		players[i].PosY = 0.0f;
 		players[i].PosZ = 0.0f;
 		//players [i].TR=col_player_data[i].TR;
 		players[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
 		players[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		players[i].SclMat = col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
+		players[i].SclMat = col_player_data[i].SclMat ;
 	}
-
-	vector<Cube_pos> CubeList_V;
-	int Cubecnt = 0;
 
 	while (true) {
 		EnterCriticalSection(&Msg_cs);
@@ -430,35 +439,44 @@ void Calcutlaion_clients() {
 			}
 
 			if (Msg.type == TYPE_BULLET) {
+				cout << col_player_data[Msg.id].Posvec.x << endl;
+				
+				cbd[Bullet_num].PosVec = col_player_data[Msg.id].Posvec;
+				cbd[Bullet_num].PosVec.z += 0.5f;
+				cbd[Bullet_num].PosMat = fixed_RotMat[Msg.id] * cbd[Bullet_num].PosMat;
+				cbd[Bullet_num].PosMat = glm::translate(cbd[Bullet_num].PosMat, cbd[Bullet_num].PosVec);
+
+				cbd[Bullet_num].rotate = col_player_data[Msg.id].rad;
+				cbd[Bullet_num].Speed = col_player_data[Msg.id].Speed + 0.3f;
+				
+				Bullet_num++;
 				break;
 			}
 		}
-
-		float fpz = 0.0f;
-		float spz = FLT_MAX;
+		//총알 정보 업데이트 
+		for (int i = 0; i < Bullet_num; i++) {
+			cbd[i].PosVec.z += cbd[i].Speed * fDeltaTime;
+			cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
+		}
 
 		//데이터 바꿔치기
 		for (int i = 0; i < count_s+1; i++) {
-			//game_data.player_data[i].BulletList.push_back(2);
-			//cout << game_data.player_data[i].BulletList[0] << endl;
-			/*game_data.player_data[i].PosMat = col_player_data[i].PosMat;
-			game_data.player_data[i].Posvec = col_player_data[i].Posvec;
-			game_data.player_data[i].SclMat = col_player_data[i].SclMat;
-			game_data.player_data[i].RotMat = col_player_data[i].RotMat;
-			game_data.player_data[i].rad = col_player_data[i].rad;*/
+			
 			players[i].PosX = col_player_data[i].Posvec.x;
 			players[i].PosY = col_player_data[i].Posvec.y;
 			players[i].PosZ = col_player_data[i].Posvec.z;
-			//players[i].TR = col_player_data[i].RotMat * col_player_data[i].PosMat * col_player_data[i].SclMat;
 			players[i].PosMat = col_player_data[i].PosMat;
 			players[i].RotMat = col_player_data[i].RotMat;
 			players[i].SclMat = col_player_data[i].SclMat;
-			
 		}
-		
+
+		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼
+
+			bullets[i].PosMat = cbd[i].PosMat;
+		}
 
 		SendPlayerPosPacket(*players);
-
+		SendBulletPosPacket(*bullets);
 	}
 }
 

@@ -51,10 +51,16 @@ typedef struct Player_data
 
 }Player_data;
 
+typedef struct Bullet_data//최종 보낼 플레이어 데이터
+{
+    glm::mat4 PosMat = glm::mat4(1.0f);
+
+}Bullet_data;
+
 typedef struct Game_data//최종 보낼 플레이어 데이터
 {
     Player_data player_data[3];
-   // Bullet_data  bullet_data[100];
+    Bullet_data  bullet_data[MAX_BULLET];
 }Game_data;
 
 typedef struct Cube_data
