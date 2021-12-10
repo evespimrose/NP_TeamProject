@@ -1,9 +1,9 @@
 diff a/Server/Server/소스.cpp b/Server/Server/소스.cpp	(rejected hunks)
-@@ -468,6 +468,7 @@
- 			players[i].PosMat = col_player_data[i].PosMat;
- 			players[i].RotMat = col_player_data[i].RotMat;
- 			players[i].SclMat = col_player_data[i].SclMat;
-+<<<<<<< HEAD
- 		}
+@@ -524,6 +524,7 @@
  
- 		for (int i = 0; i < Bullet_num; i++) { //�Ѿ� ����ŭ
+ 
+ 				CubeList_V.push_back(c);
++
+ 				cout << "�߰���" << CubeList_V.size() << endl;
+ 			}
+ 			else if (Cubecnt == 0)

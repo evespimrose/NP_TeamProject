@@ -19,7 +19,11 @@
 #define SC_GAMESTART        3
 #define SC_PLAYER_POS       4
 #define SC_BULLET_POS       5
+<<<<<<< HEAD
 #define SC_CUBE_POS       5
+=======
+#define SC_MAP_CUBE			5
+>>>>>>> 66f6e7d7d54f72d5365b0d5b7198ea5b63390027
 ///////////////////////////////
 #define CS_READY           1
 #define CS_FIRE            2
@@ -38,6 +42,13 @@ struct Bullet_pos {
 
 struct Cube_pos {
 	float life;
+	float PosZ;
+	glm::mat4 PosMat = glm::mat4(1.0f);
+	glm::mat4 RotMat = glm::mat4(1.0f);
+};
+
+struct Cube_pos {
+	int life;
 	float PosZ;
 	glm::mat4 PosMat = glm::mat4(1.0f);
 	glm::mat4 RotMat = glm::mat4(1.0f);

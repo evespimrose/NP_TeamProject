@@ -1,0 +1,9 @@
+diff a/Server/Server/packet.h b/Server/Server/packet.h	(rejected hunks)
+@@ -67,6 +67,7 @@
+ 	SendPacket(&packet);//��� Ŭ�󿡰� ����
+ }
+ =======
++=======
+ void SendCubePosPacket(Cube_pos& ps)
+ {
+ 	sc_packet_cube_pos packet;
