@@ -19,7 +19,7 @@
 #define SC_GAMESTART        3
 #define SC_PLAYER_POS       4
 #define SC_BULLET_POS       5
-#define SC_CUBE_POS       6
+#define SC_MAP_CUBE			6
 ///////////////////////////////
 #define CS_READY           1
 #define CS_FIRE            2
@@ -37,11 +37,10 @@ struct Bullet_pos {
 };
 
 struct Cube_pos {
-	float life;
+	int life;
 	float PosZ;
 	glm::mat4 PosMat = glm::mat4(1.0f);
 	glm::mat4 RotMat = glm::mat4(1.0f);
-	//glm::mat4 TR;
 };
 
 struct sc_packet_login_ok {
