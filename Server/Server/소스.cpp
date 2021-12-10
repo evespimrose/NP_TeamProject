@@ -91,7 +91,7 @@ bool Is_GameStart() {
 
 	for (int i = 0; i < count_s+1; ++i)
 	{
-		if (is_connected != false)
+		if (is_connected[i] != false)
 		{
 			if (ri[i].is_ready == true)
 			{
@@ -265,7 +265,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		{
 		case CS_PLAYER_LEFT_DOWN:
 		{
-			cout << "¿ÞÂÊ" << endl;
+			//cout << "¿ÞÂÊ" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_LEFT_GO;
@@ -274,7 +274,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		}
 		case CS_PLAYER_RIGHT_DOWN:
 		{
-			cout << "¿À¸¥ÂÊ" << endl;
+			//cout << "¿À¸¥ÂÊ" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_RIGHT_GO;
@@ -350,7 +350,8 @@ void Calcutlaion_clients() {
 	}
 
 	vector<Cube_pos> CubeList_V;
-	int Cubecnt = 0;
+	CubeList_V.reserve(20);
+	int Cubecnt = 10;
 
 	while (true) {
 		EnterCriticalSection(&Msg_cs);
@@ -381,7 +382,7 @@ void Calcutlaion_clients() {
 		}
 
 		while (!MsgQueue.empty()) {
-			cout << "¹º°¡ ¿ÔÀ½" << endl;
+			//cout << "¹º°¡ ¿ÔÀ½" << endl;
 
 
 			Msg = MsgQueue.front();
@@ -390,7 +391,7 @@ void Calcutlaion_clients() {
 				switch (Msg.dir)
 				{
 				case DIR_LEFT_GO://¿ÞÂÊ
-					cout << "¿ÞÂÊ ´©¸§" << endl;
+					//cout << "¿ÞÂÊ ´©¸§" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -406,7 +407,7 @@ void Calcutlaion_clients() {
 					break;
 		
 				case DIR_RIGHT_GO://¿À¸¥ÂÊ
-					cout << "¿À¸¥ÂÊ ´©¸§" << endl;
+					//cout << "¿À¸¥ÂÊ ´©¸§" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -454,17 +455,26 @@ void Calcutlaion_clients() {
 		
 		if ((int)fpz % 100 == 0 && fpz > 100.0f)
 		{
-			Cube_pos c;
-			c.life = rand() % 3;
-			c.PosZ = fpz + 300.0f + rand() % 100;
-			glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-			float rad = rand() % 360;
-			c.PosMat = glm::translate(c.PosMat, cpos);
-			c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+			if (Cubecnt > 0)
+			{
+				Cubecnt--;
+				Cube_pos c;
+				c.life = rand() % 3;
+				c.PosZ = fpz + 300.0f + rand() % 100;
+				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+				float rad = rand() % 360;
+				c.PosMat = glm::translate(c.PosMat, cpos);
+				c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
 
-			CubeList_V.push_back(c);
-			Cubecnt += 1;
+				CubeList_V.push_back(c);
+
+				cout << "Ãß°¡µÊ" << CubeList_V.size() << endl;
+			}
+			else if (Cubecnt == 0)
+			{
+				Cubecnt = 10;
+			}
 		}
 
 		if (!CubeList_V.empty())
@@ -474,9 +484,10 @@ void Calcutlaion_clients() {
 			{
 				CubeList_V.erase(Citer);
 				Citer = CubeList_V.end() - 1;
+				cout << "»èÁ¦µÊ" << CubeList_V.size() << endl;
 			}
 		}
-
+		//memcpy();
 		SendPlayerPosPacket(*players);
 	}
 }

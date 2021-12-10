@@ -55,3 +55,13 @@ void SendPlayerPosPacket(Player_pos& ps)
 
 	SendPacket(&packet);//모든 클라에게 전송
 }
+
+void SendCubePosPacket(Cube_pos& ps)
+{
+	sc_packet_cube_pos packet;
+	packet.size = sizeof(packet);
+	packet.type = SC_MAP_CUBE;
+	memcpy(&packet.cubes, &ps, sizeof(packet.cubes));
+
+	SendPacket(&packet);//모든 클라에게 전송
+}

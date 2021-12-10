@@ -161,6 +161,7 @@ void ProcessPacket(char* packet_buffer)
 
 		break;
 	}
+
 	default:
 		std::cout << "None Receive Packet" << std::endl;
 		break;

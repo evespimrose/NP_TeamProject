@@ -64,5 +64,5 @@ struct sc_packet_player_pos {
 struct sc_packet_cube_pos {
 	short size;
 	char type;
-	Cube_pos cubes[100];
+	Cube_pos cubes[20];
 };
