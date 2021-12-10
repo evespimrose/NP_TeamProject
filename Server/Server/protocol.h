@@ -19,7 +19,7 @@
 #define SC_GAMESTART        3
 #define SC_PLAYER_POS       4
 #define SC_BULLET_POS       5
-#define SC_CUBE_POS       5
+#define SC_CUBE_POS       6
 ///////////////////////////////
 #define CS_READY           1
 #define CS_FIRE            2

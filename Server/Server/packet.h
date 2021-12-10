@@ -56,26 +56,16 @@ void SendPlayerPosPacket(Player_pos& ps)
 	SendPacket(&packet);//모든 클라에게 전송
 }
 
-<<<<<<< HEAD
+
 void SendBulletPosPacket(Bullet_pos& bp)
 {
 	sc_packet_bullet_pos packet;
 	packet.size = sizeof(packet);
 	packet.type = SC_BULLET_POS;
 	memcpy(&packet.bullets, &bp, sizeof(packet.bullets));
-<<<<<<< HEAD
+
 	SendPacket(&packet);//모든 클라에게 전송
 }
-=======
-=======
-void SendCubePosPacket(Cube_pos& ps)
-{
-	sc_packet_cube_pos packet;
-	packet.size = sizeof(packet);
-	packet.type = SC_MAP_CUBE;
-	memcpy(&packet.cubes, &ps, sizeof(packet.cubes));
->>>>>>> HT_4
->>>>>>> 66f6e7d7d54f72d5365b0d5b7198ea5b63390027
 
 void SendCubePosPacket(Cube_pos& ps)
 {
