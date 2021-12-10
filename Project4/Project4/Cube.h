@@ -26,4 +26,5 @@ public:
 	void MinusLife();
 	float getzOffset();
 	float getRotate();
+	void set(float life, glm::mat4 pos, glm::mat4 rot);
 };

@@ -25,7 +25,7 @@
 
 int GetSize;
 char Buffer[BUFSIZE];
-
+int Cubecnt = 20;
 
 DWORD WINAPI recv_thread(LPVOID iD);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
@@ -339,6 +339,8 @@ void Calcutlaion_clients() {
 	Col_Player_data col_player_data[3];
 	Col_Bullet_data cbd[MAX_BULLET];
 	Bullet_pos bullets[MAX_BULLET];
+	Col_Cube_data ccd[MAX_CUBE];
+	Cube_pos cubes[MAX_CUBE];
 	glm::mat4 fixed_RotMat[3];
 
 	int retval;
@@ -459,9 +461,15 @@ void Calcutlaion_clients() {
 			cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
 		}
 
-		vector<Cube_pos> CubeList_V;
-		CubeList_V.reserve(20);
-		int Cubecnt = 10;
+		for (int i = 0; i < MAX_CUBE; ++i)
+		{
+			Col_Cube_data c;
+			c.life = rand() % 3;
+			c.PosZ = 0.0f;
+			glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+			c.PosMat = glm::translate(c.PosMat, cpos);
+			ccd[i] = c;
+		}
 
 		float fpz = 0.0f;
 		float spz = FLT_MAX;
@@ -483,44 +491,32 @@ void Calcutlaion_clients() {
 
 			bullets[i].PosMat = cbd[i].PosMat;
 		}
-
-		if ((int)fpz % 100 == 0 && fpz > 100.0f)
+		
+		for (int i = 0; i < MAX_CUBE; ++i)
 		{
-			while (Cubecnt > 0 || CubeList_V.size() < 20)
+			if (ccd[i].PosZ + 50.0f < spz)
 			{
-				Cubecnt--;
-				Cube_pos c;
+				Col_Cube_data c;
 				c.life = rand() % 3;
 				c.PosZ = fpz + 300.0f + rand() % 100;
 				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 				float rad = rand() % 360;
 				c.PosMat = glm::translate(c.PosMat, cpos);
 				c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-
-
-				CubeList_V.push_back(c);
-
-				cout << "Ãß°¡µÊ" << CubeList_V.size() << endl;
-			}
-			if (Cubecnt == 0)
-			{
-				Cubecnt = 10;
+				ccd[i] = c;
 			}
 		}
 
-		/*if (!CubeList_V.empty())
+		for (int i = 0; i < 20; ++i)
 		{
-			std::vector<Cube_pos>::iterator Citer = CubeList_V.begin();
-			if (Citer->PosZ + 50.0f < spz)
-			{
-				CubeList_V.erase(Citer);
-				Citer = CubeList_V.end() - 1;
-				cout << "»èÁ¦µÊ" << CubeList_V.size() << endl;
-			}
-		}*/
+			cubes[i].PosMat = ccd[i].PosMat;
+			cubes[i].RotMat = ccd[i].RotMat;
+			cubes[i].life = ccd[i].life;
+		}
 
 		SendPlayerPosPacket(*players);
 		SendBulletPosPacket(*bullets);
+		SendCubePosPacket(*cubes);
 	}
 }
 

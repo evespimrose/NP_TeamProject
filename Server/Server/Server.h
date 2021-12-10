@@ -39,6 +39,13 @@ typedef struct Col_Bullet_data//계산용 총알 데이터
 
 }Col_Bullet_data;
 
+typedef struct Col_Cube_data {
+    int life;
+    float PosZ;
+    glm::mat4 PosMat = glm::mat4(1.0f);
+    glm::mat4 RotMat = glm::mat4(1.0f);
+};
+
 typedef struct Player_data//최종 보낼 플레이어 데이터
 {
     //std::vector<int> BulletList;

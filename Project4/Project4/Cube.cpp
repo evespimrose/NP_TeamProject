@@ -64,3 +64,10 @@ float Cube::getRotate()
 {
 	return rotate;
 }
+
+void Cube::set(float l, glm::mat4 pos, glm::mat4 rot)
+{
+	Life = l;
+	PosMat = pos;
+	RotMat = rot;
+}

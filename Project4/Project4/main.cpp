@@ -33,6 +33,7 @@ float ambient = 0.6f;
 Player player1;
 MPlayer mplayer[2];
 Bullet bullet[MAX_BULLET];
+Cube cube[MAX_CUBE];
 
 Map m;
 
@@ -163,6 +164,15 @@ void ProcessPacket(char* packet_buffer)
 			bullet[i].setposMat(packet.bullets[i].PosMat);
 		}
 
+		break;
+	}
+	case SC_MAP_CUBE:
+	{
+		sc_packet_cube_pos packet;
+		memcpy(&packet, ptr, sizeof(packet));
+		for (int i = 0; i < MAX_BULLET; i++) {
+			cube[i].set(packet.cubes[i].life, packet.cubes[i].PosMat, packet.cubes[i].RotMat);
+		}
 		break;
 	}
 	default:
@@ -323,6 +333,9 @@ GLvoid drawScene()
 		}
 		for (int i = 0; i < MAX_BULLET; i++) {
 			bullet[i].Render(ShaderProgram);
+		}
+		for (int i = 0; i < MAX_CUBE; i++) {
+			cube[i].Render(ShaderProgram);
 		}
 
 		string score = "Score : ";

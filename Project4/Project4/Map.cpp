@@ -110,7 +110,7 @@ void Map::Fastest_Update(float pz)
 		LightingList.push_back(r);
 	}
 
-	while ((int)pz % 100 == 0 && pz > 100.0f)
+	/*while ((int)pz % 100 == 0 && pz > 100.0f)
 	{
 		if (CubeCounter > 0)
 		{
@@ -129,7 +129,7 @@ void Map::Fastest_Update(float pz)
 			}
 			break;
 		}
-	}
+	}*/
 }
 
 void Map::Slowest_Update(float pz)
@@ -153,7 +153,7 @@ void Map::Slowest_Update(float pz)
 		Liter = LightingList.erase(Liter);
 	}
 
-	if (!CubeList.empty())
+	/*if (!CubeList.empty())
 	{
 		std::vector<Cube>::iterator Citer = CubeList.begin();
 		if (Citer->getzOffset() + 50.0f < pz)
@@ -161,7 +161,7 @@ void Map::Slowest_Update(float pz)
 			CubeList.erase(Citer);
 			Citer = CubeList.end() - 1;
 		}
-	}
+	}*/
 }
 
 bool Map::PlayerCollisionCheck(float pz, float pRotate)

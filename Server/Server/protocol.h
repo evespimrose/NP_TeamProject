@@ -1,6 +1,7 @@
 #pragma once
 
 #define MAX_BULLET 10
+#define MAX_CUBE 20
 
 #define CS_PLAYER_LEFT_UP 17
 #define CS_PLAYER_LEFT_DOWN 18
@@ -38,7 +39,6 @@ struct Bullet_pos {
 
 struct Cube_pos {
 	int life;
-	float PosZ;
 	glm::mat4 PosMat = glm::mat4(1.0f);
 	glm::mat4 RotMat = glm::mat4(1.0f);
 };

@@ -65,3 +65,13 @@ void SendBulletPosPacket(Bullet_pos& bp)
 
 	SendPacket(&packet);//모든 클라에게 전송
 }
+
+void SendCubePosPacket(Cube_pos& cp)
+{
+	sc_packet_cube_pos packet;
+	packet.size = sizeof(packet);
+	packet.type = SC_MAP_CUBE;
+	memcpy(&packet.cubes, &cp, sizeof(packet.cubes));
+
+	SendPacket(&packet);//모든 클라에게 전송
+}
