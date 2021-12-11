@@ -6,11 +6,11 @@ void Bullet::Init(GLuint vao)
 	//QueryPerformanceCounter(&tTime);
 	//fDeltaTime = 0;
 
-	//PosVec;
+	//PosVec = playerPos;
 	//PosVec.z += 0.5f;
 
 	//PosMat = glm::mat4(1.0f);
-	//PosMat = glm::translate(PosMat, PosVec);
+	//PosMat[0] = glm::translate(PosMat, PosVec);
 
 	//rotate = rad;
 	//Speed = PlayerSpeed + 0.3f;
@@ -55,7 +55,7 @@ void Bullet::Move()
 }
 
 void Bullet::setposMat(glm::mat4 posmat) {
-	PosMat= posmat;
+	PosMat = posmat;
 };
 
 float Bullet::getzOffset()

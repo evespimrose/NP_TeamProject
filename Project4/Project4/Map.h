@@ -97,7 +97,7 @@ private:
 
 public:
 	void Init();
-	void Fastest_Update(float pz);
+	void Fastest_Update(float pz, Cube* cube);
 	void Slowest_Update(float pz);
 	void Render(GLuint ShaderProgram);
 	bool PlayerCollisionCheck(float pz, float pRotate);

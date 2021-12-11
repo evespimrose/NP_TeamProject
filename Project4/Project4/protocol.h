@@ -1,6 +1,6 @@
 #pragma once
 #define MAX_BULLET 10
-#define MAX_CUBE 20
+#define MAX_CUBE 10
 
 #define CS_PLAYER_LEFT_UP 17
 #define CS_PLAYER_LEFT_DOWN 18
@@ -8,8 +8,8 @@
 #define CS_PLAYER_RIGHT_DOWN 20
 ///////////////////////////////////
 #define SC_LOGIN_OK			1
-#define SC_READY			2
-#define SC_GAMESTART        3
+#define SC_READY            2
+#define SC_GAMESTART		3
 #define SC_PLAYER_POS       4
 #define SC_BULLET_POS       5
 #define SC_MAP_CUBE			6
@@ -45,9 +45,10 @@ struct sc_packet_ready {
 	short size;
 	char type;
 	char id;
-	bool ready;
-	bool pt;
+	char ready;
+	char pt;
 };
+
 
 struct sc_packet_game_start {
 	short size;
@@ -71,5 +72,5 @@ struct sc_packet_bullet_pos {
 struct sc_packet_cube_pos {
 	short size;
 	char type;
-	Cube_pos cubes[20];
+	Cube_pos cubes[MAX_CUBE];
 };

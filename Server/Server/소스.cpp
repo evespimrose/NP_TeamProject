@@ -18,6 +18,7 @@
 #include "protocol.h"
 #include "packet.h"
 
+#include <glm/gtx/string_cast.hpp>
 #define SERVERPORT 9000
 #define BUFSIZE 512
 #define MAXPLAYER 3
@@ -25,7 +26,6 @@
 
 int GetSize;
 char Buffer[BUFSIZE];
-int Cubecnt = 20;
 
 DWORD WINAPI recv_thread(LPVOID iD);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
@@ -368,6 +368,25 @@ void Calcutlaion_clients() {
 		players[i].SclMat = col_player_data[i].SclMat ;
 	}
 
+	for (int i = 0; i < MAX_CUBE; ++i)//cube data 초기화
+	{
+	/*	Col_Cube_data c;
+		c.life = rand() % 3;
+		c.PosZ = 0.0f;
+		glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+		c.PosMat = glm::translate(c.PosMat, cpos);
+		ccd[i] = c;*/
+
+		Col_Cube_data c;
+		c.life = rand() % 3;
+		c.PosZ = 0.0f;
+		glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+		float rad = rand() % 360;
+		c.PosMat = glm::translate(c.PosMat, cpos);
+		c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		ccd[i] = c;
+	}
+
 	while (true) {
 		EnterCriticalSection(&Msg_cs);
 		MsgQueue = glo_MsgQueue;
@@ -390,6 +409,7 @@ void Calcutlaion_clients() {
 
 			col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, glm::vec3(0.0f, 0.0f, col_player_data[i].Speed * fDeltaTime));
 		}
+
 		EnterCriticalSection(&Msg_cs);
 		while (!glo_MsgQueue.empty()) {
 			glo_MsgQueue.pop();
@@ -461,15 +481,6 @@ void Calcutlaion_clients() {
 			cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
 		}
 
-		for (int i = 0; i < MAX_CUBE; ++i)
-		{
-			Col_Cube_data c;
-			c.life = rand() % 3;
-			c.PosZ = 0.0f;
-			glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-			c.PosMat = glm::translate(c.PosMat, cpos);
-			ccd[i] = c;
-		}
 
 		float fpz = 0.0f;
 		float spz = FLT_MAX;
@@ -496,9 +507,10 @@ void Calcutlaion_clients() {
 		{
 			if (ccd[i].PosZ + 50.0f < spz)
 			{
+				cout << "업데이트" << endl;
 				Col_Cube_data c;
 				c.life = rand() % 3;
-				c.PosZ = fpz + 300.0f + rand() % 100;
+				c.PosZ = fpz + 100.0f + rand() % 100;
 				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 				float rad = rand() % 360;
 				c.PosMat = glm::translate(c.PosMat, cpos);
@@ -507,13 +519,15 @@ void Calcutlaion_clients() {
 			}
 		}
 
-		for (int i = 0; i < 20; ++i)
+		for (int i = 0; i < MAX_CUBE; ++i)
 		{
+			
 			cubes[i].PosMat = ccd[i].PosMat;
 			cubes[i].RotMat = ccd[i].RotMat;
 			cubes[i].life = ccd[i].life;
+			
 		}
-
+		//cout << glm::to_string(ccd[0].PosMat) << std::endl;
 		SendPlayerPosPacket(*players);
 		SendBulletPosPacket(*bullets);
 		SendCubePosPacket(*cubes);

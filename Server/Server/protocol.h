@@ -1,7 +1,7 @@
 #pragma once
 
 #define MAX_BULLET 10
-#define MAX_CUBE 20
+#define MAX_CUBE 10
 
 #define CS_PLAYER_LEFT_UP 17
 #define CS_PLAYER_LEFT_DOWN 18
@@ -79,5 +79,5 @@ struct sc_packet_bullet_pos {
 struct sc_packet_cube_pos {
 	short size;
 	char type;
-	Cube_pos cubes[20];
+	Cube_pos cubes[MAX_CUBE];
 };

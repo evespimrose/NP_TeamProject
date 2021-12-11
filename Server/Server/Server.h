@@ -35,8 +35,7 @@ typedef struct Col_Bullet_data//계산용 총알 데이터
     glm::mat4 PosMat = glm::mat4(1.0f);
     float Speed = 0.0f;
     glm::vec3 PosVec = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::mat4 RotMat = glm::mat4(1.0f);
-
+    glm::mat4 RotMat = glm::mat4(1.0f); 
 }Col_Bullet_data;
 
 typedef struct Col_Cube_data {

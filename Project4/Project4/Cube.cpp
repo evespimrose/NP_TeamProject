@@ -8,19 +8,19 @@ void Cube::Init(float Offset, GLuint* vao)
 		VAO[i] = vao[i];
 	}
 
-	Life = rand() % 3;
+	//Life = rand() % 3;
 
-	zOffset = Offset;
-	PosVec = glm::vec3(0.0f, -3.5f, zOffset);
+	//zOffset = Offset;
+	//PosVec = glm::vec3(0.0f, -3.5f, zOffset);
 
-	PosMat = glm::mat4(1.0f);
-	PosMat = glm::translate(PosMat, PosVec);
+	//PosMat = glm::mat4(1.0f);
+	//PosMat = glm::translate(PosMat, PosVec);
 
-	rotate = rand() % 360;
-	RotMat = glm::mat4(1.0f);
+	//rotate = rand() % 360;
+	//RotMat = glm::mat4(1.0f);
 
-	RotMat = glm::rotate(RotMat, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-	PosVec = glm::rotate(PosVec, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
+	//RotMat = glm::rotate(RotMat, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
+	//PosVec = glm::rotate(PosVec, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void Cube::Render(GLuint ShaderProgram)
@@ -70,4 +70,5 @@ void Cube::set(float l, glm::mat4 pos, glm::mat4 rot)
 	Life = l;
 	PosMat = pos;
 	RotMat = rot;
+
 }

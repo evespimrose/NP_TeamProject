@@ -97,8 +97,7 @@ bool Player::loadOBJ(
 }
 
 
-
-void Player::Init(Player_data pd,Bullet* bullet)
+void Player::Init(Player_data pd, Bullet* bullet)
 {
 	PrevFireTime = std::chrono::system_clock::now();
 
@@ -109,18 +108,7 @@ void Player::Init(Player_data pd,Bullet* bullet)
 
 	PosVec = pd.Posvec;
 
-	//PosMat = pd.PosMat;
-
-	//rad = pd.rad;
-	//RotMat = pd.RotMat;
-
-	//SclMat = pd.SclMat;
-
-	//dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
-
 	Speed = 0.0f;
-
-	//acc = 0.0005f;
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
@@ -142,7 +130,6 @@ void Player::Init(Player_data pd,Bullet* bullet)
 		SphereColor[i][1] = 1.0f;
 		SphereColor[i][2] = 0.0f;
 	}
-
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -191,12 +178,39 @@ void Player::Init(Player_data pd,Bullet* bullet)
 
 	for (int i = 0; i < MAX_BULLET; i++)
 		bullet[i].Init(BulletVAO);
+
 }
 
 void Player::Move(Player_data pd)
 {
 	  
 
+		/*RotMat = glm::rotate(RotMat, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(-pd.rotate[0]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		rad += 2.0f * Speed;
+		if (rad > 360)
+		{
+			rad -= 360;
+		}
+
+		RotMat = glm::rotate(RotMat, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(pd.rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));*/
+
+	/*if (keyDownlist[1])
+	{
+		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		rad -= 2.0f * Speed;
+		if (rad < 0)
+		{
+			rad += 360;
+		}
+
+		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+	}*/
 }
 
 void Player::Update(Player_data pd)
@@ -217,7 +231,7 @@ void Player::Key_Input(SOCKET sock, unsigned char key, bool state)
 	{
 		if (state)
 		{
-			//Fire(bullet);
+
 			Send_event(sock, CS_FIRE);
 			keyDownlist[2] = true;
 		}
@@ -227,12 +241,11 @@ void Player::Key_Input(SOCKET sock, unsigned char key, bool state)
 	}
 }
 
-void Player::sKey_Input(SOCKET sock ,int key, bool state)
+void Player::sKey_Input(SOCKET sock, int key, bool state)
 {
 	if (key == GLUT_KEY_RIGHT)
 	{
 		if (state) {
-			
 			Send_event(sock, CS_PLAYER_RIGHT_DOWN); //누름
 		}
 	
@@ -241,7 +254,6 @@ void Player::sKey_Input(SOCKET sock ,int key, bool state)
 	if (key == GLUT_KEY_LEFT)
 	{
 		if (state) {
-			
 		Send_event(sock, CS_PLAYER_LEFT_DOWN); //누름
 	}
 		
@@ -270,23 +282,25 @@ void Player::Render(GLuint ShaderProgram)
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-	//std::vector<Bullet>::iterator iter = BulletList.begin();
+	std::vector<Bullet>::iterator iter = BulletList.begin();
 
-	//for (; iter != BulletList.end(); ++iter)
-	//{
-	//	iter->Render(ShaderProgram);
-	//}
+	for (; iter != BulletList.end(); ++iter)
+	{
+		iter->Render(ShaderProgram);
+	}
 }
 
-void Player::Fire(Bullet bullet)
+void Player::Fire()
 {
 	std::chrono::milliseconds FireDelay(300);
 
 	std::chrono::duration<double> sec = std::chrono::system_clock::now() - PrevFireTime;
 	if (FireDelay < sec)
 	{
-		std::cout << "아왔다고" << std::endl;
-		
+		Bullet b;
+
+		//b.Init(PosVec, BulletVAO, Speed, rad);
+		BulletList.push_back(b);
 
 		PrevFireTime = std::chrono::system_clock::now();
 
@@ -297,11 +311,11 @@ void Player::Fire(Bullet bullet)
 
 void Player::ManageBullet()
 {
-	//if (keyDownlist[2])
-	//{
+	if (keyDownlist[2])
+	{
 
-	//	Fire();//생성하고 데이터는 서버에서 가져온것로
-	//}
+		Fire();//생성하고 데이터는 서버에서 가져온것로
+	}
 
 	std::vector<Bullet>::iterator iter = BulletList.begin();
 
@@ -369,7 +383,7 @@ bool Player::MinusLife()
 void Player::Reset()
 {
 	BulletList.clear();
-	//Init(player);
+	//Init();
 }
 
 void Player::setBulletList(std::vector<Bullet> tmpList)
