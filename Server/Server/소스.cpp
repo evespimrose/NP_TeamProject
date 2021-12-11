@@ -339,7 +339,6 @@ void Calcutlaion_clients() {
 	glm::mat4 fixed_RotMat[3];
 	Player_pos players[3];
 	int retval;
-
 	for (int i = 0; i <3; i++) {// 플레이어 초기화
 		col_player_data[i].Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
 		col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
@@ -369,7 +368,7 @@ void Calcutlaion_clients() {
 		MsgQueue = glo_MsgQueue;
 		LeaveCriticalSection(&Msg_cs);
 
-		//cout << "하이4" << endl;
+
 		LARGE_INTEGER time;
 		QueryPerformanceCounter(&time);
 		fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
@@ -441,7 +440,7 @@ void Calcutlaion_clients() {
 				cbd[Bullet_num].PosVec.z += 0.5f;
 				cbd[Bullet_num].PosMat = fixed_RotMat[Msg.id] * cbd[Bullet_num].PosMat;
 				cbd[Bullet_num].PosMat = glm::translate(cbd[Bullet_num].PosMat, cbd[Bullet_num].PosVec);
-
+				cbd[Bullet_num].life = 1;
 				cbd[Bullet_num].rotate = col_player_data[Msg.id].rad;
 				cbd[Bullet_num].Speed = col_player_data[Msg.id].Speed + 0.3f;
 				
@@ -449,12 +448,14 @@ void Calcutlaion_clients() {
 				break;
 			}
 		}
+
 		//총알 정보 업데이트 
 		for (int i = 0; i < Bullet_num; i++) {
-			cbd[i].PosVec.z += cbd[i].Speed * fDeltaTime;
-			cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
+			if (cbd[i].life != 0) {
+				cbd[i].PosVec.z += cbd[i].Speed * fDeltaTime;
+				cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
+			}
 		}
-
 
 		float fpz = 0.0f;
 		float spz = FLT_MAX;
@@ -472,30 +473,6 @@ void Calcutlaion_clients() {
 			spz = min(spz, col_player_data[i].Posvec.z);
 		}
 
-		//총알 플레이어 충돌 체크 
-		for (int i = 0; i < Bullet_num; ++i)
-		{
-			for (int j = 0; j < count_s + 1; ++j)
-			{
-				float bz = cbd[i].PosVec.z;
-				float bRad = cbd[i].rotate;
-				float pz = col_player_data[j].Posvec.z;
-				float pRad = col_player_data[j].rad;
-				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f)
-				{
-					col_player_data[j].Speed = 0.0f;
-				}
-			}
-
-
-		}
-
-		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼 총알 갱신
-
-			bullets[i].PosMat = cbd[i].PosMat;
-		}
-
-
 		// 큐브 갱신
 		for (int i = 0; i < MAX_CUBE; ++i)
 		{
@@ -512,14 +489,25 @@ void Calcutlaion_clients() {
 			}
 		}
 
-		for (int i = 0; i < MAX_CUBE; ++i)
+		//총알 플레이어 충돌 체크 
+		for (int i = 0; i < Bullet_num; ++i)
 		{
-			cubes[i].PosMat = ccd[i].PosMat;
-			cubes[i].RotMat = ccd[i].RotMat;
-			cubes[i].life = ccd[i].life;
+			for (int j = 0; j < count_s + 1; ++j)
+			{
+				float bz = cbd[i].PosVec.z;
+				float bRad = cbd[i].rotate;
+				float pz = col_player_data[j].Posvec.z;
+				float pRad = col_player_data[j].rad;
+				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f)
+				{
+					cbd[i].PosMat = glm::mat4(1.0f);
+					cbd[i].life = 0;//총알 제거 
+					col_player_data[j].Speed = 0.0f;
+				}
+			}
 		}
-		
 
+		//플레이어 큐브 충돌 체크
 		for (int i = 0; i < count_s + 1; ++i) {
 			for (int j = 0; j < MAX_CUBE; ++j)
 			{
@@ -541,8 +529,7 @@ void Calcutlaion_clients() {
 					minus_rad < ccd[j].rad
 					)
 				{
-					//cout << "플레이어" << i << ", rad " << col_player_data[i].rad << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
-					// 충돌처리 추가
+
 					col_player_data[i].Speed /= 2;
 
 					Col_Cube_data c;
@@ -557,6 +544,7 @@ void Calcutlaion_clients() {
 			}
 		}
 
+		//총알과 큐브 충돌 체크 
 		for (int i = 0; i < Bullet_num; ++i)
 		{
 			for (int j = 0; j < MAX_CUBE; ++j)
@@ -568,6 +556,9 @@ void Calcutlaion_clients() {
 
 				if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 3.0f && bRad > cRad - 3.0f)
 				{
+					cbd[i].life = 0;//총알 제거 
+					cbd[i].PosMat = glm::mat4(1.0f);
+
 					ccd[j].life -= 1;
 					if (ccd[j].life < 0)
 					{
@@ -579,11 +570,27 @@ void Calcutlaion_clients() {
 						c.PosMat = glm::translate(c.PosMat, cpos);
 						c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
 						ccd[j] = c;
+
 					}
 				}
 			}
 		}
 
+
+		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼 총알 바꿔 치기
+
+			bullets[i].PosMat = cbd[i].PosMat;
+		}
+
+		for (int i = 0; i < MAX_CUBE; ++i)//큐브 바꿔 치기
+		{
+			cubes[i].PosMat = ccd[i].PosMat;
+			cubes[i].RotMat = ccd[i].RotMat;
+			cubes[i].life = ccd[i].life;
+		}
+
+	
+		
 		SendPlayerPosPacket(*players);
 		SendBulletPosPacket(*bullets);
 		SendCubePosPacket(*cubes);
