@@ -19,7 +19,6 @@ void SendLoginOkPacket(char id)
 	packet.type = SC_LOGIN_OK;
 	
 	send(Client_sock[id], (char*)&packet, sizeof(packet), 0);
-	cout << "아이디 :"<< id << endl;
 }
 
 void SendReadyPacket(SOCKET sock, char other)
@@ -37,12 +36,11 @@ void SendGameStartPacket()
 {
 	std::cout << "Send Game STart!" << std::endl;
 
-
 	sc_packet_game_start packet;
 	packet.size = sizeof(packet);
 	packet.type = SC_GAMESTART;
 	packet.clients_num = count_s+1;
-	//memcpy(&packet.players, &tempPlayer, sizeof(tempPlayer));
+
 	SendPacket(&packet);//모든 클라에게 전송
 }
 

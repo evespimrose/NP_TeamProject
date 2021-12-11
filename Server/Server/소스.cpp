@@ -37,8 +37,6 @@ void init_player(Col_Player_data cpd);
  CRITICAL_SECTION cs;
  CRITICAL_SECTION Msg_cs;
 //소켓함수 오류 출력 후 종료
-Game_data game_data;
-
 
 void err_quit(const char* msg)
 {
@@ -342,37 +340,26 @@ void Calcutlaion_clients() {
 	Col_Cube_data ccd[MAX_CUBE];
 	Cube_pos cubes[MAX_CUBE];
 	glm::mat4 fixed_RotMat[3];
-
+	Player_pos players[3];
 	int retval;
 
-	for (int i = 0; i <3; i++) {
+	for (int i = 0; i <3; i++) {// 플레이어 초기화
 		col_player_data[i].Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
 		col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
-		col_player_data[i].rad = (120.0f * (1+i));
+		col_player_data[i].rad = (0);
 		col_player_data[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(-col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		fixed_RotMat[i] = col_player_data[i].RotMat;
 		col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 		col_player_data[i].dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
-		col_player_data[i].Speed = 0.0f;
-		col_player_data[i].TR = col_player_data[i].RotMat * col_player_data[i].PosMat * col_player_data[i].SclMat;
+		col_player_data[i].Speed = 0.1f;
 	}
 
-	Player_pos players[3];
-	for (int i = 0; i < 3; i++) {
-		players[i].PosX = 0.0f;
-		players[i].PosY = 0.0f;
-		players[i].PosZ = 0.0f;
-		//players [i].TR=col_player_data[i].TR;
-		players[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
-		players[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		players[i].SclMat = col_player_data[i].SclMat ;
-	}
 
 	for (int i = 0; i < MAX_CUBE; ++i)
 	{
 		Col_Cube_data c;
 		c.life = rand() % 3;
-		c.PosZ = 0.0f;
+		c.PosZ = 100.0f + rand() % 100;
 		glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 		c.rad = rand() % 360;
 		c.PosMat = glm::translate(c.PosMat, cpos);
@@ -410,7 +397,6 @@ void Calcutlaion_clients() {
 		}
 
 		while (!MsgQueue.empty()) {
-			//cout << "뭔가 왔음" << endl;
 
 
 			Msg = MsgQueue.front();
@@ -419,7 +405,6 @@ void Calcutlaion_clients() {
 				switch (Msg.dir)
 				{
 				case DIR_LEFT_GO://왼쪽
-					//cout << "왼쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -435,7 +420,6 @@ void Calcutlaion_clients() {
 					break;
 		
 				case DIR_RIGHT_GO://오른쪽
-					//cout << "오른쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -491,6 +475,7 @@ void Calcutlaion_clients() {
 			spz = min(spz, col_player_data[i].Posvec.z);
 		}
 
+		//총알 플레이어 충돌 체크 
 		for (int i = 0; i < MAX_BULLET; ++i)
 		{
 			for (int j = 0; j < count_s + 1; ++j)
@@ -508,7 +493,7 @@ void Calcutlaion_clients() {
 
 		}
 
-		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼
+		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼 총알 갱신
 
 			bullets[i].PosMat = cbd[i].PosMat;
 		}
@@ -594,7 +579,6 @@ void Calcutlaion_clients() {
 					minus_rad < ccd[j].rad
 					)
 				{
-					//cout << "총알" << i << ", rad " << cbd[i].rotate << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
 					// 충돌처리 추가
 					if (ccd[j].life < 2)
 					{
@@ -610,7 +594,6 @@ void Calcutlaion_clients() {
 						c.PosMat = glm::translate(c.PosMat, cpos);
 						c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
 						ccd[j] = c;
-						
 					}
 				}
 			}
@@ -622,19 +605,3 @@ void Calcutlaion_clients() {
 
 	}
 }
-
-void init_player(Col_Player_data cpd) {
-
-	cpd.Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
-	cpd.PosMat = glm::mat4(1.0f);
-	cpd.PosMat = glm::translate(cpd.PosMat, cpd.Posvec); //
-	cpd.rad = 0.0f;
-	cpd.RotMat = glm::mat4(1.0f);
-	cpd.SclMat = glm::mat4(1.0f);//
-	cpd.SclMat = glm::scale(cpd.SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
-	cpd.dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
-	cpd.Speed = 0.0f;
-
-};
-
-

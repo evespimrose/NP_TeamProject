@@ -546,6 +546,7 @@ void Reset()
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
+	if(Scene ==GAME_SCENE)
 	player1.Key_Input(sock, key, TRUE);
 
 	switch (key)

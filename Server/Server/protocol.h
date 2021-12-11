@@ -30,7 +30,7 @@ struct Player_pos {
 	glm::mat4 PosMat = glm::mat4(1.0f);
 	glm::mat4 SclMat = glm::mat4(1.0f);
 	glm::mat4 RotMat = glm::mat4(1.0f);
-	//glm::mat4 TR;
+
 };
 
 struct Bullet_pos {
