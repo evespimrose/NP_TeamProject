@@ -219,7 +219,6 @@ void Player::Update(Player_data pd)
 	PosVec = pd.Posvec;
 	PosMat = pd.PosMat;
 	SclMat = pd.SclMat;
-	
 	//ManageBullet();
 	
 	camera.setPosition(PosVec.z);

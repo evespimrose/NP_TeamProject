@@ -239,7 +239,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 
 		msg.id = -1;
 		char buf[BUFSIZE];
-		cout << "여기1" << endl;
+		//cout << "여기1" << endl;
 		char retval = recv(client_sock, buf, 1, 0);
 		cout << retval << endl;
 		// 클라이언트 접속 종료, recv 에러 처리
@@ -270,7 +270,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		{
 		case CS_PLAYER_LEFT_DOWN:
 		{
-			cout << "왼쪽" << endl;
+			//cout << "왼쪽" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_LEFT_GO;
@@ -279,7 +279,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		}
 		case CS_PLAYER_RIGHT_DOWN:
 		{
-			cout << "오른쪽" << endl;
+			//cout << "오른쪽" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_RIGHT_GO;
@@ -348,8 +348,8 @@ void Calcutlaion_clients() {
 	for (int i = 0; i <3; i++) {
 		col_player_data[i].Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
 		col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
-		col_player_data[i].rad = (-120.0f * (1+i));
-		col_player_data[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		col_player_data[i].rad = (120.0f * (1+i));
+		col_player_data[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(-col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		fixed_RotMat[i] = col_player_data[i].RotMat;
 		col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
 		col_player_data[i].dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -368,22 +368,15 @@ void Calcutlaion_clients() {
 		players[i].SclMat = col_player_data[i].SclMat ;
 	}
 
-	for (int i = 0; i < MAX_CUBE; ++i)//cube data 초기화
+	for (int i = 0; i < MAX_CUBE; ++i)
 	{
-	/*	Col_Cube_data c;
-		c.life = rand() % 3;
-		c.PosZ = 0.0f;
-		glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-		c.PosMat = glm::translate(c.PosMat, cpos);
-		ccd[i] = c;*/
-
 		Col_Cube_data c;
 		c.life = rand() % 3;
 		c.PosZ = 0.0f;
 		glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-		float rad = rand() % 360;
+		c.rad = rand() % 360;
 		c.PosMat = glm::translate(c.PosMat, cpos);
-		c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+		c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		ccd[i] = c;
 	}
 
@@ -417,7 +410,7 @@ void Calcutlaion_clients() {
 		}
 
 		while (!MsgQueue.empty()) {
-			cout << "뭔가 왔음" << endl;
+			//cout << "뭔가 왔음" << endl;
 
 
 			Msg = MsgQueue.front();
@@ -426,7 +419,7 @@ void Calcutlaion_clients() {
 				switch (Msg.dir)
 				{
 				case DIR_LEFT_GO://왼쪽
-					cout << "왼쪽 누름" << endl;
+					//cout << "왼쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -442,7 +435,7 @@ void Calcutlaion_clients() {
 					break;
 		
 				case DIR_RIGHT_GO://오른쪽
-					cout << "오른쪽 누름" << endl;
+					//cout << "오른쪽 누름" << endl;
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -502,35 +495,46 @@ void Calcutlaion_clients() {
 
 			bullets[i].PosMat = cbd[i].PosMat;
 		}
-		
+		// 큐브 갱신
 		for (int i = 0; i < MAX_CUBE; ++i)
 		{
 			if (ccd[i].PosZ + 50.0f < spz)
 			{
-				cout << "업데이트" << endl;
 				Col_Cube_data c;
 				c.life = rand() % 3;
 				c.PosZ = fpz + 100.0f + rand() % 100;
 				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-				float rad = rand() % 360;
+				c.rad = rand() % 360;
 				c.PosMat = glm::translate(c.PosMat, cpos);
-				c.RotMat = glm::rotate(c.RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
+				c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
 				ccd[i] = c;
 			}
 		}
 
 		for (int i = 0; i < MAX_CUBE; ++i)
 		{
-			
 			cubes[i].PosMat = ccd[i].PosMat;
 			cubes[i].RotMat = ccd[i].RotMat;
 			cubes[i].life = ccd[i].life;
-			
 		}
 		//cout << glm::to_string(ccd[0].PosMat) << std::endl;
 		SendPlayerPosPacket(*players);
 		SendBulletPosPacket(*bullets);
 		SendCubePosPacket(*cubes);
+
+		for (int i = 0; i < count_s + 1; ++i) {
+			for (int j = 0; j < MAX_CUBE; ++j)
+			{
+				if (col_player_data[i].Posvec.z + 0.5f > ccd[j].PosZ &&
+					col_player_data[i].Posvec.z - 0.5f < ccd[j].PosZ &&
+					col_player_data[i].rad + 10 > ccd[j].rad &&
+					col_player_data[i].rad - 10 < ccd[j].rad
+					)
+				{
+					// 충돌처리 추가
+				}
+			}
+		}
 	}
 }
 

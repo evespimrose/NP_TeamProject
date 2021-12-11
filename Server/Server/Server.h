@@ -40,6 +40,7 @@ typedef struct Col_Bullet_data//계산용 총알 데이터
 
 typedef struct Col_Cube_data {
     int life;
+    float rad;
     float PosZ;
     glm::mat4 PosMat = glm::mat4(1.0f);
     glm::mat4 RotMat = glm::mat4(1.0f);

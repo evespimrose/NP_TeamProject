@@ -48,7 +48,6 @@ typedef struct Player_data
     glm::mat4 PosMat;
     glm::mat4 RotMat;
     glm::mat4 SclMat;
-
 }Player_data;
 
 typedef struct Bullet_data//최종 보낼 플레이어 데이터

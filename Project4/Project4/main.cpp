@@ -158,13 +158,12 @@ void ProcessPacket(char* packet_buffer)
 							game_data.player_data[i].PosMat = packet.players[i].PosMat;
 							game_data.player_data[i].RotMat = packet.players[i].RotMat;
 							game_data.player_data[i].SclMat = packet.players[i].SclMat;
-					}
+						}
 						
 					}
 				
 			}
 		}
-
 		break;
 	}
 	case SC_BULLET_POS:
@@ -476,48 +475,36 @@ GLvoid Timer(int Value)
 			spz = min(spz, i->getPosition().z);
 		}*/
 
-		m.Fastest_Update(pz,cube);
+		m.Fastest_Update(pz, cube);
 		m.Slowest_Update(pz);
 
-	
+
 #ifdef MULTI
 		mplayer2.Update(player_data[1]);
 		mplayer3.Update(player_data[2]);
 #endif
 
-	
-			player1.Update(game_data.player_data[user_id]);
 
-			if (ari.pt_clients_num == 2) {
+		player1.Update(game_data.player_data[user_id]);
 
-				mplayer[0].Update(game_data.player_data[user_id == 1 ? 0 : 1]);
-			}
+		if (ari.pt_clients_num == 2) {
 
-			if (ari.pt_clients_num == 3) {
-				for (int i = 0; i < 3; i++) {
-					if (i != user_id && cnt == 0) {
-						mplayer[0].Update(game_data.player_data[i]);
-						cnt++;
-					}
-					else if(i != user_id){
-						mplayer[1].Update(game_data.player_data[i]);
-					}
+			mplayer[0].Update(game_data.player_data[user_id == 1 ? 0 : 1]);
+		}
+
+		if (ari.pt_clients_num == 3) {
+			for (int i = 0; i < 3; i++) {
+				if (i != user_id && cnt == 0) {
+					mplayer[0].Update(game_data.player_data[i]);
+					cnt++;
+				}
+				else if (i != user_id) {
+					mplayer[1].Update(game_data.player_data[i]);
 				}
 			}
+		}
 
-			cnt = 0;
-
-	/*	if (m.PlayerCollisionCheck(pz, player1.getRotate()))
-
-		{
-			SoundManager::sharedManager()->play(CRUSH_SOUND);
-
-			if (player1.collision())
-			{
-				Scene = OVER_SCENE;
-				glutPostRedisplay();
-			}
-		}*/
+		cnt = 0;
 
 		std::vector<Bullet> tmpList = player1.getBulletList();
 		m.BulletCollisionCheck(tmpList);
@@ -734,8 +721,8 @@ int main(int argc, char** argv)
 	mplayer3.Init();
 #endif
 	
-		mplayer[0].Init();
-		mplayer[1].Init();
+	mplayer[0].Init();
+	mplayer[1].Init();
 	
 
 	m.Init();
