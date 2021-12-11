@@ -1,9 +1,9 @@
 diff a/Server/Server/소스.cpp b/Server/Server/소스.cpp	(rejected hunks)
-@@ -594,7 +594,6 @@
- 					minus_rad < ccd[j].rad
- 					)
- 				{
--					//cout << "�Ѿ�" << i << ", rad " << cbd[i].rotate << ", ť��" << j << ", rad" << ccd[j].rad << endl;
- 					// �浹ó�� �߰�
- 					if (ccd[j].life < 2)
- 					{
+@@ -524,6 +524,7 @@
+ 
+ 
+ 				CubeList_V.push_back(c);
++
+ 				cout << "�߰���" << CubeList_V.size() << endl;
+ 			}
+ 			else if (Cubecnt == 0)
