@@ -22,7 +22,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 #define MAXPLAYER 3
-#define MAX_BULLET 50
+#define MAX_BULLET 10
 
 int GetSize;
 char Buffer[BUFSIZE];
