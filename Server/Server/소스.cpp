@@ -521,7 +521,7 @@ void Calcutlaion_clients() {
 			{
 				Col_Cube_data c;
 				c.life = rand() % 3;
-				c.PosZ = fpz + 100.0f + rand() % 100;
+				c.PosZ = fpz + 300.0f + rand() % 100;
 				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 				c.rad = rand() % 360;
 				c.PosMat = glm::translate(c.PosMat, cpos);
@@ -565,7 +565,7 @@ void Calcutlaion_clients() {
 
 					Col_Cube_data c;
 					c.life = rand() % 3;
-					c.PosZ = fpz + 100.0f + rand() % 100;
+					c.PosZ = fpz + 300.0f + rand() % 100;
 					glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 					c.rad = rand() % 360;
 					c.PosMat = glm::translate(c.PosMat, cpos);
@@ -594,9 +594,24 @@ void Calcutlaion_clients() {
 					minus_rad < ccd[j].rad
 					)
 				{
-					cout << "총알" << i << ", rad " << cbd[i].rotate << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
+					//cout << "총알" << i << ", rad " << cbd[i].rotate << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
 					// 충돌처리 추가
-
+					if (ccd[j].life < 2)
+					{
+						ccd[j].life -= 1;
+					}
+					if (ccd[j].life < 0)
+					{
+						Col_Cube_data c;
+						c.life = rand() % 3;
+						c.PosZ = fpz + 300.0f + rand() % 100;
+						glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+						c.rad = rand() % 360;
+						c.PosMat = glm::translate(c.PosMat, cpos);
+						c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
+						ccd[j] = c;
+						
+					}
 				}
 			}
 		}
