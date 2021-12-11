@@ -594,7 +594,6 @@ void Calcutlaion_clients() {
 					minus_rad < ccd[j].rad
 					)
 				{
-					//cout << "총알" << i << ", rad " << cbd[i].rotate << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
 					// 충돌처리 추가
 					if (ccd[j].life < 2)
 					{
