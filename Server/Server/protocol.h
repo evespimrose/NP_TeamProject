@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_BULLET 10
+#define MAX_BULLET 20
 #define MAX_CUBE 10
 
 #define CS_PLAYER_LEFT_UP 17
@@ -21,6 +21,7 @@
 #define SC_PLAYER_POS       4
 #define SC_BULLET_POS       5
 #define SC_MAP_CUBE			6
+#define SC_REMOVE_PLAYER    7
 ///////////////////////////////
 #define CS_READY           1
 #define CS_FIRE            2
@@ -81,4 +82,10 @@ struct sc_packet_cube_pos {
 	short size;
 	char type;
 	Cube_pos cubes[MAX_CUBE];
+};
+
+struct sc_packet_remove_player {
+	short size;
+	char type;
+	char id;
 };

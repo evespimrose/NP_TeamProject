@@ -73,3 +73,12 @@ void SendCubePosPacket(Cube_pos& cp)
 
 	SendPacket(&packet);//모든 클라에게 전송
 }
+
+void SendRemovePlayerPacket(char client, char leaver)
+{
+	sc_packet_remove_player packet;
+	packet.id = leaver;
+	packet.size = sizeof(packet);
+	packet.type = SC_REMOVE_PLAYER;
+	SendPacket(&packet);
+}

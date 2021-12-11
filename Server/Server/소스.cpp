@@ -22,7 +22,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 #define MAXPLAYER 3
-#define MAX_BULLET 10
+#define MAX_BULLET 20
 
 int GetSize;
 char Buffer[BUFSIZE];
@@ -243,22 +243,19 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		// 클라이언트 접속 종료, recv 에러 처리
 		if (retval == 0 || retval == SOCKET_ERROR) {
 			closesocket(client_sock);
-			cout << "여기55" << endl;
-			/*	g_clients.erase(id);
 
-				for (auto& cl : g_clients)
-					SendRemovePlayerPacket(cl.first, id);
+				for (auto& Csock : Client_sock) //다른 클라한테 나간 클라id 전송
+					SendReadyPacket(Csock, id);
 
-				g_connectedCls[id].is_connected = false;
-				g_connectedClsLock.unlock();
-				--numOfCls;*/
+				is_connected[id] = false;
+				--count_s;
 
-				//cout << "======================================================" << endl;
-				//cout << "ID " << (int)id << " is out. And this Id slot is empty" << endl;
-				//cout << "======================================================" << endl;
+				cout << "======================================================" << endl;
+				cout << "ID " << (int)id << " is out." << endl;
+				cout << "======================================================" << endl;
 
-			/*	if (retval == SOCKET_ERROR)
-					ErrDisplay("RecvThread occured Error!");*/
+				if (retval == SOCKET_ERROR)
+					err_display("RecvThread occured Error!");
 			return 0;
 		}
 		// Message 재사용을 위한 초기화

@@ -109,10 +109,8 @@ void ProcessPacket(char* packet_buffer)
 		for (int i = 0; i < 3; i++) {
 			if (packet.players[i].id != -1)
 			{
-				//cout << i << "---------" << packet.players[i].PosX << endl;
 					if ( packet.players[i].PosY != NULL && packet.players[i].PosZ != NULL)
 					{
-						
 						for (int i = 0; i < 3; i++) {
 							game_data.player_data[i].Posvec.x = packet.players[i].PosX;
 							game_data.player_data[i].Posvec.y = packet.players[i].PosY;
@@ -121,9 +119,7 @@ void ProcessPacket(char* packet_buffer)
 							game_data.player_data[i].RotMat = packet.players[i].RotMat;
 							game_data.player_data[i].SclMat = packet.players[i].SclMat;
 						}
-						
 					}
-				
 			}
 		}
 		break;
@@ -150,6 +146,13 @@ void ProcessPacket(char* packet_buffer)
 
 		break;
 	}
+	case SC_REMOVE_PLAYER:
+		sc_packet_remove_player packet;
+		memcpy(&packet, ptr, sizeof(packet));
+		
+
+		break;
+
 	default:
 		std::cout << "None Receive Packet" << std::endl;
 		break;
