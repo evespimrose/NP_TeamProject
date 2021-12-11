@@ -559,7 +559,7 @@ void Calcutlaion_clients() {
 					minus_rad < ccd[j].rad
 					)
 				{
-					cout << "플레이어" << i << ", rad " << col_player_data[i].rad << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
+					//cout << "플레이어" << i << ", rad " << col_player_data[i].rad << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
 					// 충돌처리 추가
 					col_player_data[i].Speed /= 2;
 
@@ -571,6 +571,32 @@ void Calcutlaion_clients() {
 					c.PosMat = glm::translate(c.PosMat, cpos);
 					c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					ccd[j] = c;
+				}
+			}
+		}
+
+		for (int i = 0; i < MAX_BULLET; ++i) {
+			for (int j = 0; j < MAX_CUBE; ++j)
+			{
+				float plus_rad = cbd[i].rotate + 10;
+				if (plus_rad > 360)
+				{
+					plus_rad = plus_rad - 360;
+				}
+				float minus_rad = cbd[i].rotate - 10;
+				if (minus_rad < 0)
+				{
+					minus_rad = minus_rad + 360;
+				}
+				if (cbd[i].PosVec.z + 0.1f > ccd[j].PosZ &&
+					cbd[i].PosVec.z - 0.1f < ccd[j].PosZ &&
+					plus_rad > ccd[j].rad &&
+					minus_rad < ccd[j].rad
+					)
+				{
+					cout << "총알" << i << ", rad " << cbd[i].rotate << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
+					// 충돌처리 추가
+
 				}
 			}
 		}
