@@ -348,7 +348,7 @@ void Calcutlaion_clients() {
 	for (int i = 0; i <3; i++) {
 		col_player_data[i].Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
 		col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, col_player_data[i].Posvec);
-		col_player_data[i].rad = (120.0f * (1+i));
+		col_player_data[i].rad = 0.0f;
 		col_player_data[i].RotMat = glm::rotate(col_player_data[i].RotMat, glm::radians(-col_player_data[i].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		fixed_RotMat[i] = col_player_data[i].RotMat;
 		col_player_data[i].SclMat = glm::scale(col_player_data[i].SclMat, glm::vec3(1.0f, 0.3f, 2.0f));
@@ -477,23 +477,9 @@ void Calcutlaion_clients() {
 
 		float fpz = 0.0f;
 		float spz = FLT_MAX;
-
-		//데이터 바꿔치기
-		for (int i = 0; i < count_s+1; i++) {
-			
-			players[i].PosX = col_player_data[i].Posvec.x;
-			players[i].PosY = col_player_data[i].Posvec.y;
-			players[i].PosZ = col_player_data[i].Posvec.z;
-			players[i].PosMat = col_player_data[i].PosMat;
-			players[i].RotMat = col_player_data[i].RotMat;
-			players[i].SclMat = col_player_data[i].SclMat;
+		for (int i = 0; i < count_s + 1; i++) {
 			fpz = max(fpz, col_player_data[i].Posvec.z);
 			spz = min(spz, col_player_data[i].Posvec.z);
-		}
-
-		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼
-
-			bullets[i].PosMat = cbd[i].PosMat;
 		}
 		// 큐브 갱신
 		for (int i = 0; i < MAX_CUBE; ++i)
@@ -511,17 +497,7 @@ void Calcutlaion_clients() {
 			}
 		}
 
-		for (int i = 0; i < MAX_CUBE; ++i)
-		{
-			cubes[i].PosMat = ccd[i].PosMat;
-			cubes[i].RotMat = ccd[i].RotMat;
-			cubes[i].life = ccd[i].life;
-		}
-		//cout << glm::to_string(ccd[0].PosMat) << std::endl;
-		SendPlayerPosPacket(*players);
-		SendBulletPosPacket(*bullets);
-		SendCubePosPacket(*cubes);
-
+		//플레이어-큐브 충돌처리
 		for (int i = 0; i < count_s + 1; ++i) {
 			for (int j = 0; j < MAX_CUBE; ++j)
 			{
@@ -543,8 +519,9 @@ void Calcutlaion_clients() {
 					minus_rad < ccd[j].rad
 					)
 				{
+					//충돌 출력
 					cout << "플레이어" << i << ", rad " << col_player_data[i].rad << ", 큐브" << j << ", rad" << ccd[j].rad << endl;
-					// 충돌처리 추가
+					//충돌 처리
 					col_player_data[i].Speed /= 2;
 
 					Col_Cube_data c;
@@ -558,6 +535,32 @@ void Calcutlaion_clients() {
 				}
 			}
 		}
+
+		//데이터 바꿔치기
+		for (int i = 0; i < count_s+1; i++) {
+			players[i].PosX = col_player_data[i].Posvec.x;
+			players[i].PosY = col_player_data[i].Posvec.y;
+			players[i].PosZ = col_player_data[i].Posvec.z;
+			players[i].PosMat = col_player_data[i].PosMat;
+			players[i].RotMat = col_player_data[i].RotMat;
+			players[i].SclMat = col_player_data[i].SclMat;
+		}
+
+		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼
+
+			bullets[i].PosMat = cbd[i].PosMat;
+		}
+
+		for (int i = 0; i < MAX_CUBE; ++i)
+		{
+			cubes[i].PosMat = ccd[i].PosMat;
+			cubes[i].RotMat = ccd[i].RotMat;
+			cubes[i].life = ccd[i].life;
+		}
+		//cout << glm::to_string(ccd[0].PosMat) << std::endl;
+		SendPlayerPosPacket(*players);
+		SendBulletPosPacket(*bullets);
+		SendCubePosPacket(*cubes);
 	}
 }
 
