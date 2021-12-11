@@ -43,6 +43,7 @@ all_ready_info ari;
 float Rotate = 0;
 int cnt = 0;
 int ip_number_len = 0;
+int bullet_count = 0;
 vector<string> words;
 
 SOCKET sock;
@@ -135,7 +136,7 @@ void ProcessPacket(char* packet_buffer)
 		for (int i = 0; i < MAX_BULLET; i++) {
 			bullet[i].setposMat(packet.bullets[i].PosMat);
 		}
-
+		bullet_count++;
 		break;
 	}
 	case SC_MAP_CUBE:
