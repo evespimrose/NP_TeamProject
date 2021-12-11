@@ -491,10 +491,29 @@ void Calcutlaion_clients() {
 			spz = min(spz, col_player_data[i].Posvec.z);
 		}
 
+		for (int i = 0; i < MAX_BULLET; ++i)
+		{
+			for (int j = 0; j < count_s + 1; ++j)
+			{
+				float bz = cbd[i].PosVec.z;
+				float bRad = cbd[i].rotate;
+				float pz = col_player_data[j].Posvec.z;
+				float pRad = col_player_data[j].rad;
+				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f)
+				{
+					col_player_data[j].Speed = 0.0f;
+				}
+			}
+
+
+		}
+
 		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼
 
 			bullets[i].PosMat = cbd[i].PosMat;
 		}
+
+
 		// 큐브 갱신
 		for (int i = 0; i < MAX_CUBE; ++i)
 		{
@@ -517,10 +536,7 @@ void Calcutlaion_clients() {
 			cubes[i].RotMat = ccd[i].RotMat;
 			cubes[i].life = ccd[i].life;
 		}
-		//cout << glm::to_string(ccd[0].PosMat) << std::endl;
-		SendPlayerPosPacket(*players);
-		SendBulletPosPacket(*bullets);
-		SendCubePosPacket(*cubes);
+		
 
 		for (int i = 0; i < count_s + 1; ++i) {
 			for (int j = 0; j < MAX_CUBE; ++j)
@@ -558,6 +574,11 @@ void Calcutlaion_clients() {
 				}
 			}
 		}
+
+		SendPlayerPosPacket(*players);
+		SendBulletPosPacket(*bullets);
+		SendCubePosPacket(*cubes);
+
 	}
 }
 
@@ -575,23 +596,4 @@ void init_player(Col_Player_data cpd) {
 
 };
 
-//void update_time() {
-//	LARGE_INTEGER time;
-//	QueryPerformanceCounter(&time);
-//	fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
-//	tTime = time;
-//
-//	fDeltaTime *= 100;
-//}
-//
-//void update_player(Col_Player_data cpd) {
-//
-//	if (cpd.Speed < 1.5)
-//	{
-//		cpd.Speed += acc * fDeltaTime;
-//	}
-//	cpd.Posvec.z += cpd.Speed * fDeltaTime;
-//
-//	cpd.PosMat = glm::translate(cpd.PosMat, glm::vec3(0.0f, 0.0f, cpd.Speed * fDeltaTime));
-//}
-//
+
