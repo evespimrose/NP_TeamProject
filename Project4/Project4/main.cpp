@@ -36,12 +36,9 @@ Bullet bullet[MAX_BULLET];
 
 Map m;
 
-Data* dat;
 Game_data game_data;
 
-vector<Cube_data> cd;
 all_ready_info ari;
-ready_info ri;
 
 float Rotate = 0;
 int cnt = 0;
@@ -52,33 +49,7 @@ SOCKET sock;
 char Buffer[BUFSIZE];
 Cube cube[MAX_CUBE];
 
-
-int get_ClientID(SOCKET sock);
 int recvn(SOCKET s, char* buf, int len, int flags);
-
-
-Player_data PD_pack_data(Player p)
-{
-	Player_data* pd = new Player_data;
-	//pd->KeyDownlist[3] = p.getKey();
-	/*pd->PosVec_z = p.getPosition().z;
-	pd->speed = p.getSpeed();*/
-	//pd->rotate = p.getRotate();
-	return *pd;
-}
-
-//Cube_data* CD_pack_data(Cube c)
-//{
-//	
-//}
-
-Data* pack_data(Player_data* pd, Cube_data* cd)
-{
-	Data* d = new Data;
-	d->PlayerData = *pd;
-	return d;
-}
-
 
 DWORD WINAPI JoinThread(LPVOID arg)
 {
@@ -87,10 +58,6 @@ DWORD WINAPI JoinThread(LPVOID arg)
 	
 	while (1) {
 		Recv_Packet(sock);
-			//game_data = recv_Player(sock);
-			//cout << game_data.player_data->BulletList[0] << endl;
-
-
 	}
 	return 0;
 
@@ -109,8 +76,6 @@ void ProcessPacket(char* packet_buffer)
 		memcpy(&packet, ptr, sizeof(packet));
 		user_id = packet.id;
 		cout << user_id << endl;
-	//	ari.Pt_Players[user_id] = true;
-	//	ari.is_ready[user_id] = false;
 		break;
 
 	}
@@ -146,10 +111,6 @@ void ProcessPacket(char* packet_buffer)
 				//cout << i << "---------" << packet.players[i].PosX << endl;
 					if ( packet.players[i].PosY != NULL && packet.players[i].PosZ != NULL)
 					{
-					/*	game_data.player_data[user_id].Posvec.x = packet.players[user_id].PosX;
-						game_data.player_data[user_id].Posvec.y = packet.players[user_id].PosY;
-						game_data.player_data[user_id].Posvec.z = packet.players[user_id].PosZ;
-						game_data.player_data[user_id].TR = packet.players[user_id].TR;*/
 						
 						for (int i = 0; i < 3; i++) {
 							game_data.player_data[i].Posvec.x = packet.players[i].PosX;

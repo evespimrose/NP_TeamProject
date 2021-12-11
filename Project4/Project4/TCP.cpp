@@ -106,24 +106,6 @@ void ProcessData(char* buf, size_t io_byte )
 }
 
 
-
-void send_Player(SOCKET sock, Player_data player)
-{
-	int retval;
-
-	int len = sizeof(player);
-	retval = send(sock, (char*)&len, sizeof(int), 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-		exit(1);
-	}
-	retval = send(sock, (char*)&player, sizeof(Player_data), 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-		exit(1);
-	}
-}
-
 void Send_event(SOCKET sock, char buf)
 {
 	send(sock, &buf, sizeof(char), 0);
@@ -148,51 +130,3 @@ int recvn(SOCKET s, char* buf, int len, int flags) {
 	return (len - left);
 }
 
-Game_data recv_Player(SOCKET sock) {
-	int retval;
-	int len;
-	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	else if (retval == 0) {
-	}
-
-	//printf( "Recv : %d\n", len );
-	//printf( "데이터 크기 : %d\n", len );
-
-	int GetSize;
-	char suBuffer[BUFSIZE];
-	Game_data* game_data;
-	GetSize = recv(sock, suBuffer, len, 0);
-	if (GetSize == SOCKET_ERROR) {
-		MessageBox(NULL, "서버와의 연결이 끊어졌습니다..!\n이유 : \n 1. 서버가 종료되었습니다\n 2. 서버에 의해 강제퇴장 당하였습니다\n 3. 인터넷 연결이 올바르지 않습니다", "NetworkTermProject", 0);
-		exit(1);
-	}
-
-	suBuffer[GetSize] = '\0';
-	game_data = (Game_data*)suBuffer;
-
-	//printf( "%d\n", player[0]->camxrotate );
-
-	return *game_data;
-}
-
-int get_ClientID(SOCKET sock) {
-	int retval;
-	int len;
-	retval = recvn(sock, (char*)&len, sizeof(int), 0); // 데이터 받기(고정 길이)
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	else if (retval == 0) {
-	}
-
-	char* buf = new char[len]; // 전송된 길이를 알고 있으니 크기에 맞춰서 buf를 늘려주자!
-
-	retval = recvn(sock, buf, len, 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	return atoi(buf);
-}
