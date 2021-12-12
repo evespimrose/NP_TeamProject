@@ -1,5 +1,5 @@
 #pragma once
-#define MAX_BULLET 20
+#define MAX_BULLET 30
 #define MAX_CUBE 10
 
 #define CS_PLAYER_LEFT_UP 17

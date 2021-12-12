@@ -502,7 +502,7 @@ void Calcutlaion_clients() {
 				{
 					cbd[i].PosMat = glm::mat4(1.0f);
 					cbd[i].life = 0;//ÃÑ¾Ë Á¦°Å 
-					col_player_data[j].Speed = 0.0f;
+					col_player_data[j].Speed = col_player_data[j].Speed * 0.9f;
 				}
 			}
 		}
