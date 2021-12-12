@@ -8,7 +8,7 @@ struct Message {
     bool isPushed;
 };
 using namespace std;
-
+using namespace chrono;
 typedef struct Col_Player_data //계산용 플레이어 데이터
 {
     glm::vec3 Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
