@@ -462,7 +462,6 @@ void Calcutlaion_clients() {
 
 		//데이터 바꿔치기
 		for (int i = 0; i < count_s+1; i++) {
-			
 			players[i].PosX = col_player_data[i].Posvec.x;
 			players[i].PosY = col_player_data[i].Posvec.y;
 			players[i].PosZ = col_player_data[i].Posvec.z;
@@ -490,16 +489,13 @@ void Calcutlaion_clients() {
 		}
 
 		//총알 플레이어 충돌 체크 
-		for (int i = 0; i < Bullet_num; ++i)
-		{
-			for (int j = 0; j < count_s + 1; ++j)
-			{
+		for (int i = 0; i < Bullet_num; ++i){
+			for (int j = 0; j < count_s + 1; ++j){
 				float bz = cbd[i].PosVec.z;
 				float bRad = cbd[i].rotate;
 				float pz = col_player_data[j].Posvec.z;
 				float pRad = col_player_data[j].rad;
-				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f)
-				{
+				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f){
 					cbd[i].PosMat = glm::mat4(1.0f);
 					cbd[i].life = 0;//총알 제거 
 					col_player_data[j].Speed = col_player_data[j].Speed * 0.9f;
@@ -509,8 +505,7 @@ void Calcutlaion_clients() {
 
 		//플레이어 큐브 충돌 체크
 		for (int i = 0; i < count_s + 1; ++i) {
-			for (int j = 0; j < MAX_CUBE; ++j)
-			{
+			for (int j = 0; j < MAX_CUBE; ++j){
 				// 각도 처리
 				float plus_rad = col_player_data[i].rad + 10;
 				if (plus_rad > 360)
@@ -526,9 +521,7 @@ void Calcutlaion_clients() {
 				if (col_player_data[i].Posvec.z + 0.1f > ccd[j].PosZ &&
 					col_player_data[i].Posvec.z - 0.1f < ccd[j].PosZ &&
 					plus_rad > ccd[j].rad &&
-					minus_rad < ccd[j].rad
-					)
-				{
+					minus_rad < ccd[j].rad){
 
 					col_player_data[i].Speed /= 2;
 
@@ -545,10 +538,8 @@ void Calcutlaion_clients() {
 		}
 
 		//총알과 큐브 충돌 체크 
-		for (int i = 0; i < Bullet_num; ++i)
-		{
-			for (int j = 0; j < MAX_CUBE; ++j)
-			{
+		for (int i = 0; i < Bullet_num; ++i){
+			for (int j = 0; j < MAX_CUBE; ++j){
 				float bz = cbd[i].PosVec.z;
 				float bRad = cbd[i].rotate;
 				float cz = ccd[j].PosZ;
@@ -589,7 +580,19 @@ void Calcutlaion_clients() {
 			cubes[i].life = ccd[i].life;
 		}
 
-	
+		//게임 종료 처리
+		if (!game_over_flag)
+		{
+			for (int i = 0; i < count_s + 1; ++i) {
+				if (col_player_data[i].Posvec.z > 500.0f)
+				{
+					cout << "우승자 감지" << endl;
+					game_over_flag = true;
+					char winnerid = i;
+					SendGameResultPacket(winnerid);
+				}
+			}
+		}
 		
 		SendPlayerPosPacket(*players);
 		SendBulletPosPacket(*bullets);

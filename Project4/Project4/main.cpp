@@ -7,8 +7,6 @@
 #define WIDTH 800
 #define TEXT_GAP 200
 #define BUFSIZE 1024
-// for TCP
-//#define MULTI
 
 using namespace std;
 
@@ -19,9 +17,7 @@ const float length = 0.5;
 char* arr;
 
 int user_id = -1; //0~2
-#ifdef Multi
-GameState = 0;
-#endif // Multi
+int winner_id = -1;
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -126,7 +122,6 @@ void ProcessPacket(char* packet_buffer)
 	}
 	case SC_BULLET_POS:
 	{
-
 		sc_packet_bullet_pos packet;
 		memcpy(&packet, ptr, sizeof(packet));
 		for (int i = 0; i < MAX_BULLET; i++) {
@@ -147,12 +142,22 @@ void ProcessPacket(char* packet_buffer)
 		break;
 	}
 	case SC_REMOVE_PLAYER:
+	{
 		sc_packet_remove_player packet;
 		memcpy(&packet, ptr, sizeof(packet));
 		ari.Pt_Players[packet.id] = 0;
 
 		break;
+	}
+	case SC_GAME_OVER:
+	{
+		sc_packet_game_result packet;
+		memcpy(&packet, ptr, sizeof(packet));
+		winner_id = packet.id;
+		cout << "우승자 : " << winner_id << endl;
 
+		break;
+	}
 	default:
 		std::cout << "None Receive Packet" << std::endl;
 		break;
@@ -295,10 +300,7 @@ GLvoid drawScene()
 
 		m.Render(ShaderProgram);
 		player1.Render(ShaderProgram);
-#ifdef MULTI
-		mplayer2.Render(ShaderProgram);
-		mplayer3.Render(ShaderProgram);
-#endif
+
 		//2명일때
 		
 		if (ari.pt_clients_num == 2) {
@@ -337,6 +339,7 @@ GLvoid drawScene()
 
 		//glutPrint(420.0f, 550.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		glutPrint(WIDTH / 3.0f, HEIGHT / 2.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
+		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
 		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
 
 		glutSwapBuffers();
@@ -444,10 +447,6 @@ GLvoid Timer(int Value)
 		m.Slowest_Update(pz);
 
 
-#ifdef MULTI
-		mplayer2.Update(player_data[1]);
-		mplayer3.Update(player_data[2]);
-#endif
 
 
 		player1.Update(game_data.player_data[user_id]);
@@ -682,10 +681,7 @@ int main(int argc, char** argv)
 
 	InitShader();
 	player1.Init(game_data.player_data[0], bullet);
-#ifdef MULTI
-	mplayer2.Init();
-	mplayer3.Init();
-#endif
+
 	
 	mplayer[0].Init();
 	mplayer[1].Init();

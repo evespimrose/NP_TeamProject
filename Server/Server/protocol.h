@@ -22,6 +22,7 @@
 #define SC_BULLET_POS       5
 #define SC_MAP_CUBE			6
 #define SC_REMOVE_PLAYER    7
+#define SC_GAME_OVER		8
 ///////////////////////////////
 #define CS_READY           1
 #define CS_FIRE            2
@@ -85,6 +86,12 @@ struct sc_packet_cube_pos {
 };
 
 struct sc_packet_remove_player {
+	short size;
+	char type;
+	char id;
+};
+
+struct sc_packet_game_result {
 	short size;
 	char type;
 	char id;

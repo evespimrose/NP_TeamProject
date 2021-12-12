@@ -82,3 +82,12 @@ void SendRemovePlayerPacket(char client, char leaver)
 	packet.type = SC_REMOVE_PLAYER;
 	SendPacket(&packet);
 }
+
+void SendGameResultPacket(char winner)
+{
+	sc_packet_game_result packet;
+	packet.id = winner;
+	packet.size = sizeof(packet);
+	packet.type = SC_GAME_OVER;
+	SendPacket(&packet);
+}
