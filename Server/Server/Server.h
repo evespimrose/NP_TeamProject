@@ -92,6 +92,6 @@ int Bullet_num = 0;//발사된 총알 개수
 //타이머 관련
 LARGE_INTEGER tSecond;
 LARGE_INTEGER tTime;
-float acc = 0.0001f;
+float acc = 0.0005f;
 float fDeltaTime = 0;
 bool game_over_flag = false;

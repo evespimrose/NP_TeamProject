@@ -14,7 +14,7 @@ void Bullet::Render(GLuint ShaderProgram)
 		glm::mat4 TR;
 		TR = PosMat;
 
-		TR = glm::scale(TR, glm::vec3(1.0f, 1.0f, 1.0f));
+		TR = glm::scale(TR, glm::vec3(0.5f, 0.5f, 0.5f));
 
 		unsigned int specularLocation = glGetUniformLocation(ShaderProgram, "spec_strength");
 		unsigned int diffuseLocation = glGetUniformLocation(ShaderProgram, "diffuse_strength");

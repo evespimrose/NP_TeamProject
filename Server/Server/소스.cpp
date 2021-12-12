@@ -22,7 +22,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 #define MAXPLAYER 3
-#define MAX_BULLET 20
+#define MAX_BULLET 30
 
 int GetSize;
 char Buffer[BUFSIZE];
@@ -30,9 +30,6 @@ char Buffer[BUFSIZE];
 DWORD WINAPI recv_thread(LPVOID iD);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
 void Calcutlaion_clients();
-void init_player(Col_Player_data cpd);
-//void update_player(Col_Player_data cpd);
-//void update_time();
 
  CRITICAL_SECTION cs;
  CRITICAL_SECTION Msg_cs;
@@ -377,7 +374,7 @@ void Calcutlaion_clients() {
 		fDeltaTime *= 100;
 
 		for (int i = 0; i < count_s+1; i++) {
-			if (col_player_data[i].Speed < 1.5)
+			if (col_player_data[i].Speed < 0.5)
 			{
 				col_player_data[i].Speed += acc * fDeltaTime;
 			}
@@ -404,7 +401,7 @@ void Calcutlaion_clients() {
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
-					col_player_data[Msg.id].rad += 30.0f * col_player_data[Msg.id].Speed;
+					col_player_data[Msg.id].rad += 3.0f ;
 					if (col_player_data[Msg.id].rad > 360)
 					{
 						col_player_data[Msg.id].rad -= 360;
@@ -419,7 +416,7 @@ void Calcutlaion_clients() {
 					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
 
-					col_player_data[Msg.id].rad -= 30.0f * col_player_data[Msg.id].Speed;
+					col_player_data[Msg.id].rad -= 3.0f ;
 					if (col_player_data[Msg.id].rad < 0)
 					{
 						col_player_data[Msg.id].rad += 360;
@@ -499,6 +496,7 @@ void Calcutlaion_clients() {
 					cbd[i].PosMat = glm::mat4(1.0f);
 					cbd[i].life = 0;//ÃÑ¾Ë Á¦°Å 
 					col_player_data[j].Speed = col_player_data[j].Speed * 0.9f;
+
 				}
 			}
 		}
@@ -523,11 +521,11 @@ void Calcutlaion_clients() {
 					plus_rad > ccd[j].rad &&
 					minus_rad < ccd[j].rad){
 
-					col_player_data[i].Speed /= 2;
+					col_player_data[i].Speed  = col_player_data[i].Speed * 0.8f;
 
 					Col_Cube_data c;
 					c.life = rand() % 3;
-					c.PosZ = fpz + 300.0f + rand() % 100;
+					c.PosZ = fpz + 100.0f + rand() % 100;
 					glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 					c.rad = rand() % 360;
 					c.PosMat = glm::translate(c.PosMat, cpos);
@@ -555,7 +553,7 @@ void Calcutlaion_clients() {
 					{
 						Col_Cube_data c;
 						c.life = rand() % 3;
-						c.PosZ = fpz + 300.0f + rand() % 100;
+						c.PosZ = fpz + 100.0f + rand() % 100;
 						glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 						c.rad = rand() % 360;
 						c.PosMat = glm::translate(c.PosMat, cpos);
