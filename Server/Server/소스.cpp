@@ -490,13 +490,14 @@ void Calcutlaion_clients() {
 			for (int j = 0; j < count_s + 1; ++j){
 				float bz = cbd[i].PosVec.z;
 				float bRad = cbd[i].rotate;
+				int life = cbd[i].life;
 				float pz = col_player_data[j].Posvec.z;
 				float pRad = col_player_data[j].rad;
-				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f){
+				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f && life==1){
 					cbd[i].PosMat = glm::mat4(1.0f);
 					cbd[i].life = 0;//ÃÑ¾Ë Á¦°Å 
 					col_player_data[j].Speed = col_player_data[j].Speed * 0.9f;
-
+					cout << j << "¶û Ãæµ¹" << endl;
 				}
 			}
 		}
@@ -531,6 +532,7 @@ void Calcutlaion_clients() {
 					c.PosMat = glm::translate(c.PosMat, cpos);
 					c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
 					ccd[j] = c;
+					
 				}
 			}
 		}
