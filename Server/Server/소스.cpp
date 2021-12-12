@@ -435,7 +435,7 @@ void Calcutlaion_clients() {
 			}
 
 			if (Msg.type == TYPE_BULLET) {
-				cout << col_player_data[Msg.id].Posvec.x << endl;
+				//cout << col_player_data[Msg.id].Posvec.x << endl;
 				
 				cbd[Bullet_num].PosVec = col_player_data[Msg.id].Posvec;
 				cbd[Bullet_num].PosVec.z += 0.5f;
