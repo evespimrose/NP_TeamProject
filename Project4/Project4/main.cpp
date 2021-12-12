@@ -149,7 +149,7 @@ void ProcessPacket(char* packet_buffer)
 	case SC_REMOVE_PLAYER:
 		sc_packet_remove_player packet;
 		memcpy(&packet, ptr, sizeof(packet));
-		
+		ari.Pt_Players[packet.id] = 0;
 
 		break;
 
