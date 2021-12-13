@@ -123,10 +123,6 @@ public:
 	void Render(GLuint ShaderProgram);
 	float getSpeed();
 	float getRotate();
-	//bool collision();
-	//bool MinusLife();
-	//int getLife();
-	//void setSpeed(float speed);
 	void Fire();
 	std::vector<Bullet> getBulletList();
 	void setBulletList(std::vector<Bullet> tmpList);

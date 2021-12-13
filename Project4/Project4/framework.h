@@ -72,7 +72,6 @@ typedef struct all_ready_info
     char Pt_Players[3];
     char is_ready[3];
     int pt_clients_num;
-    BOOL game_start{ false };
 }all_ready_info;
 
 void err_quit(const char* msg);

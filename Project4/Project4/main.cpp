@@ -442,17 +442,7 @@ GLvoid Timer(int Value)
 	if (Scene == GAME_SCENE)
 	{
 		float pz = player1.getPosition().z;
-		//float pz = player2.getPosition().z;
-		float fpz = 0.0f;
-		float spz = 10000000.0f;
 
-		/*vector<Player>::iterator fastest_player_iter = p.begin();
-		vector<Player>::iterator slowest_player_iter = p.begin();*/
-		/*for (auto i = p.begin(); i != p.end(); ++i)
-		{
-			fpz = max(fpz, i->getPosition().z);
-			spz = min(spz, i->getPosition().z);
-		}*/
 
 		m.Fastest_Update(pz, cube);
 		m.Slowest_Update(pz);
@@ -481,10 +471,6 @@ GLvoid Timer(int Value)
 
 		cnt = 0;
 
-		std::vector<Bullet> tmpList = player1.getBulletList();
-		m.BulletCollisionCheck(tmpList);
-
-		player1.setBulletList(tmpList);
 	}
 
 	string str = "Turbo_Racing   fps:";
@@ -508,13 +494,11 @@ void BGM()
 void Reset()
 {
 	Scene = LOBBY_SCENE;
-	/*for (auto i = p.begin(); i != p.end(); ++i)
-	{
-		i->Reset();
-	}*/
+
 	player1.Reset();
 	m.Reset();
-	BGM();
+	for(int i=0;i<3;i++)
+	ari.is_ready[i] = 0;
 
 	glutTimerFunc(1, Timer, 0);
 }
@@ -629,8 +613,6 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 				ip_add += word;
 
 			
-			//Send_event(sock, CS_READY);
-			printf("전송완료");
 			Scene = LOBBY_SCENE;
 			break;
 		}
@@ -642,7 +624,6 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		{
 		case 32:
 
-			printf("전송완료");
 			Send_event(sock, CS_READY);
 
 			break;
