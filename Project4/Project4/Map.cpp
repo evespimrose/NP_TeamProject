@@ -137,79 +137,14 @@ void Map::Slowest_Update(float pz)
 		Liter = LightingList.erase(Liter);
 		Liter = LightingList.erase(Liter);
 	}
-
-	if (!CubeList.empty())
-	{
-		std::vector<Cube>::iterator Citer = CubeList.begin();
-		if (Citer->getzOffset() + 50.0f < pz)
-		{
-			CubeList.erase(Citer);
-			Citer = CubeList.end() - 1;
-		}
-	}
 }
 
 bool Map::PlayerCollisionCheck(float pz, float pRotate)
 {
-	std::vector<Cube>::iterator Citer = CubeList.begin();
-	for (; Citer != CubeList.end(); ++Citer)
-	{
-		float cz = Citer->getzOffset();
-		float cRotate = Citer->getRotate();
-		if (cz < pz + 0.5f && cz > pz - 0.5f && cRotate > pRotate - 10 && cRotate < pRotate + 10)
-		{
-			CubeList.erase(Citer);
-			return true;
-		}
-	}
-	return false;
 }
 
 void Map::BulletCollisionCheck(std::vector<Bullet>& bList)
 {
-	std::vector<Bullet>::iterator iter = bList.begin();
-
-	for (; iter != bList.end();)
-	{
-		bool isCollision = 0;
-		std::vector<Cube>::iterator Citer = CubeList.begin();
-		for (; Citer != CubeList.end();)
-		{
-			float bz = iter->getzOffset();
-			float bRad = iter->getRotate();
-			float cRad = Citer->getRotate();
-
-			float cz = Citer->getzOffset();
-			if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 3.0f && bRad > cRad - 3.0f)
-			{
-				isCollision = 1;
-
-				Citer->MinusLife();
-				if (Citer->getLife() < 0)
-				{
-					Citer = CubeList.erase(Citer);
-				}
-				else
-				{
-					Citer++;
-				}
-
-				break;
-			}
-			else
-			{
-				Citer++;
-			}
-		}
-		if (isCollision)
-		{
-			iter = bList.erase(iter);
-		}
-		else
-		{
-			iter++;
-		}
-	}
 }
 
 void Map::Reset()

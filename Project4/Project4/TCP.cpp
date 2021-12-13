@@ -40,7 +40,7 @@ SOCKET init_sock()
 	ULONG on = 1;
 	BOOL optval = TRUE;
 
-	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&optval, sizeof(optval));
+	//setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&optval, sizeof(optval));
 	//ioctlsocket(sock, FIONBIO, &on);
 
 	//connect

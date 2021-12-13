@@ -18,6 +18,7 @@
 ///////////////////////////////
 #define CS_READY           1
 #define CS_FIRE            2
+
 struct Player_pos {
 	char id;
 	float PosX, PosY, PosZ;

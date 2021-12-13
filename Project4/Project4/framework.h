@@ -63,12 +63,6 @@ typedef struct Game_data//최종 보낼 플레이어 데이터
     Bullet_data  bullet_data[MAX_BULLET];
 }Game_data;
 
-typedef struct Cube_data
-{
-    glm::vec3 PosVec;
-    int life;
-}Cube_data;
-
 typedef struct all_ready_info
 {
     char Pt_Players[3];

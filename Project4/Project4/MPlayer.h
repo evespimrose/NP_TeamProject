@@ -59,8 +59,6 @@ private:
 	GLuint BulletVBO[3];
 	GLuint BulletEBO;
 
-	int Life;
-
 	int p_user_id;
 
 	std::vector<Bullet> BulletList;

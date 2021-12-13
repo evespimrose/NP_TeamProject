@@ -10,11 +10,6 @@ void Camera::setRotate(float r)
 	rotate = r;
 }
 
-//void Camera::setPosition(glm::vec3 p)
-//{
-//	posz = p.z;
-//}
-
 void Camera::setPosition(float p_z)
 {
 	posz = p_z;
@@ -60,10 +55,9 @@ void Camera::Render(GLuint ShaderProgram)
 	unsigned int viewLocation = glGetUniformLocation(ShaderProgram, "viewTransform");
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 }
+
 void Camera::setcamera_pos(float x, float y, float z) {
 	posx = x;
 	posy = y;
 	posz = z;
-	//std::cout <<"          " << x <<"         " << y <<"        " << z << std::endl;
-	
 }

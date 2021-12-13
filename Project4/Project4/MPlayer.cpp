@@ -188,35 +188,6 @@ void MPlayer::Init()
 
 void MPlayer::Move()
 {
-	if (keyDownlist[0])
-	{
-		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		rad += 2.0f * Speed;
-		if (rad > 360)
-		{
-			rad -= 360;
-		}
-
-		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-	}
-
-	if (keyDownlist[1])
-	{
-		RotMat = glm::rotate(RotMat, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(-rad), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		rad -= 2.0f * Speed;
-		if (rad < 0)
-		{
-			rad += 360;
-		}
-
-		RotMat = glm::rotate(RotMat, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-		PosVec = glm::rotate(PosVec, glm::radians(rad), glm::vec3(0.0f, 0.0f, 1.0f));
-	}
 }
 
 void MPlayer::Update(Player_data pd)
@@ -230,7 +201,6 @@ void MPlayer::Update(Player_data pd)
 
 void MPlayer::Render(GLuint ShaderProgram)
 {
-
 	unsigned int modelLocation = glGetUniformLocation(ShaderProgram, "modelTransform");
 
 	glm::mat4 TR;
@@ -258,44 +228,10 @@ void MPlayer::Render(GLuint ShaderProgram)
 
 void MPlayer::Fire()
 {
-	std::chrono::milliseconds FireDelay(300);
-
-	std::chrono::duration<double> sec = std::chrono::system_clock::now() - PrevFireTime;
-	if (FireDelay < sec)
-	{
-		Bullet b;
-
-		//b.Init(PosVec, BulletVAO, Speed, rad);
-		BulletList.push_back(b);
-
-		PrevFireTime = std::chrono::system_clock::now();
-
-		SoundManager::sharedManager()->play(ATTACK_SOUND);
-	}
-
 }
 
 void MPlayer::ManageBullet()
 {
-	if (keyDownlist[2])
-	{
-		Fire();
-	}
-
-	std::vector<Bullet>::iterator iter = BulletList.begin();
-
-	for (; iter != BulletList.end();)
-	{
-		iter->Move();
-		if (iter->getzOffset() > PosVec.z + 50.0f)
-		{
-			iter = BulletList.erase(iter);
-		}
-		else
-		{
-			iter++;
-		}
-	}
 }
 
 float MPlayer::getSpeed()
@@ -308,42 +244,6 @@ float MPlayer::getRotate()
 	return rad;
 }
 
-bool MPlayer::collision()
-{
-	Speed /= 2;
-	if (MinusLife())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-std::vector<Bullet> MPlayer::getBulletList()
-{
-	return BulletList;
-}
-
-bool MPlayer::MinusLife()
-{
-	if (Life > 1)
-	{
-		Life--;
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-int MPlayer::getLife()
-{
-	return Life;
-}
-
 void MPlayer::Reset()
 {
 	BulletList.clear();
@@ -352,8 +252,6 @@ void MPlayer::Reset()
 
 void MPlayer::setBulletList(std::vector<Bullet> tmpList)
 {
-	BulletList.clear();
-	BulletList = tmpList;
 }
 
 glm::vec3 MPlayer::getPosition()
