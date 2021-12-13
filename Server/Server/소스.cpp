@@ -590,7 +590,7 @@ void Calcutlaion_clients() {
 			}
 
 			//게임 종료 처리
-			if (!game_over_flag)
+			if (game_over_flag)
 			{
 				for (int i = 0; i < count_s + 1; ++i) {
 					if (col_player_data[i].Posvec.z > 500.0f)
@@ -598,6 +598,7 @@ void Calcutlaion_clients() {
 						game_over_flag = true;
 						char winnerid = i;
 						SendGameResultPacket(winnerid);
+						return;
 					}
 				}
 			}

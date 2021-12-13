@@ -94,4 +94,4 @@ LARGE_INTEGER tSecond;
 LARGE_INTEGER tTime;
 float acc = 0.0005f;
 float fDeltaTime = 0;
-bool game_over_flag = false;
+bool game_over_flag = true;
