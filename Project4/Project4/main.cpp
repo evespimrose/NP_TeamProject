@@ -100,7 +100,6 @@ void ProcessPacket(char* packet_buffer)
 	}
 	case SC_PLAYER_POS:
 	{
-		cout << "¹Þ´ÂÁß " << endl;
 		sc_packet_player_pos packet;
 		memcpy(&packet, ptr, sizeof(packet));
 		for (int i = 0; i < 3; i++) {
