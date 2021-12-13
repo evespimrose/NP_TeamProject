@@ -289,6 +289,12 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 
 			if (Is_GameStart())
 			{
+				for (int i = 0; i < 3; i++)
+					ri[i].is_ready = 0;
+
+				for (auto& Csock : Client_sock)
+					SendReadyPacket(Csock, id);
+
 				SendGameStartPacket();
 				cout << "게임시작" << endl;
 				// Physics Thread 생성

@@ -510,7 +510,7 @@ void BGM()
 
 void Reset()
 {
-	Scene = GAME_SCENE;
+	Scene = LOBBY_SCENE;
 	/*for (auto i = p.begin(); i != p.end(); ++i)
 	{
 		i->Reset();
