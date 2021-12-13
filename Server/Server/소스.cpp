@@ -491,7 +491,7 @@ void Calcutlaion_clients() {
 					int life = cbd[i].life;
 					float pz = col_player_data[j].Posvec.z;
 					float pRad = col_player_data[j].rad;
-					if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f && life == 1) {
+					if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 10.0f && bRad > pRad - 10.0f && life == 1) {
 						cbd[i].PosMat = glm::mat4(1.0f);
 						cbd[i].life = 0;//총알 제거 
 						col_player_data[j].Speed = col_player_data[j].Speed * 0.9f;
@@ -503,12 +503,12 @@ void Calcutlaion_clients() {
 			for (int i = 0; i < count_s + 1; ++i) {
 				for (int j = 0; j < MAX_CUBE; ++j) {
 					// 각도 처리
-					float plus_rad = col_player_data[i].rad + 10;
+					float plus_rad = col_player_data[i].rad + 15;
 					if (plus_rad > 360)
 					{
 						plus_rad = plus_rad - 360;
 					}
-					float minus_rad = col_player_data[i].rad - 10;
+					float minus_rad = col_player_data[i].rad - 15;
 					if (minus_rad < 0)
 					{
 						minus_rad = minus_rad + 360;
@@ -541,7 +541,7 @@ void Calcutlaion_clients() {
 					float cz = ccd[j].PosZ;
 					float cRad = ccd[j].rad;
 
-					if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 3.0f && bRad > cRad - 3.0f)
+					if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 10.0f && bRad > cRad - 10.0f)
 					{
 						cbd[i].life = 0;//총알 제거 
 						cbd[i].PosMat = glm::mat4(1.0f);
@@ -579,7 +579,7 @@ void Calcutlaion_clients() {
 		
 
 				for (int i = 0; i < count_s + 1; ++i) {
-					if (col_player_data[i].Posvec.z > 500.0f)
+					if (col_player_data[i].Posvec.z > 3000.0f)
 					{
 						while (!glo_MsgQueue.empty())
 						{

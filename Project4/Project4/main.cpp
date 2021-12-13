@@ -353,7 +353,6 @@ GLvoid drawScene()
 			glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "YOU LOSER!");
 		}
 		glutPrint(WIDTH / 3.0f, HEIGHT / 2.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
-		glutPrint(WIDTH / 3.0f, HEIGHT / 4.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
 
 		glutSwapBuffers();
 	}
@@ -523,19 +522,6 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 			Send_event(sock, CS_PLAYER_LEFT_DOWN);
 			break;
 
-		}
-	}
-
-	if (Scene == OVER_SCENE)
-	{
-		switch (key)
-		{
-		case 'R':
-			Reset();
-			break;
-		case 'r':
-			Reset();
-			break;
 		}
 	}
 

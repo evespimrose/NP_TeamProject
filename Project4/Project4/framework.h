@@ -29,8 +29,9 @@
 #include <winsock2.h>
 
 //#define Proto_IP "127.0.0.1"
-#define Proto_IP "192.168.61.242"
+//#define Proto_IP "192.168.61.242"
 //#define Proto_IP "172.30.1.2"
+#define Proto_IP "172.20.10.4"
 #define Proto_Port 9000
 #define BUFSIZE 1024
 
