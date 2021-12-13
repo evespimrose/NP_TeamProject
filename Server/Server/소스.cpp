@@ -22,7 +22,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 #define MAXPLAYER 3
-#define MAX_BULLET 30
+#define MAX_BULLET 50
 
 int GetSize;
 char Buffer[BUFSIZE];
@@ -109,7 +109,7 @@ int main()
 {
 	//임계 영역 생성
 	InitializeCriticalSection(&cs);
-	InitializeCriticalSection(&Msg_cs);
+	
 	int retval;
 
 	WSADATA wsa;
@@ -211,7 +211,7 @@ int main()
 	}
 
 	DeleteCriticalSection(&cs);
-	DeleteCriticalSection(&Msg_cs);
+	
 	// closesocket()
 	closesocket(listen_sock);
 
@@ -222,7 +222,6 @@ int main()
 }
 
 DWORD WINAPI recv_thread(LPVOID iD) {
-
 	char id = (char)iD;
 
 	SOCKET client_sock = Client_sock[id];
@@ -327,7 +326,6 @@ void Calcutlaion_clients() {
 	QueryPerformanceFrequency(&tSecond);
 	QueryPerformanceCounter(&tTime);
 
-
 	std::queue <Message> MsgQueue;
 	Message Msg;
 	Col_Player_data col_player_data[3];
@@ -348,8 +346,7 @@ void Calcutlaion_clients() {
 		col_player_data[i].dirVec = glm::vec3(0.0f, 0.0f, 1.0f);
 		col_player_data[i].Speed = 0.1f;
 	}
-
-
+	
 	for (int i = 0; i < MAX_CUBE; ++i)
 	{
 		Col_Cube_data c;
@@ -362,28 +359,27 @@ void Calcutlaion_clients() {
 		ccd[i] = c;
 	}
 	int p_count = 0;
+	p_count++;
 	//시간 계산
 	using FpFloatMilliseconds = duration<float, milliseconds::period>;
 	auto prev_Time = chrono::high_resolution_clock::now();
 	float elapsedTime{};
 	while (true) {
+
 		auto cur_Time = chrono::high_resolution_clock::now();
 		elapsedTime += FpFloatMilliseconds(cur_Time - prev_Time).count();
 		prev_Time = cur_Time;
 
 		if (elapsedTime > 17)
 		{
-			EnterCriticalSection(&Msg_cs);
+
 			MsgQueue = glo_MsgQueue;
-			LeaveCriticalSection(&Msg_cs);
-			
 			LARGE_INTEGER time;
 			QueryPerformanceCounter(&time);
 			fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
 			tTime = time;
 
 			fDeltaTime *= 100;
-
 			for (int i = 0; i < count_s + 1; i++) {
 				if (col_player_data[i].Speed < 0.5)
 				{
@@ -393,12 +389,10 @@ void Calcutlaion_clients() {
 				col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, glm::vec3(0.0f, 0.0f, col_player_data[i].Speed * fDeltaTime));
 			}
 
-			EnterCriticalSection(&Msg_cs);
 			while (!glo_MsgQueue.empty()) {
 				glo_MsgQueue.pop();
-				LeaveCriticalSection(&Msg_cs);
+				
 			}
-
 			while (!MsgQueue.empty()) {
 
 
@@ -439,7 +433,6 @@ void Calcutlaion_clients() {
 
 					}
 				}
-
 				if (Msg.type == TYPE_BULLET) {
 
 					cbd[Bullet_num].PosVec = col_player_data[Msg.id].Posvec;
@@ -454,7 +447,6 @@ void Calcutlaion_clients() {
 					break;
 				}
 			}
-
 			//총알 정보 업데이트 
 			for (int i = 0; i < Bullet_num; i++) {
 				if (cbd[i].life != 0) {
@@ -465,7 +457,6 @@ void Calcutlaion_clients() {
 
 			float fpz = 0.0f;
 			float spz = FLT_MAX;
-
 			//데이터 바꿔치기
 			for (int i = 0; i < count_s + 1; i++) {
 				players[i].PosX = col_player_data[i].Posvec.x;
@@ -477,7 +468,6 @@ void Calcutlaion_clients() {
 				fpz = max(fpz, col_player_data[i].Posvec.z);
 				spz = min(spz, col_player_data[i].Posvec.z);
 			}
-
 			// 큐브 갱신
 			for (int i = 0; i < MAX_CUBE; ++i)
 			{
@@ -493,7 +483,6 @@ void Calcutlaion_clients() {
 					ccd[i] = c;
 				}
 			}
-
 			//총알 플레이어 충돌 체크 
 			for (int i = 0; i < Bullet_num; ++i) {
 				for (int j = 0; j < count_s + 1; ++j) {
@@ -510,7 +499,6 @@ void Calcutlaion_clients() {
 					}
 				}
 			}
-
 			//플레이어 큐브 충돌 체크
 			for (int i = 0; i < count_s + 1; ++i) {
 				for (int j = 0; j < MAX_CUBE; ++j) {
@@ -545,7 +533,6 @@ void Calcutlaion_clients() {
 					}
 				}
 			}
-
 			//총알과 큐브 충돌 체크 
 			for (int i = 0; i < Bullet_num; ++i) {
 				for (int j = 0; j < MAX_CUBE; ++j) {
@@ -576,7 +563,6 @@ void Calcutlaion_clients() {
 				}
 			}
 
-
 			for (int i = 0; i < Bullet_num; i++) { //총알 수만큼 총알 바꿔 치기
 
 				bullets[i].PosMat = cbd[i].PosMat;
@@ -591,7 +577,6 @@ void Calcutlaion_clients() {
 
 			//게임 종료 처리
 		
-				
 
 				for (int i = 0; i < count_s + 1; ++i) {
 					if (col_player_data[i].Posvec.z > 500.0f)
@@ -607,11 +592,11 @@ void Calcutlaion_clients() {
 						return;
 					}
 				}
-			
 
 			SendPlayerPosPacket(*players);
 			SendBulletPosPacket(*bullets);
 			SendCubePosPacket(*cubes);
+			
 			elapsedTime = 0;
 		}
 	}

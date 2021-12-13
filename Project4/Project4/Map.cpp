@@ -114,26 +114,7 @@ void Map::Fastest_Update(float pz, Cube* cube)
 		cube[i].Init(pz, CubeVAO);
 	}
 
-	//while ((int)pz % 100 == 0 && pz > 100.0f)
-	//{
-	//	if (CubeCounter > 0)
-	//	{
-	//		CubeCounter--;
-	//		Cube c;
 
-	//		c.Init(pz + 300.0f + rand() % 100, CubeVAO);
-	//		CubeList.push_back(c);
-	//	}
-	//	else if (CubeCounter == 0)
-	//	{
-	//		CubeCounter = 1 + pz / 1000;
-	//		if (CubeCounter > 10)
-	//		{
-	//			CubeCounter = 10;
-	//		}
-	//		break;
-	//	}
-	//}
 }
 
 void Map::Slowest_Update(float pz)

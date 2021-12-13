@@ -100,7 +100,7 @@ void ProcessPacket(char* packet_buffer)
 	}
 	case SC_PLAYER_POS:
 	{
-		
+		cout << "받는중 " << endl;
 		sc_packet_player_pos packet;
 		memcpy(&packet, ptr, sizeof(packet));
 		for (int i = 0; i < 3; i++) {
@@ -290,6 +290,7 @@ GLvoid drawScene()
 {
 	if (Scene == GAME_SCENE) //게임 시작
 	{
+
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -344,7 +345,6 @@ GLvoid drawScene()
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//glutPrint(420.0f, 550.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 		if (i_winner == true)
 		{
 			glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "YOU WINNNER!");
