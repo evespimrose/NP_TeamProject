@@ -436,9 +436,6 @@ GLvoid Timer(int Value)
 {
 	if (Scene == OVER_SCENE)
 	{
-		SoundManager::sharedManager()->play(OVER_SOUND);
-		SoundManager::sharedManager()->stop(BACKGROUND_SOUND);
-		SoundManager::sharedManager()->stop(DRIVE_SOUND);
 		return;
 	}
 
