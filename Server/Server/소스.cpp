@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <thread>
-
+#include <chrono>
 
 #include <gl/glew.h>
 
@@ -22,7 +22,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 #define MAXPLAYER 3
-#define MAX_BULLET 20
+#define MAX_BULLET 30
 
 int GetSize;
 char Buffer[BUFSIZE];
@@ -30,9 +30,6 @@ char Buffer[BUFSIZE];
 DWORD WINAPI recv_thread(LPVOID iD);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
 void Calcutlaion_clients();
-void init_player(Col_Player_data cpd);
-//void update_player(Col_Player_data cpd);
-//void update_time();
 
  CRITICAL_SECTION cs;
  CRITICAL_SECTION Msg_cs;
@@ -237,9 +234,7 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 
 		msg.id = -1;
 		char buf[BUFSIZE];
-		//cout << "여기1" << endl;
 		char retval = recv(client_sock, buf, 1, 0);
-		cout << retval << endl;
 		// 클라이언트 접속 종료, recv 에러 처리
 		if (retval == 0 || retval == SOCKET_ERROR) {
 			closesocket(client_sock);
@@ -265,7 +260,6 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		{
 		case CS_PLAYER_LEFT_DOWN:
 		{
-			//cout << "왼쪽" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_LEFT_GO;
@@ -274,7 +268,6 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		}
 		case CS_PLAYER_RIGHT_DOWN:
 		{
-			//cout << "오른쪽" << endl;
 			msg.id = id;
 			msg.type = TYPE_PLAYER;
 			msg.dir = DIR_RIGHT_GO;
@@ -362,168 +355,137 @@ void Calcutlaion_clients() {
 		c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
 		ccd[i] = c;
 	}
-
+	int p_count = 0;
+	//시간 계산
+	using FpFloatMilliseconds = duration<float, milliseconds::period>;
+	auto prev_Time = chrono::high_resolution_clock::now();
+	float elapsedTime{};
 	while (true) {
-		EnterCriticalSection(&Msg_cs);
-		MsgQueue = glo_MsgQueue;
-		LeaveCriticalSection(&Msg_cs);
+		auto cur_Time = chrono::high_resolution_clock::now();
+		elapsedTime += FpFloatMilliseconds(cur_Time - prev_Time).count();
+		prev_Time = cur_Time;
 
+		if (elapsedTime > 17)
+		{
+			EnterCriticalSection(&Msg_cs);
+			MsgQueue = glo_MsgQueue;
+			LeaveCriticalSection(&Msg_cs);
+			
+			LARGE_INTEGER time;
+			QueryPerformanceCounter(&time);
+			fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
+			tTime = time;
 
+<<<<<<< HEAD
 		LARGE_INTEGER time;
 		QueryPerformanceCounter(&time);
 		fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
 		tTime = time; 
 		fDeltaTime *= 100;
+=======
+			fDeltaTime *= 100;
 
-		for (int i = 0; i < count_s+1; i++) {
-			if (col_player_data[i].Speed < 1.5)
-			{
-				col_player_data[i].Speed += acc * fDeltaTime;
-			}
-			col_player_data[i].Posvec.z += col_player_data[i].Speed * fDeltaTime;
-
-			col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, glm::vec3(0.0f, 0.0f, col_player_data[i].Speed * fDeltaTime));
-		}
-
-		EnterCriticalSection(&Msg_cs);
-		while (!glo_MsgQueue.empty()) {
-			glo_MsgQueue.pop();
-		LeaveCriticalSection(&Msg_cs);
-		}
-
-		while (!MsgQueue.empty()) {
-
-
-			Msg = MsgQueue.front();
-			MsgQueue.pop();
-			if (Msg.type == TYPE_PLAYER) {
-				switch (Msg.dir)
+			for (int i = 0; i < count_s + 1; i++) {
+				if (col_player_data[i].Speed < 0.5)
 				{
-				case DIR_LEFT_GO://왼쪽
-					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+					col_player_data[i].Speed += acc * fDeltaTime;
+				}
+				col_player_data[i].Posvec.z += col_player_data[i].Speed * fDeltaTime;
+>>>>>>> 687cb7e581e756f0ff50eb345cdbad3f019cebb2
 
-					col_player_data[Msg.id].rad += 30.0f * col_player_data[Msg.id].Speed;
-					if (col_player_data[Msg.id].rad > 360)
+				col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, glm::vec3(0.0f, 0.0f, col_player_data[i].Speed * fDeltaTime));
+			}
+
+			EnterCriticalSection(&Msg_cs);
+			while (!glo_MsgQueue.empty()) {
+				glo_MsgQueue.pop();
+				LeaveCriticalSection(&Msg_cs);
+			}
+
+			while (!MsgQueue.empty()) {
+
+
+				Msg = MsgQueue.front();
+				MsgQueue.pop();
+				if (Msg.type == TYPE_PLAYER) {
+					switch (Msg.dir)
 					{
-						col_player_data[Msg.id].rad -= 360;
+					case DIR_LEFT_GO://왼쪽
+						col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+						col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+						col_player_data[Msg.id].rad += 3.0f;
+						if (col_player_data[Msg.id].rad > 360)
+						{
+							col_player_data[Msg.id].rad -= 360;
+						}
+
+						col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+						col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+						break;
+
+					case DIR_RIGHT_GO://오른쪽
+						col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+						col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+						col_player_data[Msg.id].rad -= 3.0f;
+						if (col_player_data[Msg.id].rad < 0)
+						{
+							col_player_data[Msg.id].rad += 360;
+						}
+
+						col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+						col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+
+						break;
+
 					}
+				}
 
-					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
+				if (Msg.type == TYPE_BULLET) {
 
+					cbd[Bullet_num].PosVec = col_player_data[Msg.id].Posvec;
+					cbd[Bullet_num].PosVec.z += 0.5f;
+					cbd[Bullet_num].PosMat = fixed_RotMat[Msg.id] * cbd[Bullet_num].PosMat;
+					cbd[Bullet_num].PosMat = glm::translate(cbd[Bullet_num].PosMat, cbd[Bullet_num].PosVec);
+					cbd[Bullet_num].life = 1;
+					cbd[Bullet_num].rotate = col_player_data[Msg.id].rad;
+					cbd[Bullet_num].Speed = col_player_data[Msg.id].Speed + 0.3f;
+
+					Bullet_num++;
 					break;
-		
-				case DIR_RIGHT_GO://오른쪽
-					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(-col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-
-					col_player_data[Msg.id].rad -= 30.0f * col_player_data[Msg.id].Speed;
-					if (col_player_data[Msg.id].rad < 0)
-					{
-						col_player_data[Msg.id].rad += 360;
-					}
-
-					col_player_data[Msg.id].RotMat = glm::rotate(col_player_data[Msg.id].RotMat, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-					col_player_data[Msg.id].Posvec = glm::rotate(col_player_data[Msg.id].Posvec, glm::radians(col_player_data[Msg.id].rad), glm::vec3(0.0f, 0.0f, 1.0f));
-
-					break;
-				
 				}
 			}
 
-			if (Msg.type == TYPE_BULLET) {
-				//cout << col_player_data[Msg.id].Posvec.x << endl;
-				
-				cbd[Bullet_num].PosVec = col_player_data[Msg.id].Posvec;
-				cbd[Bullet_num].PosVec.z += 0.5f;
-				cbd[Bullet_num].PosMat = fixed_RotMat[Msg.id] * cbd[Bullet_num].PosMat;
-				cbd[Bullet_num].PosMat = glm::translate(cbd[Bullet_num].PosMat, cbd[Bullet_num].PosVec);
-				cbd[Bullet_num].life = 1;
-				cbd[Bullet_num].rotate = col_player_data[Msg.id].rad;
-				cbd[Bullet_num].Speed = col_player_data[Msg.id].Speed + 0.3f;
-				
-				Bullet_num++;
-				break;
+			//총알 정보 업데이트 
+			for (int i = 0; i < Bullet_num; i++) {
+				if (cbd[i].life != 0) {
+					cbd[i].PosVec.z += cbd[i].Speed * fDeltaTime;
+					cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
+				}
 			}
-		}
 
-		//총알 정보 업데이트 
-		for (int i = 0; i < Bullet_num; i++) {
-			if (cbd[i].life != 0) {
-				cbd[i].PosVec.z += cbd[i].Speed * fDeltaTime;
-				cbd[i].PosMat = glm::translate(cbd[i].PosMat, glm::vec3(0, 0, cbd[i].Speed * fDeltaTime));
+			float fpz = 0.0f;
+			float spz = FLT_MAX;
+
+			//데이터 바꿔치기
+			for (int i = 0; i < count_s + 1; i++) {
+				players[i].PosX = col_player_data[i].Posvec.x;
+				players[i].PosY = col_player_data[i].Posvec.y;
+				players[i].PosZ = col_player_data[i].Posvec.z;
+				players[i].PosMat = col_player_data[i].PosMat;
+				players[i].RotMat = col_player_data[i].RotMat;
+				players[i].SclMat = col_player_data[i].SclMat;
+				fpz = max(fpz, col_player_data[i].Posvec.z);
+				spz = min(spz, col_player_data[i].Posvec.z);
 			}
-		}
 
-		float fpz = 0.0f;
-		float spz = FLT_MAX;
-
-		//데이터 바꿔치기
-		for (int i = 0; i < count_s+1; i++) {
-			players[i].PosX = col_player_data[i].Posvec.x;
-			players[i].PosY = col_player_data[i].Posvec.y;
-			players[i].PosZ = col_player_data[i].Posvec.z;
-			players[i].PosMat = col_player_data[i].PosMat;
-			players[i].RotMat = col_player_data[i].RotMat;
-			players[i].SclMat = col_player_data[i].SclMat;
-			fpz = max(fpz, col_player_data[i].Posvec.z);
-			spz = min(spz, col_player_data[i].Posvec.z);
-		}
-
-		// 큐브 갱신
-		for (int i = 0; i < MAX_CUBE; ++i)
-		{
-			if (ccd[i].PosZ + 50.0f < spz)
+			// 큐브 갱신
+			for (int i = 0; i < MAX_CUBE; ++i)
 			{
-				Col_Cube_data c;
-				c.life = rand() % 3;
-				c.PosZ = fpz + 300.0f + rand() % 100;
-				glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-				c.rad = rand() % 360;
-				c.PosMat = glm::translate(c.PosMat, cpos);
-				c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
-				ccd[i] = c;
-			}
-		}
-
-		//총알 플레이어 충돌 체크 
-		for (int i = 0; i < Bullet_num; ++i){
-			for (int j = 0; j < count_s + 1; ++j){
-				float bz = cbd[i].PosVec.z;
-				float bRad = cbd[i].rotate;
-				float pz = col_player_data[j].Posvec.z;
-				float pRad = col_player_data[j].rad;
-				if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f){
-					cbd[i].PosMat = glm::mat4(1.0f);
-					cbd[i].life = 0;//총알 제거 
-					col_player_data[j].Speed = col_player_data[j].Speed * 0.9f;
-				}
-			}
-		}
-
-		//플레이어 큐브 충돌 체크
-		for (int i = 0; i < count_s + 1; ++i) {
-			for (int j = 0; j < MAX_CUBE; ++j){
-				// 각도 처리
-				float plus_rad = col_player_data[i].rad + 10;
-				if (plus_rad > 360)
+				if (ccd[i].PosZ + 50.0f < spz)
 				{
-					plus_rad = plus_rad - 360;
-				}
-				float minus_rad = col_player_data[i].rad - 10;
-				if (minus_rad < 0)
-				{
-					minus_rad = minus_rad + 360;
-				}
-				// 비교
-				if (col_player_data[i].Posvec.z + 0.1f > ccd[j].PosZ &&
-					col_player_data[i].Posvec.z - 0.1f < ccd[j].PosZ &&
-					plus_rad > ccd[j].rad &&
-					minus_rad < ccd[j].rad){
-
-					col_player_data[i].Speed /= 2;
-
 					Col_Cube_data c;
 					c.life = rand() % 3;
 					c.PosZ = fpz + 300.0f + rand() % 100;
@@ -531,30 +493,52 @@ void Calcutlaion_clients() {
 					c.rad = rand() % 360;
 					c.PosMat = glm::translate(c.PosMat, cpos);
 					c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
-					ccd[j] = c;
+					ccd[i] = c;
 				}
 			}
-		}
 
-		//총알과 큐브 충돌 체크 
-		for (int i = 0; i < Bullet_num; ++i){
-			for (int j = 0; j < MAX_CUBE; ++j){
-				float bz = cbd[i].PosVec.z;
-				float bRad = cbd[i].rotate;
-				float cz = ccd[j].PosZ;
-				float cRad = ccd[j].rad;
+			//총알 플레이어 충돌 체크 
+			for (int i = 0; i < Bullet_num; ++i) {
+				for (int j = 0; j < count_s + 1; ++j) {
+					float bz = cbd[i].PosVec.z;
+					float bRad = cbd[i].rotate;
+					int life = cbd[i].life;
+					float pz = col_player_data[j].Posvec.z;
+					float pRad = col_player_data[j].rad;
+					if (bz > pz - 0.2f && bz < pz + 0.2f && bRad < pRad + 3.0f && bRad > pRad - 3.0f && life == 1) {
+						cbd[i].PosMat = glm::mat4(1.0f);
+						cbd[i].life = 0;//총알 제거 
+						col_player_data[j].Speed = col_player_data[j].Speed * 0.9f;
 
-				if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 3.0f && bRad > cRad - 3.0f)
-				{
-					cbd[i].life = 0;//총알 제거 
-					cbd[i].PosMat = glm::mat4(1.0f);
+					}
+				}
+			}
 
-					ccd[j].life -= 1;
-					if (ccd[j].life < 0)
+			//플레이어 큐브 충돌 체크
+			for (int i = 0; i < count_s + 1; ++i) {
+				for (int j = 0; j < MAX_CUBE; ++j) {
+					// 각도 처리
+					float plus_rad = col_player_data[i].rad + 10;
+					if (plus_rad > 360)
 					{
+						plus_rad = plus_rad - 360;
+					}
+					float minus_rad = col_player_data[i].rad - 10;
+					if (minus_rad < 0)
+					{
+						minus_rad = minus_rad + 360;
+					}
+					// 비교
+					if (col_player_data[i].Posvec.z + 0.1f > ccd[j].PosZ &&
+						col_player_data[i].Posvec.z - 0.1f < ccd[j].PosZ &&
+						plus_rad > ccd[j].rad &&
+						minus_rad < ccd[j].rad) {
+
+						col_player_data[i].Speed = col_player_data[i].Speed * 0.8f;
+
 						Col_Cube_data c;
 						c.life = rand() % 3;
-						c.PosZ = fpz + 300.0f + rand() % 100;
+						c.PosZ = fpz + 100.0f + rand() % 100;
 						glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
 						c.rad = rand() % 360;
 						c.PosMat = glm::translate(c.PosMat, cpos);
@@ -564,38 +548,67 @@ void Calcutlaion_clients() {
 					}
 				}
 			}
-		}
 
+			//총알과 큐브 충돌 체크 
+			for (int i = 0; i < Bullet_num; ++i) {
+				for (int j = 0; j < MAX_CUBE; ++j) {
+					float bz = cbd[i].PosVec.z;
+					float bRad = cbd[i].rotate;
+					float cz = ccd[j].PosZ;
+					float cRad = ccd[j].rad;
 
-		for (int i = 0; i < Bullet_num; i++) { //총알 수만큼 총알 바꿔 치기
+					if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 3.0f && bRad > cRad - 3.0f)
+					{
+						cbd[i].life = 0;//총알 제거 
+						cbd[i].PosMat = glm::mat4(1.0f);
 
-			bullets[i].PosMat = cbd[i].PosMat;
-		}
+						ccd[j].life -= 1;
+						if (ccd[j].life < 0)
+						{
+							Col_Cube_data c;
+							c.life = rand() % 3;
+							c.PosZ = fpz + 100.0f + rand() % 100;
+							glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+							c.rad = rand() % 360;
+							c.PosMat = glm::translate(c.PosMat, cpos);
+							c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
+							ccd[j] = c;
 
-		for (int i = 0; i < MAX_CUBE; ++i)//큐브 바꿔 치기
-		{
-			cubes[i].PosMat = ccd[i].PosMat;
-			cubes[i].RotMat = ccd[i].RotMat;
-			cubes[i].life = ccd[i].life;
-		}
-
-		//게임 종료 처리
-		if (!game_over_flag)
-		{
-			for (int i = 0; i < count_s + 1; ++i) {
-				if (col_player_data[i].Posvec.z > 500.0f)
-				{
-					cout << "우승자 감지" << endl;
-					game_over_flag = true;
-					char winnerid = i;
-					SendGameResultPacket(winnerid);
+						}
+					}
 				}
 			}
-		}
-		
-		SendPlayerPosPacket(*players);
-		SendBulletPosPacket(*bullets);
-		SendCubePosPacket(*cubes);
 
+
+			for (int i = 0; i < Bullet_num; i++) { //총알 수만큼 총알 바꿔 치기
+
+				bullets[i].PosMat = cbd[i].PosMat;
+			}
+
+			for (int i = 0; i < MAX_CUBE; ++i)//큐브 바꿔 치기
+			{
+				cubes[i].PosMat = ccd[i].PosMat;
+				cubes[i].RotMat = ccd[i].RotMat;
+				cubes[i].life = ccd[i].life;
+			}
+
+			//게임 종료 처리
+			if (!game_over_flag)
+			{
+				for (int i = 0; i < count_s + 1; ++i) {
+					if (col_player_data[i].Posvec.z > 500.0f)
+					{
+						game_over_flag = true;
+						char winnerid = i;
+						SendGameResultPacket(winnerid);
+					}
+				}
+			}
+
+			SendPlayerPosPacket(*players);
+			SendBulletPosPacket(*bullets);
+			SendCubePosPacket(*cubes);
+			elapsedTime = 0;
+		}
 	}
 }

@@ -8,7 +8,7 @@ struct Message {
     bool isPushed;
 };
 using namespace std;
-
+using namespace chrono;
 typedef struct Col_Player_data //계산용 플레이어 데이터
 {
     glm::vec3 Posvec = glm::vec3(0.0f, -3.5f, 0.0f);
@@ -92,6 +92,6 @@ int Bullet_num = 0;//발사된 총알 개수
 //타이머 관련
 LARGE_INTEGER tSecond;
 LARGE_INTEGER tTime;
-float acc = 0.0001f;
+float acc = 0.0005f;
 float fDeltaTime = 0;
 bool game_over_flag = false;
