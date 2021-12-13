@@ -444,7 +444,7 @@ void Calcutlaion_clients() {
 					cbd[Bullet_num].life = 1;
 					cbd[Bullet_num].rotate = col_player_data[Msg.id].rad;
 					cbd[Bullet_num].Speed = col_player_data[Msg.id].Speed + 0.3f;
-
+					cbd[Bullet_num].id = Msg.id;
 					Bullet_num++;
 					break;
 				}
@@ -545,21 +545,27 @@ void Calcutlaion_clients() {
 
 					if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 10.0f && bRad > cRad - 10.0f)
 					{
+						
+
 						cbd[i].life = 0;//ÃÑ¾Ë Á¦°Å 
 						cbd[i].PosMat = glm::mat4(1.0f);
 
-						ccd[j].life -= 1;
-						if (ccd[j].life < 0)
+						if(ccd[j].life < 2)
 						{
-							Col_Cube_data c;
-							c.life = rand() % 3;
-							c.PosZ = fpz + 100.0f + rand() % 100;
-							glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
-							c.rad = rand() % 360;
-							c.PosMat = glm::translate(c.PosMat, cpos);
-							c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
-							ccd[j] = c;
+							ccd[j].life -= 1;
+							if (ccd[j].life < 0)
+							{
+								col_player_data[cbd[i].id].Speed = col_player_data[cbd[i].id].Speed * 1.2f;
 
+								Col_Cube_data c;
+								c.life = rand() % 3;
+								c.PosZ = fpz + 100.0f + rand() % 100;
+								glm::vec3 cpos = glm::vec3(0.0f, -3.5f, c.PosZ);
+								c.rad = rand() % 360;
+								c.PosMat = glm::translate(c.PosMat, cpos);
+								c.RotMat = glm::rotate(c.RotMat, glm::radians(c.rad), glm::vec3(0.0f, 0.0f, 1.0f));
+								ccd[j] = c;
+							}
 						}
 					}
 				}
