@@ -376,13 +376,6 @@ void Calcutlaion_clients() {
 			fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
 			tTime = time;
 
-<<<<<<< HEAD
-		LARGE_INTEGER time;
-		QueryPerformanceCounter(&time);
-		fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
-		tTime = time; 
-		fDeltaTime *= 100;
-=======
 			fDeltaTime *= 100;
 
 			for (int i = 0; i < count_s + 1; i++) {
@@ -391,8 +384,6 @@ void Calcutlaion_clients() {
 					col_player_data[i].Speed += acc * fDeltaTime;
 				}
 				col_player_data[i].Posvec.z += col_player_data[i].Speed * fDeltaTime;
->>>>>>> 687cb7e581e756f0ff50eb345cdbad3f019cebb2
-
 				col_player_data[i].PosMat = glm::translate(col_player_data[i].PosMat, glm::vec3(0.0f, 0.0f, col_player_data[i].Speed * fDeltaTime));
 			}
 
