@@ -31,7 +31,6 @@ DWORD WINAPI recv_thread(LPVOID iD);
 //DWORD WINAPI Calcutlaion_Thread(LPVOID arg);
 void Calcutlaion_clients();
 
- CRITICAL_SECTION cs;
  CRITICAL_SECTION Msg_cs;
 //소켓함수 오류 출력 후 종료
 
@@ -108,7 +107,7 @@ bool Is_GameStart() {
 int main()
 {
 	//임계 영역 생성
-	InitializeCriticalSection(&cs);
+	InitializeCriticalSection(&Msg_cs);
 	
 	int retval;
 
@@ -210,7 +209,7 @@ int main()
 
 	}
 
-	DeleteCriticalSection(&cs);
+	DeleteCriticalSection(&Msg_cs);
 	
 	// closesocket()
 	closesocket(listen_sock);
@@ -316,7 +315,9 @@ DWORD WINAPI recv_thread(LPVOID iD) {
 		}
 		if (msg.id != -1)
 		{
+			EnterCriticalSection(&Msg_cs);
 			glo_MsgQueue.emplace(msg);
+			LeaveCriticalSection(&Msg_cs);
 		}
 	}
 }
@@ -372,8 +373,9 @@ void Calcutlaion_clients() {
 
 		if (elapsedTime > 17)
 		{
-
+			EnterCriticalSection(&Msg_cs);
 			MsgQueue = glo_MsgQueue;
+			LeaveCriticalSection(&Msg_cs);
 			LARGE_INTEGER time;
 			QueryPerformanceCounter(&time);
 			fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
@@ -578,20 +580,20 @@ void Calcutlaion_clients() {
 			//게임 종료 처리
 		
 
-				for (int i = 0; i < count_s + 1; ++i) {
-					if (col_player_data[i].Posvec.z > 3000.0f)
+			for (int i = 0; i < count_s + 1; ++i) {
+				if (col_player_data[i].Posvec.z > 3000.0f)
+				{
+					while (!glo_MsgQueue.empty())
 					{
-						while (!glo_MsgQueue.empty())
-						{
-							glo_MsgQueue.pop();
-						}
-
-						game_over_flag = true;
-						char winnerid = i;
-						SendGameResultPacket(winnerid);
-						return;
+						glo_MsgQueue.pop();
 					}
+
+					game_over_flag = true;
+					char winnerid = i;
+					SendGameResultPacket(winnerid);
+					return;
 				}
+			}
 
 			SendPlayerPosPacket(*players);
 			SendBulletPosPacket(*bullets);
