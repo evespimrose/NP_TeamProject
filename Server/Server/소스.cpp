@@ -372,8 +372,7 @@ void Calcutlaion_clients() {
 		LARGE_INTEGER time;
 		QueryPerformanceCounter(&time);
 		fDeltaTime = (time.QuadPart - tTime.QuadPart) / (float)tSecond.QuadPart;
-		tTime = time;
-
+		tTime = time; 
 		fDeltaTime *= 100;
 
 		for (int i = 0; i < count_s+1; i++) {

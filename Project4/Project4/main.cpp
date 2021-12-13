@@ -18,6 +18,7 @@ char* arr;
 
 int user_id = -1; //0~2
 int winner_id = -1;
+bool i_winner = false;
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -155,6 +156,12 @@ void ProcessPacket(char* packet_buffer)
 		memcpy(&packet, ptr, sizeof(packet));
 		winner_id = packet.id;
 		cout << "¿ì½ÂÀÚ : " << winner_id << endl;
+		if (user_id == winner_id)
+		{
+			i_winner = true;
+		}
+
+		Scene = OVER_SCENE;
 
 		break;
 	}
@@ -338,9 +345,16 @@ GLvoid drawScene()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//glutPrint(420.0f, 550.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
+		if (i_winner == true)
+		{
+			glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "YOU WINNNER!");
+		}
+		else
+		{
+			glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "YOU LOSER!");
+		}
 		glutPrint(WIDTH / 3.0f, HEIGHT / 2.0f, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
-		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
-		glutPrint(WIDTH / 3.0f, HEIGHT / 3.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
+		glutPrint(WIDTH / 3.0f, HEIGHT / 4.0f, GLUT_BITMAP_TIMES_ROMAN_24, "Press R to CONTINUE");
 
 		glutSwapBuffers();
 	}
