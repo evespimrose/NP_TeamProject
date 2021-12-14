@@ -516,8 +516,8 @@ void Calcutlaion_clients() {
 						minus_rad = minus_rad + 360;
 					}
 					// ºñ±³
-					if (col_player_data[i].Posvec.z + 0.1f > ccd[j].PosZ &&
-						col_player_data[i].Posvec.z - 0.1f < ccd[j].PosZ &&
+					if (col_player_data[i].Posvec.z + 1.0f > ccd[j].PosZ &&
+						col_player_data[i].Posvec.z - 1.0f < ccd[j].PosZ &&
 						plus_rad > ccd[j].rad &&
 						minus_rad < ccd[j].rad) {
 
@@ -543,7 +543,7 @@ void Calcutlaion_clients() {
 					float cz = ccd[j].PosZ;
 					float cRad = ccd[j].rad;
 
-					if (bz > cz - 0.2f && bz < cz + 0.2f && bRad < cRad + 10.0f && bRad > cRad - 10.0f)
+					if (bz > cz - 0.5f && bz < cz + 0.5f && bRad < cRad + 10.0f && bRad > cRad - 10.0f)
 					{
 						
 
