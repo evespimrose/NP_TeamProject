@@ -160,7 +160,7 @@ void ProcessPacket(char* packet_buffer)
 			i_winner = true;
 		}
 
-		Scene = OVER_SCENE;
+		
 
 		break;
 	}
@@ -469,6 +469,10 @@ GLvoid Timer(int Value)
 
 		cnt = 0;
 
+		if (i_winner)
+		{
+			Scene = OVER_SCENE;
+		}
 	}
 
 	string str = "Turbo_Racing   fps:";
