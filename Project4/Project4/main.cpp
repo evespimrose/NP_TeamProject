@@ -19,6 +19,7 @@ char* arr;
 int user_id = -1; //0~2
 int winner_id = -1;
 bool i_winner = false;
+bool game_over = false;
 
 GLuint vertexShader;
 GLuint fragmentShader;
@@ -160,7 +161,7 @@ void ProcessPacket(char* packet_buffer)
 			i_winner = true;
 		}
 
-		
+		game_over = true;
 
 		break;
 	}
@@ -469,7 +470,7 @@ GLvoid Timer(int Value)
 
 		cnt = 0;
 
-		if (i_winner)
+		if (game_over)
 		{
 			Scene = OVER_SCENE;
 		}
